@@ -67,15 +67,15 @@ This Proposed Architecture does not solve the inherent performance problem of th
 
 A Architectural development workflow for building solutions to problems (Apps) in a Language Agnostic (Recode able in another language with minimum rework) and which can be deployed in multiple OS supported environments using appropriate native OS wrappers.
 
-![Code Architectrue](https://raw.github.com/Srid68/Priya.InfoList/master/src/Document/Architecture2.png "Code Architecture")
+![Code Architectrue](https://raw.github.com/Srid68/Priya.InfoList/master/Document/Architecture2.png "Code Architecture")
 
 The vision for implementing this code is to develop a methodology/architecture which is Platform/Language/GUI agnostic and also leads to Separation of Skills for various participants involved in the development of the code base
 
-![Architectrue](https://raw.github.com/Srid68/Priya.InfoList/master/src/Document/Architecture3.png "Architecture")
+![Architectrue](https://raw.github.com/Srid68/Priya.InfoList/master/Document/Architecture3.png "Architecture")
 
 Separation of Skills as well as Concerns in the Code base leads to parallel and efficient outsourcing of development
 
-![Separation of Skills/Concerns](https://raw.github.com/Srid68/Priya.InfoList/master/src/Document/Architecture1.png "Separation of Skills/Concerns")
+![Separation of Skills/Concerns](https://raw.github.com/Srid68/Priya.InfoList/master/Document/Architecture1.png "Separation of Skills/Concerns")
 
 ## MIT License
 The Source with the supporting binary dlls is published using MIT License
