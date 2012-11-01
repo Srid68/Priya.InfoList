@@ -1,10 +1,8 @@
 # Warning (Pre Alpha)
 
-Even though the Web Code base has been tested thoroughly, frequent changes leads to buggy code due to manual regression testing. 
+The Apk File given is about 12MB with arm6, arm7 and x86 binaries to facilitate easy testing. 
 
-A lot of changes are expected when the Web and OpenGL Code bases are integrated, which leads to buggy code which has to be regression tested again.
-
-The Apk File given is about 12MB with arm6, arm7 and x86 binaries to facilitate easy testing. The webapp demo is running in Godaddy Servers using mysql which has some bugs due to concurrency.
+The webapp demo is running in Godaddy Servers using mysql to test medium trust and performance under shared host environments.
 
 Early publication of this Framework is get feedback from Early Adopters/OEM Freelancers who want to build App Store within an App Store, Packaging Services etc.
  
