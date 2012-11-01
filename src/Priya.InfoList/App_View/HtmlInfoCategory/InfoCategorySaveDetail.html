@@ -1,0 +1,42 @@
+<ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+    data-dividertheme="e">
+    <li>
+        <p class="ui-li-aside">
+            {{RevisionNo}}
+        </p>
+        <label for="infoCategoryName{{DataIndex}}">
+            Info Category<span style="color:Red;">*</span></label>
+        <input type="text" name="infoCategoryName{{DataIndex}}" id="infoCategoryName{{DataIndex}}" value="{{InfoCategoryName}}"  {{#InfoCategoryNameDisabled}}disabled="disabled"{{/InfoCategoryNameDisabled}}
+            maxlength="50" placeholder="&#187;Enter Info Category Name*" onkeypress="return clickButton(event,'{{#AddMode}}buttonAddInfoCategory{{/AddMode}}{{^AddMode}}buttonSaveInfoCategory{{/AddMode}}{{DataIndex}}');"/>
+        
+    </li>
+    {{#IsDefaultVisible}}
+    <li>
+        {{#IsDefault}}
+        <input type="checkbox" name="infoCategoryIsDefault{{DataIndex}}" id="infoCategoryIsDefault{{DataIndex}}" checked="checked"/>
+        {{/IsDefault}}
+        {{#IsNotDefault}}
+        <input type="checkbox" name="infoCategoryIsDefault{{DataIndex}}" id="infoCategoryIsDefault{{DataIndex}}"/>
+        {{/IsNotDefault}}
+        <label for="infoCategoryIsDefault{{DataIndex}}">Is Default</label>
+    </li>
+    {{/IsDefaultVisible}}
+    {{#IsActiveVisible}}
+    <li>
+        {{#IsActive}}
+            <input type="checkbox" name="infoCategoryIsActive{{DataIndex}}" id="infoCategoryIsActive{{DataIndex}}" checked="checked" />
+        {{/IsActive}}
+        {{#IsInActive}}
+            <input type="checkbox" name="infoCategoryIsActive{{DataIndex}}" id="infoCategoryIsActive{{DataIndex}}"/>
+        {{/IsInActive}}
+        <label for="infoCategoryIsActive{{DataIndex}}">Is Active</label>
+    </li>
+    {{/IsActiveVisible}}
+    <li>
+        {{#ShowUserInfo}}
+        <span style="font-weight: lighter; color: red;">Please login to Save</span>
+        {{/ShowUserInfo}}        
+        {{AddAction}}
+        {{EditAction}}
+    </li>
+</ul>

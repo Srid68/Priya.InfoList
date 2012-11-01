@@ -1,0 +1,11 @@
+<div>
+    <div class="ui-grid-a">
+        <div class="ui-block-a">
+            <button id="buttonAddDataType" name="buttonAddDataType" type="submit" data-theme="b" onclick="return saveDataType(0, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}')" {{#AddActionDisabled}}disabled="disabled"{{/AddActionDisabled}}>Add</button>            
+        </div>
+        <div class="ui-block-b">
+            <button type="submit" data-theme="c" onclick="return refreshDataTypeForm({{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}')">
+                Cancel</button>
+        </div>
+    </div>
+</div>

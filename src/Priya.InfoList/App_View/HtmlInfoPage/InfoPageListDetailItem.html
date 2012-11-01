@@ -1,0 +1,29 @@
+﻿<li data-role="list-divider">
+    <h3 title="{{InfoCategoryName}}">
+        <strong>{{InfoPageName}}</strong>{{#IsDeleted}}<span style="color: red; font-weight: bold;">(Deleted)</span>{{/IsDeleted}}
+        {{#IsInActive}}<span style="color: red; font-weight: bold;">(InActive)</span>{{/IsInActive}}
+        {{#IsPublic}}<span style="color: red; font-weight: bold;">(Public)</span>{{/IsPublic}}
+    </h3>
+    <p>
+        dt {{LastUpdateDate}} by {{CreatedBy}}
+    </p>
+    <p class="ui-li-aside">
+    {{#EditAction}}
+        <button data-inline="true" data-ajax="false" data-icon="edit" data-iconpos='notext' data-mini="true" onclick="return getInfoPageSaveView({{Id}}, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', true);">Edit</button>
+    {{/EditAction}}
+    {{#AsyncAction}}
+        <button data-inline="true" data-ajax="false" data-icon="chevron-down" data-iconpos='notext' data-mini="true" onclick="return retrieveInfoSectionList(this, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', {{AsyncLoading}}, {{InfoPageId}});">Retrieve</button>
+    {{/AsyncAction}}
+    </p>
+</li>
+<li>
+    <span style="font-size: small">{{InfoPageDescription}}</span>
+    {{InfoSectionView}}
+</li>
+{{#CommentView}}
+<li>
+    <div>
+    {{CommentViewDetail}}
+    </div>
+</li>
+{{/CommentView}}

@@ -1,0 +1,13 @@
+﻿<li>
+    <h3>
+        <strong>{{InfoCategoryName}}</strong>
+            {{#IsDefault}}<span style="color:blue;font-weight:bold;">(Default)</span>{{/IsDefault}} 
+            {{#IsInActive}}<span style="color:red;font-weight:bold;">(InActive)</span>{{/IsInActive}}
+    </h3>
+    <p>{{CreatedBy}}</p>
+    {{#EditAction}}
+        <p class="ui-li-aside">
+            <button data-inline="true" data-ajax="false" data-mini="true" data-icon="edit"  onclick="return getInfoCategorySaveView({{Id}}, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', true);" >Edit</button>
+        </p>
+    {{/EditAction}}
+</li>

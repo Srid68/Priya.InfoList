@@ -1,0 +1,12 @@
+﻿<li>
+    <h3>
+        <strong>{{DataRefType}}</strong> 
+        {{#IsInActive}}<span style="color:red;font-weight:bold;">(InActive)</span>{{/IsInActive}}
+        {{#IsDefault}}<span style="color:black;font-weight:bold;">(Default)</span>{{/IsDefault}} 
+    </h3>
+    {{#EditAction}}
+        <p class="ui-li-aside">
+            <button data-inline="true" data-ajax="false" data-mini="true" data-icon="edit" onclick="return getDataRefTypeSaveView({{Id}}, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}');">Edit</button>
+        </p>
+    {{/EditAction}}
+</li>

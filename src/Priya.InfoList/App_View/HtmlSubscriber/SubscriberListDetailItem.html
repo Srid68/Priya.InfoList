@@ -1,0 +1,11 @@
+﻿<li>
+    <h3>
+        <strong>{{SubscriberEmail}}</strong>
+    </h3>
+    <p>{{SubscriberMessage}} </p>
+    {{#EditAction}}
+        <p class="ui-li-aside">
+            <button data-inline="true" data-ajax="false" data-mini="true" data-icon="edit"  onclick="return getSubscriberSaveView({{Id}}, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}');" >Edit</button>
+        </p>
+    {{/EditAction}}
+</li>

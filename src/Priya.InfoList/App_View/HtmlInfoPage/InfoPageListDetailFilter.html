@@ -1,0 +1,33 @@
+﻿<li id="infoPageListFilter" {{#InfoPageListFilterHidden}}style="display:none;"{{/InfoPageListFilterHidden}}>
+    <div>
+        <ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b" data-dividertheme="e">
+
+            <li>
+                {{#ShowPublicChecked}}
+                <input type="checkbox" name="filterInfoPagePublic" id="filterInfoPagePublic" checked="checked" onchange="return filterInfoPageList({{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', {{AsyncLoading}})"/>
+                {{/ShowPublicChecked}}
+                {{#ShowPublicUnChecked}}
+                <input type="checkbox" name="filterInfoPagePublic" id="filterInfoPagePublic" onchange="return filterInfoPageList({{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', {{AsyncLoading}})"/>
+                {{/ShowPublicUnChecked}}
+                <label for="filterInfoPagePublic">Show Public</label>
+            </li>
+
+            <li >
+                <label for="filterCategorySelect">
+                    Info Category</label>
+                <select name="filterCategorySelect" id="filterCategorySelect" data-native-menu="false" onchange="return filterInfoPageList({{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', {{AsyncLoading}})">
+                    {{#InfoCategoryItem}}
+                        <option value="{{InfoCategoryValue}}" {{#InfoCategorySelected}}selected="selected"{{/InfoCategorySelected}}>{{InfoCategoryText}}</option>
+                    {{/InfoCategoryItem}}
+                </select>        
+            </li>
+        
+             <li>
+                <label for="infoPageFilter">
+                        Info Page Filter<span id="infoPageFilterInfo" style="font-size:xx-small;">&nbsp;</span></label>
+                <input type="search" name="infoPageFilter" id="infoPageFilter" value="{{InfoPageFilter}}" onkeypress="return inputFilterInfoPageList(event, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', {{AsyncLoading}});" />
+            </li>
+
+        </ul>
+    </div>
+</li>

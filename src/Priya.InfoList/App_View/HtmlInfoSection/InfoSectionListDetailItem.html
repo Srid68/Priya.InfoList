@@ -1,0 +1,17 @@
+﻿<li data-role="list-divider">
+    <h3>
+        <strong>{{InfoSectionName}}</strong> {{#IsInActive}}<span style="color: red; font-weight: bold;">(InActive)</span>{{/IsInActive}}
+    </h3>
+    <p class="ui-li-aside">
+    {{#EditAction}}
+        <button data-inline="true" data-ajax="false" data-icon="edit" data-mini="true" data-iconpos='notext' onclick="return getInfoSectionSaveView({{Id}}, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', true, {{InfoPageId}});">Edit</button>
+    {{/EditAction}}
+    {{#AsyncAction}}
+        <button data-inline="true" data-ajax="false" data-icon="chevron-down" data-iconpos='notext' data-mini="true" onclick="return retrieveInfoDetailList(this, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', {{Id}});">Retrieve</button>
+    {{/AsyncAction}}
+    </p>
+</li>
+<li>
+    <span style="font-size: small">{{InfoSectionDescription}}</span>
+    {{InfoDetailView}}
+</li>

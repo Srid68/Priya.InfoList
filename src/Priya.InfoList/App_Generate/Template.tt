@@ -1,0 +1,14 @@
+﻿<#@ include file="Config.ttinclude"#>
+<#@ import namespace="Priya.Template" #>
+<#
+    Template template = new Template();
+    Template.DevelopmentMode = false;
+    Template.NameSpaceName = namespaceName;
+    Template.ProjectPath = projectPath;
+    Template.ToolDir = toolDir;
+    Template.Javacmd = javacmd;
+	Template.TemplateSkipFilterRegEx = "";
+	Template.TemplateIncludeFilterRegEx ="";
+    string transformLog = template.TransformText();
+	WriteLine(transformLog);
+#>

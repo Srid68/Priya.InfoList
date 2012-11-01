@@ -1,0 +1,11 @@
+<div>
+    <div class="ui-grid-a">
+        <div class="ui-block-a">            
+            <button id="buttonAppendData" name="buttonAppendData" type="submit" data-theme="b" onclick="return saveData(0, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', '{{ConfigToken}}')" {{#SaveActionDisabled}}disabled="disabled"{{/SaveActionDisabled}}>Save</button>            
+        </div>
+        <div class="ui-block-b">
+            <button type="submit" data-theme="c" onclick="return refreshDataForm({{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', '{{ConfigToken}}')">
+                Cancel</button>
+        </div>
+    </div>
+</div>

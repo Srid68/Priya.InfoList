@@ -1,0 +1,94 @@
+<li>
+    <div>
+        <ul id="infoPageAdvanced" data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+            data-dividertheme="e" style="display:none;">
+
+            <li>
+                <label for="accessGroupSelect">
+                    Access Group</label>
+                <select name="accessGroupSelect" id="accessGroupSelect" data-native-menu="false">
+                    {{#AccessGroupItem}}
+                        <option value="{{AccessGroupValue}}" {{#AccessGroupSelected}}selected="selected"{{/AccessGroupSelected}}>{{AccessGroupText}}</option>
+                    {{/AccessGroupItem}}
+                </select>
+            </li>
+
+            <li>
+                {{#Commentable}}
+                <input type="checkbox" name="infoPageCommentable" id="infoPageCommentable" checked="checked"/>
+                {{/Commentable}}
+                {{^Commentable}}
+                <input type="checkbox" name="infoPageCommentable" id="infoPageCommentable"/>
+                {{/Commentable}}
+                <label for="infoPageCommentable">Commentable</label>
+            </li>
+
+            <li>
+                <label for="commentorRoleSelect">
+                    Commentor Role</label>
+                <select name="commentorRoleSelect" id="commentorRoleSelect" data-native-menu="false" multiple="multiple">
+                    {{#CommentorRoleItem}}
+                        <option value="{{CommentorRoleValue}}" {{#CommentorRoleSelected}}selected="selected"{{/CommentorRoleSelected}}>{{CommentorRoleText}}</option>
+                    {{/CommentorRoleItem}}
+                </select>
+            </li>
+
+            <li>
+                {{#AsyncLoading}}
+                <input type="checkbox" name="infoPageAsyncLoading" id="infoPageAsyncLoading" checked="checked"/>
+                {{/AsyncLoading}}
+                {{^AsyncLoading}}
+                <input type="checkbox" name="infoPageAsyncLoading" id="infoPageAsyncLoading"/>
+                {{/AsyncLoading}}
+                <label for="infoPageAsyncLoading">Async Loading</label>
+            </li>
+
+            <li {{#IsPublicHidden}}style="display:none;"{{/IsPublicHidden}}>
+                    {{#IsPublic}}
+                <input type="checkbox" name="infoPageIsPublic" id="infoPageIsPublic" checked="checked"/>
+                {{/IsPublic}}
+                {{^IsPublic}}
+                <input type="checkbox" name="infoPageIsPublic" id="infoPageIsPublic"/>
+                {{/IsPublic}}
+                <label for="infoPageIsPublic">Is Public</label>
+            </li>
+                
+            <li {{#IsActiveHidden}}style="display:none;"{{/IsActiveHidden}}>
+                {{#IsActive}}
+                    <input type="checkbox" name="infoPageIsActive" id="infoPageIsActive" checked="checked" />
+                {{/IsActive}}
+                {{^IsActive}}
+                    <input type="checkbox" name="infoPageIsActive" id="infoPageIsActive"/>
+                {{/IsActive}}
+                <label for="infoPageIsActive">Is Active</label>
+            </li>
+
+            <li >
+                <div data-role="fieldcontain">
+                    <label for="infoPageExpiryDate">
+                        Expiry Date</label>
+                    <input name="infoPageExpiryDate" id="infoPageExpiryDate" type="text" data-role="datebox" data-options='{"mode": "calbox", "dateFormat": "dd/mmmm/YYYY","calTodayButton": true, "afterToday": true, "maxDays": 1095, "disableManualInput": true}'
+                        value="{{ExpiryDate}}" />
+                </div>    
+            </li>
+
+                
+            <li {{#IsDeletedHidden}}style="display:none;"{{/IsDeletedHidden}}>
+                {{#IsDeleted}}
+                    <input type="checkbox" name="infoPageIsDeleted" id="infoPageIsDeleted" checked="checked" />
+                {{/IsDeleted}}
+                {{^IsDeleted}}
+                    <input type="checkbox" name="infoPageIsDeleted" id="infoPageIsDeleted"/>
+                {{/IsDeleted}}
+                <label for="infoPageIsDeleted">Is Deleted</label>
+            </li>
+                
+            <li {{#SequenceHidden}}style="display:none;"{{/SequenceHidden}}>
+                <label for="infoPageSequence">
+                    Sequence<span style="color:Red;">*</span></label>
+                <input type="text" name="infoPageSequence" id="infoPageSequence" value="{{Sequence}}"
+                    maxlength="5" placeholder="&#187;Enter Info Page Sequence*" onkeypress="return return clickButton(event,'{{#AddMode}}buttonAddInfoPage{{/AddMode}}{{^AddMode}}buttonSaveInfoPage{{/AddMode}}');"/>
+            </li>
+        </ul>
+    </div>
+</li>

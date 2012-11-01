@@ -1,0 +1,1 @@
+<%@ WebHandler Language="C#" Class="Arshu.Core.Http.HttpBaseHandler" %>

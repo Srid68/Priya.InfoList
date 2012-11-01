@@ -1,0 +1,27 @@
+﻿<li id="dataListFilter{{DataIndex}}" {{#DataListFilterHidden}}style="display:none;"{{/DataListFilterHidden}}>
+    <div>
+        <ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b" data-dividertheme="e">
+
+            <li >
+                <label for="filterDataRefTypeSelect">
+                    Data Ref Type</label>
+                <select name="filterDataRefTypeSelect" id="filterDataRefTypeSelect" data-native-menu="false" onchange="return filterDataList({{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', '{{ConfigToken}}')">
+                    {{#DataRefTypeItem}}
+                        <option value="{{DataRefTypeValue}}" {{#DataRefTypeSelected}}selected="selected"{{/DataRefTypeSelected}}>{{DataRefTypeText}}</option>
+                    {{/DataRefTypeItem}}
+                </select>        
+            </li>
+        
+            <li>
+                <label for="filterDataTypeSelect">
+                    Data Type</label>        
+                <select name="filterDataTypeSelect" id="filterDataTypeSelect" data-native-menu="false" onchange="return filterDataList({{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', '{{ConfigToken}}')">
+                    {{#DataTypeItem}}
+                        <option value="{{DataTypeValue}}" {{#DataTypeSelected}}selected="selected"{{/DataTypeSelected}}>{{DataTypeText}}</option>
+                    {{/DataTypeItem}}
+                </select>        
+            </li>
+
+        </ul>
+    </div>
+</li>

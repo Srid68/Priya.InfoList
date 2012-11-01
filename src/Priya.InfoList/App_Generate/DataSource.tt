@@ -1,0 +1,30 @@
+﻿<#@ include file="Config.ttinclude"#>
+<#@ include file="DataConfig.ttinclude"#>
+<#@ import namespace="Priya.Template" #>
+<#
+    DataSource template = new DataSource();
+    
+	//Project Configuration
+    DataSource.DevelopmentMode = false;
+    DataSource.DatabaseName = databaseName;
+    DataSource.NameSpaceName = namespaceName;
+    DataSource.ProjectPath = projectPath;
+
+	//Database Configuration
+    DataSource.DataSourceProviderNameFactory = dataSourceProviderNameFactory;
+    DataSource.DataSourceConnectionString = dataSourceConnectionString;
+    DataSource.DataProviderNameFactory = dataProviderNameFactory;
+    DataSource.DataConnectionString = dataConnectionString;
+
+    //System Configuration
+    DataSource.ToolDir = toolDir;
+    DataSource.Javacmd = javacmd;
+
+	DataSource.EntitySkipFilterTableRegEx ="sqlite_";
+	DataSource.EntityIncludeFilterTableRegEx = "";
+	DataSource.DataSkipFilterDataRegEx ="sqlite_";
+	DataSource.DataIncludeFilterDataRegEx = "";
+
+    string transformLog = template.TransformText();
+	WriteLine(transformLog);
+#>

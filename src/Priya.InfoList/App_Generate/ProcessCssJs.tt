@@ -1,0 +1,24 @@
+﻿<#@ include file="Config.ttinclude"#>
+<#@ import namespace="Priya.Template" #>
+
+<#
+	//Compress Css
+	YUICompressorCss templateCss = new YUICompressorCss();
+    YUICompressorCss.DevelopmentMode = false;
+    YUICompressorCss.NameSpaceName = namespaceName;
+    YUICompressorCss.ProjectPath = projectPath;
+	YUICompressorCss.ToolDir = toolDir;
+    YUICompressorCss.Javacmd = javacmd;
+	string transformCssLog = templateCss.TransformText();
+	WriteLine(transformCssLog);
+
+	//Compress Js
+	YUICompressorJs templateJs = new YUICompressorJs();
+    YUICompressorJs.DevelopmentMode = false;
+    YUICompressorJs.NameSpaceName = namespaceName;
+    YUICompressorJs.ProjectPath = projectPath;
+	YUICompressorJs.ToolDir = toolDir;
+    YUICompressorJs.Javacmd = javacmd;
+	string transformJsLog = templateJs.TransformText();
+	WriteLine(transformJsLog);
+#>

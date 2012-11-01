@@ -1,0 +1,77 @@
+<ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+    data-dividertheme="e">
+        
+    <li {{#ParentDataIdHidden}}style="display:none;"{{/ParentDataIdHidden}} >
+        <label for="parentDataId">
+            Parent Data ID</label>        
+        <input type="text" name="parentDataId" id="parentDataId" value="{{ParentDataId}}" {{#ParentDataIdDisable}}disabled="disabled"{{/ParentDataIdDisable}} placeholder="&#187;Enter Parent Data Id"/>        
+    </li>
+           
+    <li {{#DataRefIDHidden}}style="display:none;"{{/DataRefIDHidden}}>
+        <label for="dataRefId">
+            Data Ref ID</label>        
+        <input type="text" name="dataRefId" id="dataRefId" value="{{DataRefID}}" placeholder="&#187;Enter Data Ref ID" {{#DataRefIDDisable}}disabled="disabled"{{/DataRefIDDisable}}/>        
+    </li>
+           
+    <li {{#DataRefTypeHidden}}style="display:none;"{{/DataRefTypeHidden}} >
+        <label for="dataRefTypeSelect">
+            Data Ref Type<span style="color:Red;">*</span></label>
+        <select name="dataRefTypeSelect" id="dataRefTypeSelect" data-native-menu="false" {{#DataRefTypeDisable}}disabled="disabled"{{/DataRefTypeDisable}}>
+            {{#DataRefTypeItem}}
+                <option value="{{DataRefTypeValue}}" {{#DataRefTypeSelected}}selected="selected"{{/DataRefTypeSelected}}>{{DataRefTypeText}}</option>
+            {{/DataRefTypeItem}}
+        </select>        
+    </li>
+        
+    <li {{#DataTypeHidden}}style="display:none;"{{/DataTypeHidden}}>
+        <label for="dataTypeSelect">
+            Data Type<span style="color:Red;">*</span></label>        
+        <select name="dataTypeSelect" id="dataTypeSelect" data-native-menu="false" {{#DataTypeDisable}}disabled="disabled"{{/DataTypeDisable}}>
+            {{#DataTypeItem}}
+                <option value="{{DataTypeValue}}" {{#DataTypeSelected}}selected="selected"{{/DataTypeSelected}}>{{DataTypeText}}</option>
+            {{/DataTypeItem}}
+        </select>        
+    </li>
+
+    <li>
+       <p class="ui-li-aside">
+            {{RevisionNo}}
+        </p>
+        <label for="dataValue">
+            {{DataValueName}}<span style="color:Red;">*</span></label>
+        <textarea name="dataValue" id="dataValue" maxlength="500" rows="10" style="height:150px;">{{DataValue}}</textarea>    
+    </li>
+
+    {{#IsActiveVisible}}
+    <li>
+        {{#IsActive}}
+            <input type="checkbox" name="dataIsActive{{DataIndex}}" id="dataIsActive{{DataIndex}}" checked="checked" />
+        {{/IsActive}}
+        {{#IsInActive}}
+            <input type="checkbox" name="dataIsActive{{DataIndex}}" id="dataIsActive{{DataIndex}}"/>
+        {{/IsInActive}}
+        <label for="dataIsActive{{DataIndex}}">Is Active</label>
+    </li>
+    {{/IsActiveVisible}}
+
+    {{#IsDeleteVisible}}
+    <li>
+        {{#IsDeleteChecked}}
+            <input type="checkbox" name="dataIsDeleted{{DataIndex}}" id="dataIsDeleted{{DataIndex}}" checked="checked" />
+        {{/IsDeleteChecked}}
+        {{#IsDelete}}
+            <input type="checkbox" name="dataIsDeleted{{DataIndex}}" id="dataIsDeleted{{DataIndex}}"/>
+        {{/IsDelete}}
+        <label for="dataIsDeleted{{DataIndex}}">Is Deleted</label>
+    </li>
+    {{/IsDeleteVisible}}
+
+    <li>
+        {{#ShowUserInfo}}
+        <span style="font-weight: lighter; color: red;">Please login to Save</span>
+        {{/ShowUserInfo}}        
+        {{AddAction}}
+        {{EditAction}}
+        {{AppendAction}}
+    </li>
+</ul>

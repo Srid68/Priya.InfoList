@@ -1,0 +1,9 @@
+﻿<li>
+    <span style="position:absolute;top:5px;right:10px;">
+        <a href="#" onclick="return refreshDataList({{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', {{ConfigToken}});" data-role="button" data-inline="true" data-mini="true" data-icon="refresh" data-iconpos="notext">Refresh</a>
+        {{#AddAction}}
+        <a onclick="return getDataSaveView(0, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', '{{ConfigToken}}', true);" href="#"  data-ajax="false" data-theme="b" data-role="button" data-mini="true" data-inline="true" data-icon="plus" data-iconpos='notext'>Add</a>
+        {{/AddAction}}
+    </span>
+    No {{DataValueName}}(s) Found
+</li>

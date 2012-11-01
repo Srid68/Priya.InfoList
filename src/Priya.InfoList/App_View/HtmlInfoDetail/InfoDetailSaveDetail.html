@@ -1,0 +1,68 @@
+<ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+    data-dividertheme="e">
+    <li>
+        <p>Detail for Info Section : {{InfoSectionName}}</p>
+    </li>
+    <li>
+        {{#AdditionalActionVisible}}
+        <div class="ui-li-aside">
+            <a href="#" onclick="hideMessage();$('#infoDetailAdvanced').toggle('slow');">Additional?</a>
+        </div>
+        {{/AdditionalActionVisible}}
+        <label for="infoDetailName">
+            Info Detail Name<span style="color:Red;">*</span></label>
+        <input type="text" name="infoDetailName" id="infoDetailName" value="{{InfoDetailName}}"
+            maxlength="50" placeholder="&#187;Enter Info Detail Name*" onkeypress="return setFocusOrClickButton(event,'infoDetailDescription','');"/>
+    </li>
+    <li>
+        <p class="ui-li-aside">
+            {{RevisionNo}}
+        </p>
+        <label for="infoDetailDescription">
+            Info Detail Description<span style="color:Red;">*</span></label>
+        <textarea name="infoDetailDescription" id="infoDetailDescription" maxlength="4000" rows="20" style="min-height:150px;">{{InfoDetailDescription}}</textarea>    
+    </li>
+    {{#AdditionalVisible}}
+    <li>
+        <div>
+            <ul id="infoDetailAdvanced" data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+                data-dividertheme="e" style="display:none;">
+
+                <li {{#IsActiveHidden}}style="display:none;"{{/IsActiveHidden}}>
+                    {{#IsActive}}
+                        <input type="checkbox" name="infoDetailIsActive" id="infoDetailIsActive" checked="checked" />
+                    {{/IsActive}}
+                    {{^IsActive}}
+                        <input type="checkbox" name="infoDetailIsActive" id="infoDetailIsActive"/>
+                    {{/IsActive}}
+                    <label for="infoDetailIsActive">Is Active</label>
+                </li>
+
+                <li {{#IsDeletedHidden}}style="display:none;"{{/IsDeletedHidden}}>
+                    {{#IsDeleted}}
+                        <input type="checkbox" name="infoDetailIsDeleted" id="infoDetailIsDeleted" checked="checked" />
+                    {{/IsDeleted}}
+                    {{^IsDeleted}}
+                        <input type="checkbox" name="infoDetailIsDeleted" id="infoDetailIsDeleted"/>
+                    {{/IsDeleted}}
+                    <label for="infoDetailIsDeleted">Is Deleted</label>
+                </li>
+
+                <li {{#SequenceHidden}}style="display:none;"{{/SequenceHidden}}>
+                    <label for="infoDetailSequence">
+                        Sequence<span style="color:Red;">*</span></label>
+                    <input type="text" name="infoDetailSequence" id="infoDetailSequence" value="{{Sequence}}"
+                        maxlength="5" placeholder="&#187;Enter Info Detail Sequence*" onkeypress="return return clickButton(event,'{{#AddMode}}buttonAddInfoDetail{{/AddMode}}{{^AddMode}}buttonSaveInfoDetail{{/AddMode}}');"/>
+                </li>
+            </ul>
+        </div>
+    </li>
+    {{/AdditionalVisible}}
+    <li>
+        {{#ShowUserInfo}}
+        <span style="font-weight: lighter; color: red;">Please login to Save</span>
+        {{/ShowUserInfo}}        
+        {{AddAction}}
+        {{EditAction}}
+    </li>
+</ul>

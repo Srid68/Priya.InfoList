@@ -1,0 +1,36 @@
+<ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+    data-dividertheme="e">
+    <li>
+        <p class="ui-li-aside">
+            {{RevisionNo}}
+        </p>
+        <label for="dataTypeName">
+            Data Type<span style="color: Red;">*</span></label>
+        <input type="text" name="dataTypeName" id="dataTypeName" value="{{DataTypeName}}" {{#DataTypeNameDisabled}}disabled="disabled"{{/DataTypeNameDisabled}}
+            maxlength="50" placeholder="&#187;Enter Data Type Name*" onkeypress="return clickButton(event,'{{#AddMode}}buttonAddDataType{{/AddMode}}{{^AddMode}}buttonSaveDataType{{/AddMode}}');" />        
+    </li>
+    <li>{{#IsDefault}}
+        <input type="checkbox" name="dataTypeIsDefault" id="dataTypeIsDefault" checked="checked" />
+        {{/IsDefault}}
+        {{^IsDefault}}
+        <input type="checkbox" name="dataTypeIsDefault" id="dataTypeIsDefault" />
+        {{/IsDefault}}
+        <label for="dataTypeIsDefault">Is Default</label>
+    </li>
+    {{#IsActiveVisible}}
+    <li>{{#IsActive}}
+            <input type="checkbox" name="dataTypeIsActive" id="dataTypeIsActive" checked="checked" />
+        {{/IsActive}}
+        {{^IsActive}}
+            <input type="checkbox" name="dataTypeIsActive" id="dataTypeIsActive" />
+        {{/IsActive}}
+        <label for="dataTypeIsActive">Is Active</label>
+    </li>
+    {{/IsActiveVisible}}
+    <li>{{#ShowAdminInfo}}
+        <span style="font-weight: lighter; color: red;">Please login as User having Admin Role to Save</span>
+        {{/ShowAdminInfo}}        
+        {{AddAction}}
+        {{EditAction}}
+    </li>
+</ul>

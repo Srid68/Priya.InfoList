@@ -1,0 +1,334 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AEEDE5A3-D510-4645-A694-73ED2C4178F0}</ProjectGuid>
+    <ProjectTypeGuids>{349C5851-65DF-11DA-9384-00065B846F21};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Priya.InfoList</RootNamespace>
+    <AssemblyName>Priya.InfoList</AssemblyName>
+    <UseIISExpress>false</UseIISExpress>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <TargetFrameworkProfile />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\PC\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Arshu.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=965eb7c7ced7f21b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\Arshu.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Arshu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=965eb7c7ced7f21b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\Arshu.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Priya.Generic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\Priya.Generic.dll</HintPath>
+    </Reference>
+    <Reference Include="Priya.JQMobile, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\Priya.JQMobile.dll</HintPath>
+    </Reference>
+    <Reference Include="Priya.Security, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\Priya.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Priya.Setting, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\Priya.Setting.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.79.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App_Data\full.v1.mysql.sql" />
+    <None Include="App_Data\full.v1.sqlite.sql" />
+    <Content Include="appbackground.png" />
+    <Content Include="applogo.png" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveAdd.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeSaveAdd.html" />
+    <Content Include="App_View\HtmlData\DataListDetailFilter.html" />
+    <Content Include="App_View\HtmlData\Main.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryListDetailItem.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryList.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryListDetail.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryListScript.js" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryListScript.min.js" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySave.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveDetail.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveScript.js" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveScript.min.js" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategory.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryListDetailEmpty.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveDetailAdd.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveDetailEdit.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryView.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeView.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeListDetailEmpty.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeView.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeListDetailEmpty.html" />
+    <Content Include="App_View\HtmlData\DataView.html" />
+    <Content Include="App_View\HtmlData\DataListDetailChildEmpty.html" />
+    <Content Include="App_View\HtmlData\DataSaveDetailAppend.html" />
+    <Content Include="App_View\HtmlData\DataListDetailEmpty.html" />
+    <Content Include="App_View\HtmlData\Data.html" />
+    <Content Include="App_View\HtmlData\DataList.html" />
+    <Content Include="App_View\HtmlData\DataListDetail.html" />
+    <Content Include="App_View\HtmlData\DataListDetailItem.html" />
+    <Content Include="App_View\HtmlData\DataListScript.js" />
+    <Content Include="App_View\HtmlData\DataListScript.min.js" />
+    <Content Include="App_View\HtmlData\DataSave.html" />
+    <Content Include="App_View\HtmlData\DataSaveDetail.html" />
+    <Content Include="App_View\HtmlData\DataSaveScript.js" />
+    <Content Include="App_View\HtmlData\DataSaveScript.min.js" />
+    <Content Include="App_View\HtmlDataRefType\DataRefType.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeList.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeListDetail.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeListDetailItem.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeListScript.js" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeListScript.min.js" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSave.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveDetail.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveScript.js" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveScript.min.js" />
+    <Content Include="App_View\HtmlDataType\DataType.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeList.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeListDetail.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeListDetailItem.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeListScript.js" />
+    <Content Include="App_View\HtmlDataType\DataTypeListScript.min.js" />
+    <Content Include="App_View\HtmlDataType\DataTypeSave.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeSaveDetail.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeSaveScript.js" />
+    <Content Include="App_View\HtmlDataType\DataTypeSaveScript.min.js" />
+    <Content Include="App_View\HtmlData\DataSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlData\DataSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlData\DataSaveAdd.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveAdd.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailListDetailEmpty.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetail.html" />
+    <Content Include="App_Data\security.v1.db" />
+    <Content Include="App_Data\infolist.v1.db" />
+    <Content Include="Apps\Setting\Config\JsonConfig.ashx" />
+    <Content Include="Apps\Setting\Profile\JsonProfile.ashx" />
+    <Content Include="Apps\Setting\Sync\JsonSync.ashx" />
+    <Content Include="App_Data\setting.v1.db" />
+    <None Include="App_View\HtmlInfoDetail\InfoDetailList.html" />
+    <None Include="App_View\HtmlInfoDetail\InfoDetailListDetail.html" />
+    <None Include="App_View\HtmlInfoDetail\InfoDetailListDetailItem.html" />
+    <None Include="App_View\HtmlInfoDetail\InfoDetailListScript.js" />
+    <None Include="App_View\HtmlInfoDetail\InfoDetailListScript.min.js" />
+    <None Include="App_View\HtmlInfoDetail\InfoDetailSave.html" />
+    <None Include="App_View\HtmlInfoDetail\InfoDetailSaveDetail.html" />
+    <None Include="App_View\HtmlInfoDetail\InfoDetailSaveScript.js" />
+    <None Include="App_View\HtmlInfoDetail\InfoDetailSaveScript.min.js" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailView.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailSaveAdd.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageListDetailFilter.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageSaveDetailMore.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageCategoryOption.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageListDetailEmpty.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageSaveAdd.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageView.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionListDetailEmpty.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionSaveAdd.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionView.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlSubscriber\SubscriberListDetailEmpty.html" />
+    <Content Include="App_View\HtmlSubscriber\SubscriberView.html" />
+    <Content Include="App_View\HtmlSubscriber\SubscriberSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlSubscriber\SubscriberSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlSubscriber\Subscriber.html" />
+    <None Include="App_View\HtmlSubscriber\SubscriberList.html" />
+    <None Include="App_View\HtmlSubscriber\SubscriberListDetail.html" />
+    <None Include="App_View\HtmlSubscriber\SubscriberListDetailItem.html" />
+    <None Include="App_View\HtmlSubscriber\SubscriberListScript.js" />
+    <None Include="App_View\HtmlSubscriber\SubscriberListScript.min.js" />
+    <None Include="App_View\HtmlSubscriber\SubscriberSave.html" />
+    <None Include="App_View\HtmlSubscriber\SubscriberSaveDetail.html" />
+    <None Include="App_View\HtmlSubscriber\SubscriberSaveScript.js" />
+    <None Include="App_View\HtmlSubscriber\SubscriberSaveScript.min.js" />
+    <Content Include="App_View\HtmlInfoSection\InfoSection.html" />
+    <None Include="App_View\HtmlInfoSection\InfoSectionList.html" />
+    <None Include="App_View\HtmlInfoSection\InfoSectionListDetail.html" />
+    <None Include="App_View\HtmlInfoSection\InfoSectionListDetailItem.html" />
+    <None Include="App_View\HtmlInfoSection\InfoSectionListScript.js" />
+    <None Include="App_View\HtmlInfoSection\InfoSectionListScript.min.js" />
+    <None Include="App_View\HtmlInfoSection\InfoSectionSave.html" />
+    <None Include="App_View\HtmlInfoSection\InfoSectionSaveDetail.html" />
+    <None Include="App_View\HtmlInfoSection\InfoSectionSaveScript.js" />
+    <None Include="App_View\HtmlInfoSection\InfoSectionSaveScript.min.js" />
+    <Content Include="App_View\HtmlInfoPage\InfoPage.html" />
+    <None Include="App_View\HtmlInfoPage\InfoPageList.html" />
+    <None Include="App_View\HtmlInfoPage\InfoPageListDetail.html" />
+    <None Include="App_View\HtmlInfoPage\InfoPageListDetailItem.html" />
+    <None Include="App_View\HtmlInfoPage\InfoPageListScript.js" />
+    <None Include="App_View\HtmlInfoPage\InfoPageListScript.min.js" />
+    <None Include="App_View\HtmlInfoPage\InfoPageSave.html" />
+    <None Include="App_View\HtmlInfoPage\InfoPageSaveDetail.html" />
+    <None Include="App_View\HtmlInfoPage\InfoPageSaveScript.js" />
+    <None Include="App_View\HtmlInfoPage\InfoPageSaveScript.min.js" />
+    <Content Include="Pages\Footer\Architecture.html" />
+    <Content Include="Pages\Footer\Architecture1.png" />
+    <Content Include="Pages\Footer\Architecture2.png" />
+    <Content Include="Pages\Footer\Architecture3.png" />
+    <Content Include="Pages\Footer\License.html" />
+    <Content Include="Pages\Footer\PoweredByZipStorer.png" />
+    <Content Include="Pages\InfoList.html" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Apps\InfoList\InfoPage\JsonInfoPage.ashx" />
+    <Content Include="Apps\InfoList\InfoSection\JsonInfoSection.ashx" />
+    <Content Include="Apps\InfoList\Subscriber\JsonSubscriber.ashx" />
+    <Content Include="Apps\InfoList\InfoDetail\JsonInfoDetail.ashx" />
+    <Content Include="Apps\InfoList\InfoCategory\JsonInfoCategory.ashx" />
+    <Content Include="Apps\InfoList\Data\JsonData.ashx" />
+    <Content Include="Apps\InfoList\Data\JsonDataRefType.ashx" />
+    <Content Include="Apps\InfoList\Data\JsonDataType.ashx" />
+    <Content Include="Apps\Security\Action\JsonAction.ashx" />
+    <Content Include="Apps\Security\Group\JsonGroup.ashx" />
+    <Content Include="Apps\Security\Invite\JsonInvite.ashx" />
+    <Content Include="Apps\Security\JsonSecurity.ashx" />
+    <Content Include="Apps\Security\Request\JsonRequest.ashx" />
+    <Content Include="Apps\Security\User\JsonUser.ashx" />
+    <Content Include="Apps\Security\UserAdmin\JsonUserAdmin.ashx" />
+    <Content Include="JsonBase.ashx" />
+    <Content Include="HttpBase.ashx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Gen\DataSource\DataEntities.cs" />
+    <Compile Include="App_Handler\InfoCategory\JsonInfoCategoryHandler.cs" />
+    <Compile Include="App_Gen\DataSource\DataSource.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="App_Gen\DataSource\FileSource.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="App_Gen\Resource\Resource.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="App_Gen\Template\Template.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="App_Handler\Data\JsonDataHandler.cs" />
+    <Compile Include="App_Handler\Data\JsonDataRefTypeHandler.cs" />
+    <Compile Include="App_Handler\Data\JsonDataTypeHandler.cs" />
+    <Compile Include="App_Handler\InfoDetail\JsonInfoDetailHandler.cs" />
+    <Compile Include="App_Handler\InfoSection\JsonInfoSectionHandler.cs" />
+    <Compile Include="App_Handler\InfoPage\JsonInfoPageHandler.cs" />
+    <Compile Include="App_Handler\Subscriber\JsonSubscriberHandler.cs" />
+    <Compile Include="App_Model\DataCommon.cs" />
+    <Compile Include="App_Model\DataInfoList.cs" />
+    <Compile Include="App_Model\DataSource.cs" />
+    <Compile Include="App_ViewModel\InfoCategory\InfoCategoryView.cs" />
+    <Compile Include="App_ViewModel\Data\DataRefTypeView.cs" />
+    <Compile Include="App_ViewModel\Data\DataTypeView.cs" />
+    <Compile Include="App_ViewModel\Data\DataView.cs" />
+    <Compile Include="App_ViewModel\InfoDetail\InfoDetailView.cs" />
+    <Compile Include="App_ViewModel\Subscriber\SubscriberView.cs" />
+    <Compile Include="App_ViewModel\InfoPage\InfoPageView.cs" />
+    <Compile Include="App_ViewModel\InfoSection\InfoSectionView.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Index.ashx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Data\SetupData.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349C5851-65DF-11DA-9384-00065B846F21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>1093</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+    <MonoDevelop>
+      <Properties VerifyCodeBehindFields="true" VerifyCodeBehindEvents="true">
+        <XspParameters Port="8080" Address="127.0.0.1" SslMode="None" SslProtocol="Default" KeyType="None" CertFile="" KeyFile="" PasswordOptions="None" Password="" Verbose="true" />
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

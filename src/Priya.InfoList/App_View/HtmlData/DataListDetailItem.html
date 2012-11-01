@@ -1,0 +1,27 @@
+﻿<li>
+    <div style="position:absolute;right:5px;top:5px;">
+
+        {{#EditAction}}
+        <button data-inline="true" data-ajax="false" data-mini="true" data-iconpos='notext' data-icon="edit" onclick="return getDataSaveView({{Id}}, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', '{{ConfigToken}}', true);" >{{ItemEditName}}</button>
+        {{/EditAction}}
+
+        {{#AppendAction}}
+        <button data-inline="true" data-ajax="false" data-mini="true" data-iconpos='notext' data-icon="comment" onclick="return getDataAppendView({{Id}}, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', '{{ConfigToken}}', true);">{{ItemAppendName}}</button>
+        {{/AppendAction}}
+
+    </div>
+
+    {{#ItemHeaderVisible}}
+    <p>
+        <strong>{{DataTypeName}}</strong> {{#IsInActive}}<span style="color:red;font-weight:bold;">(InActive)</span>{{/IsInActive}}
+    </p>
+    {{/ItemHeaderVisible}}
+
+    <p>{{DataValue}}</p>
+
+    <br />
+    <p>{{CreatedBy}} on {{CreatedDate}}</p>
+    
+    {{ChildItem}}
+        
+</li>

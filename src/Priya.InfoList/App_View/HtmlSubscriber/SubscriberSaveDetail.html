@@ -1,0 +1,37 @@
+<ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+    data-dividertheme="e">
+    <li>
+        <p class="ui-li-aside">
+            {{RevisionNo}}
+        </p>
+        <label for="subscriberEmail">
+            Subscriber Email<span style="color:Red;">*</span></label>
+        <input type="text" name="subscriberEmail" id="subscriberEmail" value="{{SubscriberEmail}}"  {{#SubscriberEmailDisable}}disabled="disabled"{{/SubscriberEmailDisable}}
+            maxlength="50" placeholder="&#187;Enter Subscriber Email*" onkeypress="return setFocusOrClickButton(event,'subscriberMessage','');"/>        
+    </li>
+    <li>
+        <label for="subscriberMessage">
+            Subscriber Message<span style="color:Red;">*</span></label>
+        <textarea name="subscriberMessage" id="subscriberMessage" maxlength="500" rows="5" style="height:100px;">{{SubscriberMessage}}</textarea>    
+    </li>
+
+    {{#IsDeletedVisible}}
+    <li>
+        {{#IsDeleted}}
+            <input type="checkbox" name="subscriberIsDeleted" id="subscriberIsDeleted" checked="checked" />
+        {{/IsDeleted}}
+        {{^IsDeleted}}
+            <input type="checkbox" name="subscriberIsDeleted" id="subscriberIsDeleted"/>
+        {{/IsDeleted}}
+        <label for="subscriberIsDeleted">Is Deleted</label>
+    </li>
+    {{/IsDeletedVisible}}
+
+    <li>
+        {{#ShowUserInfo}}
+        <span style="font-weight: lighter; color: red;">Please login to Save</span>
+        {{/ShowUserInfo}}        
+        {{AddAction}}
+        {{EditAction}}
+    </li>
+</ul>

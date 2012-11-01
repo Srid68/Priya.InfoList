@@ -1,0 +1,9 @@
+<li style="color:gray">
+    <h6>{{AddTitle}}</h6> 
+    <p class="ui-li-aside">
+        <a onclick="return getDataSaveView(0, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', '{{ConfigToken}}', true);" href="#"  data-ajax="false" data-theme="b" data-role="button" data-mini="true" data-inline="true" data-icon="comment" data-iconpos='notext'>Add</a>
+        {{#FilterAction}}
+        <a onclick="$('#dataListFilter{{DataIndex}}').toggle('slow');" href="#" data-icon="filter" data-ajax="false" data-theme="a" data-mini="true" data-inline="true" data-role="button" data-iconpos='notext'>Filter</a>
+        {{/FilterAction}}
+    </p>
+</li>

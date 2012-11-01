@@ -1,0 +1,43 @@
+<ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+    data-dividertheme="e">
+    <li>
+        <p class="ui-li-aside">
+            {{RevisionNo}}
+        </p>
+        <label for="dataRefType">
+            DataRefType<span style="color: Red;">*</span></label>
+        {{#DataRefTypeNameEnabled}}
+        <input type="text" name="dataRefType" id="dataRefType" value="{{DataRefType}}"
+            maxlength="50" placeholder="&#187;Enter DataType*" onkeypress="return clickButton(event,'{{#AddMode}}buttonAddDataRefType{{/AddMode}}{{^AddMode}}buttonSaveDataRefType{{/AddMode}}');" />
+        {{/DataRefTypeNameEnabled}}
+        {{#DataRefTypeNameDisabled}}
+        <input type="text" name="dataRefType" id="dataRefType" value="{{DataRefType}}"
+            maxlength="50" placeholder="&#187;Enter DataType*" onkeypress="return clickButton(event,'{{#AddMode}}buttonAddDataRefType{{/AddMode}}{{^AddMode}}buttonSaveDataRefType{{/AddMode}}');" />
+        {{/DataRefTypeNameDisabled}}
+    </li>
+    <li>{{#IsDefault}}
+        <input type="checkbox" name="dataRefTypeIsDefault" id="dataRefTypeIsDefault" checked="checked" />
+        {{/IsDefault}}
+        {{^IsDefault}}
+        <input type="checkbox" name="dataRefTypeIsDefault" id="dataRefTypeIsDefault" />
+        {{/IsDefault}}
+        <label for="dataRefTypeIsDefault">Is Default</label>
+    </li>
+    {{#IsActiveVisible}}
+    <li>{{#IsActive}}
+            <input type="checkbox" name="dataRefTypeIsActive" id="dataRefTypeIsActive" checked="checked" />
+        {{/IsActive}}
+        {{^IsActive}}
+            <input type="checkbox" name="dataRefTypeIsActive" id="dataRefTypeIsActive" />
+        {{/IsActive}}
+        <label for="dataRefTypeIsActive">Is Active</label>
+    </li>
+    {{/IsActiveVisible}}
+
+    <li>{{#ShowAdminInfo}}
+        <span style="font-weight: lighter; color: red;">Please login as User having Admin Role to Save</span>
+        {{/ShowAdminInfo}}        
+        {{AddAction}}
+        {{EditAction}}
+    </li>
+</ul>

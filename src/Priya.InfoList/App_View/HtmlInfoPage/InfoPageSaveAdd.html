@@ -1,0 +1,9 @@
+<li style="color: gray">
+    <h6>Info Page</h6>
+    <p class="ui-li-aside">
+        {{#AddAction}}
+        <a onclick="return getInfoPageSaveView(0, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', true);" href="#" data-ajax="false" data-theme="b" data-role="button" data-mini="true" data-inline="true" data-icon="plus" data-iconpos='notext'>Add</a>
+        {{/AddAction}}
+        <a onclick="$('#infoPageListFilter').toggle('slow');" href="#" data-icon="filter" data-ajax="false" data-theme="a" data-mini="true" data-inline="true" data-role="button" data-iconpos='notext'>Filter</a>
+    </p>
+</li>

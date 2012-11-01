@@ -1,0 +1,14 @@
+<div>
+    <div class="ui-grid-a">
+        <div class="ui-block-a">
+            <button id="buttonSaveDataType" name="buttonSaveDataType" type="submit" data-theme="b" onclick="return saveDataType({{Id}}, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}')" {{#SaveActionDisabled}}disabled="disabled"{{/SaveActionDisabled}}>Save</button>            
+        </div>
+        <div class="ui-block-b">
+            <button type="submit" data-theme="c" onclick="return refreshDataTypeForm({{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}')">
+                Cancel</button>
+        </div>
+    </div>
+    <div>
+        <button type="submit" data-theme="c" onclick="return deleteDataType({{Id}}, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}')" {{#DeleteActionDisabled}}disabled="disabled"{{/DeleteActionDisabled}}>Delete</button>        
+    </div>
+</div>

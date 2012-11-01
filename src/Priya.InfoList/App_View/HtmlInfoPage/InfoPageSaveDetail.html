@@ -1,0 +1,45 @@
+<ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+    data-dividertheme="e">
+    <li>
+        {{#AdditionalActionVisible}}
+        <div class="ui-li-aside">
+            <a href="#" onclick="hideMessage();$('#infoPageAdvanced').toggle('slow');">Additional?</a>
+        </div>
+        {{/AdditionalActionVisible}}
+        <label for="infoPageName">
+            Info Page Name<span style="color:Red;">*</span></label>
+        <input type="text" name="infoPageName" id="infoPageName" value="{{InfoPageName}}"
+            maxlength="50" placeholder="&#187;Enter Page Name*" onkeypress="return setFocusOrClickButton(event,'infoPageDescription','');"/>
+    </li>
+    <li>
+        <p class="ui-li-aside">
+            {{RevisionNo}}
+        </p>
+        <label for="infoPageDescription">
+            Info Page Description<span style="color:Red;">*</span></label>
+        <textarea name="infoPageDescription" id="infoPageDescription" maxlength="4000" rows="20" style="height:150px;">{{InfoPageDescription}}</textarea>    
+    </li>
+    <li>
+        {{#AddInfoCategory}}
+        <div style="top:0px; right:0px; position:absolute;">
+            <button onclick="hideMessage();return getInfoCategorySaveView(0, {{PageNo}}, {{ItemsPerPage}}, {{DataIndex}}, '{{TemplateSuffix}}', true);" data-inline="true" data-ajax="false" data-icon="plus" data-iconpos="notext">Add Category</button>
+        </div>
+        {{/AddInfoCategory}}
+        <label for="infoPageCategorySelect">
+            Info Category<span style="color:Red;">*</span></label>
+        <select name="infoPageCategorySelect" id="infoPageCategorySelect" data-native-menu="false" {{#InfoCategorySelectDisable}}disabled="disabled"{{/InfoCategorySelectDisable}}>
+             {{#InfoCategoryItem}}
+                <option value="{{InfoCategoryValue}}" {{#InfoCategorySelected}}selected="selected"{{/InfoCategorySelected}}  {{#InfoCategoryDisable}}disabled="disabled"{{/InfoCategoryDisable}}>{{InfoCategoryText}}</option>
+            {{/InfoCategoryItem}}
+        </select>
+        {{InfoCategorySaveDetail}}
+    </li>
+    {{MoreDetails}}
+    <li>
+        {{#ShowUserInfo}}
+        <span style="font-weight: lighter; color: red;">Please login to Save</span>
+        {{/ShowUserInfo}}        
+        {{AddAction}}
+        {{EditAction}}
+    </li>
+</ul>

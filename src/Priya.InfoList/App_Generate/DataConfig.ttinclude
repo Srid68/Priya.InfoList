@@ -1,0 +1,9 @@
+﻿<#+
+	//Database Configuration
+	static string databaseName = "InfoList.db";
+	static string dataSourceProviderNameFactory = DataEntities.MSSQLProviderNameFactory;
+    static string dataSourceConnectionString = "Data Source=localhost;Initial Catalog=" + databaseName.Replace(".db", "") + ";Integrated Security=True;MultipleActiveResultSets=true";
+	static string dataProviderNameFactory = DataEntities.SQLiteProviderNameFactory;
+    static string dataConnectionString = "Data Source=|DataDirectory|" + databaseName;
+
+#>
