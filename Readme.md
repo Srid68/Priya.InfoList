@@ -41,7 +41,7 @@ Please Auto Register and enable Author Mode to add Info Pages. Advanced Options 
 
 The Info List App has be architected so that it can be deployed in Shared Host Servers/EC2/Iron Foundry/Android and IOS Devices with appropriate Platform Wrappers.
 
-# Why do this
+# Why do this Common Operating Environment
 
 There is a major pain experienced by Companies when they want to develop mobile apps because of OS Fragmentation between three major OS (IOS/Android/Win8) leading to increased cost with unknown benefits. 
 
@@ -49,7 +49,9 @@ It is better to validate the usefulness/adoptability/need of the App by creating
 
 To do this at the minimum cost, if we can adopt a architecture which enables seamless transfer of knowledge/effort from a web architecture to a native architecture with minimum rework it will be beneficial from a cost point of view.
 
-## Different In Architecture
+![Common Operating Environment][]
+
+## Difference In Architecture from Existing Solutions
 
 Every other Mobile Hybrid architecture is trying to provide the App functionality by targeting the Browser as the main component. This constraints all the architectures to using JavaScript and anyone who has worked on JavaScript for big projects knows the increased complexity/lack of tools to implement good separation of concerns and reduced performance due to Single Threaded JavaScript/Browser Complexity.
 
@@ -65,62 +67,86 @@ The Meta Data Development architecture of the App will also enable in the future
 
 A Architectural development workflow for building solutions to problems (Apps) in a Language Agnostic (Recode able in another language with minimum rework) and which can be deployed in multiple OS supported environments using appropriate native OS wrappers.
 
-![Code Architectrue](https://raw.github.com/Srid68/Priya.InfoList/master/Document/Architecture2.png "Code Architecture")
+![Platform GUI Agnostic Framework][]
 
 The vision for implementing this code is to develop a methodology/architecture which is Platform/Language/GUI agnostic and also leads to Separation of Skills for various participants involved in the development of the code base
 
-![Architectrue](https://raw.github.com/Srid68/Priya.InfoList/master/Document/Architecture3.png "Architecture")
+![Platform GUI Langauge Agnostic Framework][]
 
 Separation of Skills as well as Concerns in the Code base leads to parallel and efficient outsourcing of development
 
-![Separation of Skills/Concerns](https://raw.github.com/Srid68/Priya.InfoList/master/Document/Architecture1.png "Separation of Skills/Concerns")
+![Separation of Skills Framework][]
+
+
+
 
 # Functional Screens of Info List Web App
 
 ## Auto Register 
 To login immediately and Latter can enter the User Id and Password if required
 
-![Augo Registeration](https://raw.github.com/Srid68/Priya.InfoList/master/Document/AutoRegister.png "Auto Registration")
+![InfoList AutoRegister][]
 
 ## Guest Top Action Menu [LogOff/User Details/Setting - Guest Role] 
 Access by clicking AppMaker Menu
 
-![Guest Role Action Menu](https://raw.github.com/Srid68/Priya.InfoList/master/Document/GuestRoleActionMenu.png "Guest Role Action Menu")
+![Top Menu Guest Role][]
 
 ## Enable Author Role - User Details 
 Access by clicking User Name Link Button. The Application architecture has roles for controlling the access of functionality. 
 The default roles provided are Guest, Author and Admin 
 
-![User Details - Enable Author Role](https://raw.github.com/Srid68/Priya.InfoList/master/Document/UserDetailEnableAuthorRole.png "User Details - Enable Author Role")
-
-## Change Password - User Details 
-Access by clicking User Name Link Button
-
-## User Groups - User Details 
-Access by clicking User Name Link Button
+![InfoList Enable Author Role][]
 
 ## Author Top Action Menu [LogOff/User Details/Setting/API List/Tracking - Author Role Enabled] (Access by clicking AppMaker Menu)
 
-![Author Role Enabled Action Menu](https://raw.github.com/Srid68/Priya.InfoList/master/Document/AuthorRoleEnabledActionMenu.png "Author Role Enabled Action Menu")
-
-
-## API Details (Help Screen) 
-Access by clicking API Link Button
-
+![Top Menu Author Role][]
 
 ## Setting Details 
 Access by clicking Setting Link Button
 
+![Profile Setting][]
 
 ## Tracking Details 
 Access by clicking Tracking Link Button
 
+![Tracking View][]
 
-## Admin Details 
-Access by clicking Admin Link Button
+## API Details (Help Screen) 
+Access by clicking API Link Button
 
+![API View][]
 
 ## MIT License
 The Source with the supporting binary dlls is published using MIT License
 
+
 [IdeatoMvp]: http:www.ideatomvp.com "Idea to Mvp"
+
+[Common Operating Environment]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/Architecture/CommonOperatingEnvironment.png "Common Operating Environment"
+
+[Platform GUI Agnostic Framework]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/Architecture/PlatformGUIAgnosticFramework.png "Platform GUI Agnostic Framework"
+
+[Platform GUI Langauge Agnostic Framework]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/Architecture/PlatformGUILanguageAgnosticFramework.png "Platform GUI Langauge Agnostic Framework"
+
+[Separation of Skills Framework]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/Architecture/SeparationOfSkills.png "Separation of Skills"
+
+[App Development Abstraction]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/Architecture/AppDevelopmentAbstraction.png "App Development Abstraction"
+
+[InfoList AutoRegister]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/InfoList/InfoGrid-AutoRegister.png "InfoList AutoRegister"
+
+[InfoList Enable Author Role]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/InfoList/InfoGrid-EnableAuthorRole.png "InfoList Enable Author Role"
+
+[InfoList Hierarchical InfoPage]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/InfoList/InfoGrid-HierarchicalInfo.png "InfoList Hierarchical InfoPage"
+
+[InfoList Async InfoPage]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/InfoList/InfoGrid-InfoPageAsync.png "InfoList Async InfoPage"
+
+[Top Menu Guest Role]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/InfoList/InfoGrid-TopMenuGuestRole.png "Top Menu Guest Role"
+
+[Top Menu Author Role]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/InfoList/InfoGrid-TopMenuAuthorRole.png "Top Menu Author Role"
+
+[Profile Setting]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/InfoList/InfoGrid-SettingProfile.png "Profile Setting"
+
+[Tracking View]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/InfoList/InfoGrid-TrackingView.png "Tracking View"
+
+[API View]: https://raw.github.com/Srid68/Priya.InfoList/master/Document/InfoList/InfoGrid-APIView.png "API View"
