@@ -9,15 +9,17 @@ Simply Copy the zip of your Html5App into the assets/Apps directory (Case Sensit
 
 Kindly note that this cannot be used for packaging C# Apps since you need to compile it using Xamarin Mono for Android profile. If you require this, then contact me so that i can help you to configure the development environment for enabling packaging C# Apps.
 
-You can download the APK of a AppGrid Containing the Hello World App and a C# Web App available in the following path = /Srid68/Priya.InfoList/master/Android/Arshu.AppGrid.v1-Signed.apk
+You can download the APK of a AppGrid Containing the Hello World App and a C# Web App available in the following path
+
+  /Srid68/Priya.InfoList/master/Android/Arshu.AppGrid.v1-Signed.apk
 
 Kindly install the Hello World app first before installing the C# Web App. Also can clear the data and reinstall the App again.
 
-[Android AppGrid Apk Download][]
+A PreAlpha OPEN GL based APK is available in the following path 
 
-A PreAlpha OPEN GL based APK is available in the following path = /Srid68/Priya.InfoList/master/Android/Arshu.GUIGrid.v1-Signed.apk
+/Srid68/Priya.InfoList/master/Android/Arshu.GUIGrid.v1-Signed.apk
 
-[Android GUIGrid Apk Download][].
+APK Download Location [Android Apk Download][]
 
 # Major Difference between PhoneGap/Cordova and this Framework
 
@@ -128,9 +130,7 @@ Access by clicking API Link Button
 ## MIT License
 The Source with the supporting binary dlls is published using MIT License
 
-[Android AppGrid Apk Download]: https://raw.github.com/Srid68/Priya.InfoList/master/Android/Arshu.AppGrid.v1-Signed.apk "Android AppGrid Apk Download"
-
-[Android GUIGrid Apk Download]: https://raw.github.com/Srid68/Priya.InfoList/master/Android/Arshu.GUIGrid.v1-Signed.apk "Android GUIGrid Apk Download"
+[Android Apk Download]: https://raw.github.com/Srid68/Priya.InfoList/master/Android/ "Android AppGrid Apk Download"
 
 [IdeatoMvp]: http:www.ideatomvp.com "Idea to Mvp"
 
