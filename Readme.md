@@ -130,7 +130,7 @@ Access by clicking API Link Button
 ## MIT License
 The Source with the supporting binary dlls is published using MIT License
 
-[Android Apk Download]: https://raw.github.com/Srid68/Priya.InfoList/master/Android/ "Android AppGrid Apk Download"
+[Android Apk Download]: https://github.com/Srid68/Priya.InfoList/tree/master/Android "Android AppGrid Apk Download"
 
 [IdeatoMvp]: http:www.ideatomvp.com "Idea to Mvp"
 
