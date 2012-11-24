@@ -31,12 +31,12 @@ namespace Priya.InfoList
 
         [JsonRpcMethod("SaveInfoPage")]
         [JsonRpcHelp("Save Info Page (Only by Loged in User having Admin Role)")]
-        public JsonObject SaveInfoPage(string infoPageName, string infoPageDescription, long infoPageCategoryId, long accessGroupId, bool commentable, string commentorRoleList, bool asyncLoading, bool isPublic, bool isActive, DateTime expiryDate, bool isDeleted, long sequence, long infoPageId)
+        public JsonObject SaveInfoPage(string infoPageName, string infoPageDescription, long infoPageCategoryId, long accessGroupId, bool asyncLoading, bool isActive, DateTime expiryDate, bool commentable, string commentorRoleList, bool isPublic, bool isCommon, bool isDeleted, long sequence, long infoPageId)
         {
             var retMessage = new JsonObject();
 
             string message;
-            long retID = DataInfoList.SaveLtdInfoPage(DecodeUrl(infoPageName), DecodeUrl(infoPageDescription), infoPageCategoryId, accessGroupId, commentable, commentorRoleList, asyncLoading, isPublic, isActive, expiryDate, isDeleted, sequence, infoPageId, out message);
+            long retID = DataInfoList.SaveLtdInfoPage(DecodeUrl(infoPageName), DecodeUrl(infoPageDescription), infoPageCategoryId, accessGroupId, asyncLoading, isActive, expiryDate, commentable, commentorRoleList, isPublic, isCommon, isDeleted, sequence, infoPageId, out message);
             if ((retID > 0) && (message.Trim().Length == 0))
             {
                 retMessage.Put("message", infoPageId == 0 ? "Successfully Added Info Page" : "Successfully Updated Info Page");
@@ -100,7 +100,7 @@ namespace Priya.InfoList
         {
             JsonObject retMessage = new JsonObject();
 
-            string htmlText = InfoPageView.GetListAllItemView(pageNo, itemsPerPage, dataIndex, templateSuffix, asyncLoading, 0, "", false, true);
+            string htmlText = InfoPageView.GetListAllItemView(pageNo, itemsPerPage, dataIndex, templateSuffix, asyncLoading, 0, "", false, 0, true);
             retMessage.Put("html", htmlText);
 
             return retMessage;
@@ -112,11 +112,11 @@ namespace Priya.InfoList
 
         [JsonRpcMethod("GetInfoPageFilterListView")]
         [JsonRpcHelp("Get Info Page Filter List View(Only by Loged in User)")]
-        public JsonObject GetInfoPageFilterListView(long pageNo, long itemsPerPage, long dataIndex, string templateSuffix, bool asyncLoading, long filterInfoCategoryId, string filterInfoPage, bool filterInfoPagePublic)
+        public JsonObject GetInfoPageFilterListView(long pageNo, long itemsPerPage, long dataIndex, string templateSuffix, bool asyncLoading, long filterInfoCategoryId, string filterInfoPage, bool filterInfoPagePublic, long filterCreatedUserId)
         {
             JsonObject retMessage = new JsonObject();
 
-            string htmlText = InfoPageView.GetListAllItemView(pageNo, itemsPerPage, dataIndex, templateSuffix, asyncLoading, filterInfoCategoryId, filterInfoPage, filterInfoPagePublic, false);
+            string htmlText = InfoPageView.GetListAllItemView(pageNo, itemsPerPage, dataIndex, templateSuffix, asyncLoading, filterInfoCategoryId, filterInfoPage, filterInfoPagePublic, filterCreatedUserId, false);
             retMessage.Put("html", htmlText);
 
             return retMessage;

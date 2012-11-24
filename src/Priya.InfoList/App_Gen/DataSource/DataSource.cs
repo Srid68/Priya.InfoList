@@ -1,5 +1,6 @@
 
 using System;
+using System.Threading;
 using System.Collections.Generic;
 
 using Arshu.Core.Basic.Log;
@@ -10,25 +11,18 @@ using Arshu.Data.Common;
 using Arshu.Data.DBMigrate;
 
 using PetaPoco;
+using Priya.Security.Utils;
 using Priya.InfoList.Entity;
 
 namespace Priya.InfoList.Data
 {
-    internal static partial class DataSource 
+    internal static partial class DataSource
     {
-		#region User Event
+		#region User Info
 
-        public static event GetUserInfo OnGetUserInfo;
-
-        private static object _eventLock = new object();
         private static UserInfo GetUserInfo()
         {
-            UserInfo userInfo = new UserInfo();
-
-            GetUserInfo eh;
-            lock (_eventLock) { eh = OnGetUserInfo; }
-            if (eh != null) { userInfo = eh(); }
-
+            UserInfo userInfo = UtilsSecurity.UtilsSecurity_GetUserInfo();;
             return userInfo;
         }
 
@@ -53,25 +47,28 @@ namespace Priya.InfoList.Data
 
         public static void BeginTransaction()
         {
-			if (_haveDb == true)
+            Database db = HaveDb();
+            if (db != null)
 			{
-				GetDb.BeginTransaction();
+				db.BeginTransaction();
 			}
         }
 
         public static void CompleteTransaction()
         {
-			if (_haveDb == true)
+            Database db = HaveDb();
+            if (db != null)
 			{
-				GetDb.CompleteTransaction();
+				db.CompleteTransaction();
 			}
         }
 
         public static void AbortTransaction()
         {
-			if (_haveDb == true)
+            Database db = HaveDb();
+            if (db != null)
 			{
-				GetDb.AbortTransaction();
+				db.AbortTransaction();
 			}
         }
 
@@ -113,101 +110,101 @@ namespace Priya.InfoList.Data
             }
         }
 
-		private static bool _haveDb = false;
+		/*
+			Note: for transactions to work, all operations need to use the same instance of the PetaPoco database object. 
+			So you'll probably want to use a per-http request, or per-thread IOC container to serve up a shared instance 
+			of this object.
+
+			Using a static database will get errors like "There is already an open DataReader associated with this Command"
+			because the same connection is used by different request accesing the same resource.
+
+			Solutions 
+				1) Create the connection in a MVC controller base class
+				2) Static method creating one connection per request using HttpContext.Items as checking store
+				3) Shared Database Object using ThreadStatic assuming no thread switches will happen 
+				   between start and end of a transaction.
+
+			Warning: Using ThreadStatic in ASP.NET is not correct because of ASP.NET Thread Affinity. The Threads may be
+			switched when ever you execute any Async Operations.
+
+			In ASP.NET your code is run on a WorkerThread from the 25 or so threads in the default ASP.NET worker thread 
+			pool and the variable that you think is "personal private to your thread" is personal private...to you and 
+			every other request that this worker thread has been with.
+		*/
+        [ThreadStatic]
         private static Database _db;
-		private static object _dbLock = new object();
-        private static bool HaveDb
+        private static Database HaveDb()
         {
-            get
-            {
-				string message = "";
-				lock (_dbLock)
+			string message = "";
+			if ((UseFileSystem == false) && (_db == null))
+			{
+				InitDb();
+
+				string rootPath = IOManager.RootDirectory;
+				string dataPath = IOManager.Combine(rootPath, "App_Data");
+				if (ConnectionString.Contains("|DataDirectory|") == true)
 				{
-					if ((UseFileSystem == false) && (_haveDb ==false))
+					ConnectionString = ConnectionString.Replace("|DataDirectory|", dataPath + IOManager.DirectorySeparator);
+				}
+				bool checkDb = true;
+				if ((ProviderNameFactory.ToUpper() == AppCommon.SQLiteProviderNameFactory.ToUpper()) && (ConnectionString.Contains("AutoFill") == false))
+				{
+						string sqliteDbPath = "";
+					int idxOfSemiColon =ConnectionString.IndexOf(";");
+					if (idxOfSemiColon > -1)
 					{
-						InitDb();
-
-						string rootPath = IOManager.RootDirectory;
-						string dataPath = IOManager.Combine(rootPath, "App_Data");
-						if (ConnectionString.Contains("|DataDirectory|") == true)
-						{
-							ConnectionString = ConnectionString.Replace("|DataDirectory|", dataPath + IOManager.DirectorySeparator);
-						}
-						bool checkDb = true;
-						if ((ProviderNameFactory.ToUpper() == AppCommon.SQLiteProviderNameFactory.ToUpper()) && (ConnectionString.Contains("AutoFill") == false))
-						{
-							 string sqliteDbPath = "";
-							int idxOfSemiColon =ConnectionString.IndexOf(";");
-							if (idxOfSemiColon > -1)
-							{
-								int idxOfEqual = ConnectionString.IndexOf("=");
-								sqliteDbPath = ConnectionString.Substring(idxOfEqual + 1, idxOfSemiColon - idxOfEqual -1);
-							}
-							else
-							{
-								sqliteDbPath = ConnectionString.Substring(ConnectionString.IndexOf("=") + 1);
-							}
-							if (IOManager.CachedFileExists(sqliteDbPath, true, true) ==false)
-							{
-								checkDb =false ;
-								LogManager.Log(LogLevel.Critical, "DataSource-HaveDb", "Sqlite Db Not found in Path [" + sqliteDbPath + "]");
-							}                       
-						}
-						if (checkDb == true)
-						{
-							_db = DataStore.HaveDb(ConnectionString, ProviderNameFactory, out message);
-							 if (_db != null) _haveDb = true;
-						}
+						int idxOfEqual = ConnectionString.IndexOf("=");
+						sqliteDbPath = ConnectionString.Substring(idxOfEqual + 1, idxOfSemiColon - idxOfEqual -1);
 					}
-					if (_haveDb == false) {
-						if (UseFileSystem ==false)
-						{
-							LogManager.Log(LogLevel.Critical, "Priya.InfoList.DataSource-HaveDb", "Have Db is false for " + DbName + "[" + message + "]");
-						}
-						else
-						{
-							LogManager.Log(LogLevel.Critical, "Priya.InfoList.DataSource-HaveDb", "Have Db is false for " + DbName + ". Use FileSystem is true");
-						}
+					else
+					{
+						sqliteDbPath = ConnectionString.Substring(ConnectionString.IndexOf("=") + 1);
+					}
+					if (IOManager.CachedFileExists(sqliteDbPath, true, true) ==false)
+					{
+						checkDb =false ;
+						LogManager.Log(LogLevel.Critical, "DataSource-HaveDb", "Sqlite Db Not found in Path [" + sqliteDbPath + "]");
+					}                       
+				}
+				if (checkDb == true)
+				{
+					_db = DataStore.HaveDb(ConnectionString, ProviderNameFactory, out message);
+					if (_db != null) {
+                        _db.OnDBException -= new PetaPoco.DBException(OnDBException);
+                        _db.OnDBException += new PetaPoco.DBException(OnDBException);
+                        if (ProviderNameFactory == AppCommon.SQLiteProviderNameFactory)
+                        {
+                            _db.KeepConnectionAlive = true;
+                            UseSharedConnection = true;
+                            //_db.Execute("PRAGMA journal_mode=WAL;");
+                            //_db.Execute("PRAGMA journal_mode=DELETE;");
+                        }
+                        if (ProviderNameFactory == AppCommon.MySQLProviderNameFactory)
+                        {
+                            _db.KeepConnectionAlive = false;
+                            UseSharedConnection = false;
+                            //_db.Execute("set wait_timeout=28800");
+                            //_db.Execute("set interactive_timeout=28800");
+                            //_db.Execute("set net_write_timeout=999");
+                        }
+                        if (UseSharedConnection == true)
+                        {
+                            _db.OpenSharedConnection();
+                        }
 					}
 				}
-                return _haveDb;
-            }
-        }
-
-        private static Database GetDb
-        {
-            get
-            {
-				if (_haveDb == false) _haveDb = HaveDb;
-                if ((_db != null) && (_haveDb ==true))
-                {
-                    _db.OnDBException -= new PetaPoco.DBException(OnDBException);
-					_db.OnDBException += new PetaPoco.DBException(OnDBException);
-					if (ProviderNameFactory == AppCommon.SQLiteProviderNameFactory)
-					{
-						_db.KeepConnectionAlive = true;
-						UseSharedConnection =true;
-						//_db.Execute("PRAGMA journal_mode=WAL;");
-						//_db.Execute("PRAGMA journal_mode=DELETE;");
-					}
-					if (ProviderNameFactory == AppCommon.MySQLProviderNameFactory)
-					{
-						_db.KeepConnectionAlive = false;
-						UseSharedConnection =false;
-						//_db.Execute("set wait_timeout=28800");
-						//_db.Execute("set interactive_timeout=28800");
-						//_db.Execute("set net_write_timeout=999");
-					}
-					if (UseSharedConnection ==true)
-					{
-						_db.OpenSharedConnection();
-					}
-                };
-                if (_db == null) {
-					LogManager.Log(LogLevel.Critical, "Priya.InfoList.DataSource-GetDb", "GetDb is Null for " + DbName);
+			}
+			if (_db == null) {
+				if (UseFileSystem ==false)
+				{
+					LogManager.Log(LogLevel.Critical, "Priya.InfoList.DataSource-HaveDb", "Have Db is false for " + DbName + "[" + message + "]");
 				}
-                return _db;
-            }
+				else
+				{
+					LogManager.Log(LogLevel.Critical, "Priya.InfoList.DataSource-HaveDb", "Have Db is false for " + DbName + ". Use FileSystem is true");
+				}
+			}
+            return _db;
         }
 
         private static void OnDBException(Exception ex, string lastCommand, string lastSQL, Database db)
@@ -236,12 +233,16 @@ namespace Priya.InfoList.Data
             switch (tableName.ToUpper())
             {
      
-                case "CNS_DATATYPE":
-                    revisionNo = GetMaxCnsDataTypeRevisionNo();
-                    break ;
-     
                 case "LTD_INFOSECTION":
                     revisionNo = GetMaxLtdInfoSectionRevisionNo();
+                    break ;
+     
+                case "LTD_INFODETAIL":
+                    revisionNo = GetMaxLtdInfoDetailRevisionNo();
+                    break ;
+     
+                case "CNS_DATATYPE":
+                    revisionNo = GetMaxCnsDataTypeRevisionNo();
                     break ;
      
                 case "CNS_DATAREFTYPE":
@@ -250,10 +251,6 @@ namespace Priya.InfoList.Data
      
                 case "CND_DATA":
                     revisionNo = GetMaxCndDataRevisionNo();
-                    break ;
-     
-                case "LTD_INFODETAIL":
-                    revisionNo = GetMaxLtdInfoDetailRevisionNo();
                     break ;
      
                 case "LTD_INFOPAGE":
@@ -283,19 +280,27 @@ namespace Priya.InfoList.Data
             switch (tableName.ToUpper())
             {
      
-                case "CNS_DATATYPE":
-                    List<CNS_DataType> pagedCnsDataTypeData = GetPagedCnsDataType(pageNo, itemsPerPage, out totalPages, out totalItems, "", "WHERE RevisionNo > @0", minRevisionNo);
-                    if (pagedCnsDataTypeData.Count > 0)
-                    {
-                        jsonRecord = SimpleJson.SerializeObject(pagedCnsDataTypeData);
-                    }
-                    break ;
-     
                 case "LTD_INFOSECTION":
                     List<LTD_InfoSection> pagedLtdInfoSectionData = GetPagedLtdInfoSection(pageNo, itemsPerPage, out totalPages, out totalItems, "", "WHERE RevisionNo > @0", minRevisionNo);
                     if (pagedLtdInfoSectionData.Count > 0)
                     {
                         jsonRecord = SimpleJson.SerializeObject(pagedLtdInfoSectionData);
+                    }
+                    break ;
+     
+                case "LTD_INFODETAIL":
+                    List<LTD_InfoDetail> pagedLtdInfoDetailData = GetPagedLtdInfoDetail(pageNo, itemsPerPage, out totalPages, out totalItems, "", "WHERE RevisionNo > @0", minRevisionNo);
+                    if (pagedLtdInfoDetailData.Count > 0)
+                    {
+                        jsonRecord = SimpleJson.SerializeObject(pagedLtdInfoDetailData);
+                    }
+                    break ;
+     
+                case "CNS_DATATYPE":
+                    List<CNS_DataType> pagedCnsDataTypeData = GetPagedCnsDataType(pageNo, itemsPerPage, out totalPages, out totalItems, "", "WHERE RevisionNo > @0", minRevisionNo);
+                    if (pagedCnsDataTypeData.Count > 0)
+                    {
+                        jsonRecord = SimpleJson.SerializeObject(pagedCnsDataTypeData);
                     }
                     break ;
      
@@ -312,14 +317,6 @@ namespace Priya.InfoList.Data
                     if (pagedCndDataData.Count > 0)
                     {
                         jsonRecord = SimpleJson.SerializeObject(pagedCndDataData);
-                    }
-                    break ;
-     
-                case "LTD_INFODETAIL":
-                    List<LTD_InfoDetail> pagedLtdInfoDetailData = GetPagedLtdInfoDetail(pageNo, itemsPerPage, out totalPages, out totalItems, "", "WHERE RevisionNo > @0", minRevisionNo);
-                    if (pagedLtdInfoDetailData.Count > 0)
-                    {
-                        jsonRecord = SimpleJson.SerializeObject(pagedLtdInfoDetailData);
                     }
                     break ;
      
@@ -358,186 +355,190 @@ namespace Priya.InfoList.Data
 
         public static void SaveJsonRecord(string tableName, string jsonRecordList)
         {
-            switch (tableName.ToUpper())
+			Database db = HaveDb();
+            if (db != null)
             {
+				switch (tableName.ToUpper())
+				{
      
-                case "CNS_DATATYPE":
-                    CNS_DataType[] importCnsDataTypeData = SimpleJson.DeserializeObject<CNS_DataType[]>(jsonRecordList);
-                    using (ITransaction scope = GetDb.GetTransaction())
-                    {
-                        foreach (CNS_DataType item in importCnsDataTypeData)
-                        {
-                            CNS_DataType itemCnsDataTypeExisting = DataSource.GetCnsDataType(0, " WHERE DataTypeGUID=@0", item.DataTypeGUID);
-                            if (itemCnsDataTypeExisting == null)
-                            {
-                                GetDb.Insert(item);
-                            }
-                            else
-                            {
-                                item.DataTypeID = itemCnsDataTypeExisting.DataTypeID;
-                                GetDb.Update(item) ;
-                            }
-                        }
-                        scope.Complete();
-                    }
-                    break ;
+					case "LTD_INFOSECTION":
+						LTD_InfoSection[] importLtdInfoSectionData = SimpleJson.DeserializeObject<LTD_InfoSection[]>(jsonRecordList);
+						using (ITransaction scope = db.GetTransaction())
+						{
+							foreach (LTD_InfoSection item in importLtdInfoSectionData)
+							{
+								LTD_InfoSection itemLtdInfoSectionExisting = DataSource.GetLtdInfoSection(0, " WHERE InfoSectionGUID=@0", item.InfoSectionGUID);
+								if (itemLtdInfoSectionExisting == null)
+								{
+									db.Insert(item);
+								}
+								else
+								{
+									item.InfoSectionID = itemLtdInfoSectionExisting.InfoSectionID;
+									db.Update(item) ;
+								}
+							}
+							scope.Complete();
+						}
+						break ;
      
-                case "LTD_INFOSECTION":
-                    LTD_InfoSection[] importLtdInfoSectionData = SimpleJson.DeserializeObject<LTD_InfoSection[]>(jsonRecordList);
-                    using (ITransaction scope = GetDb.GetTransaction())
-                    {
-                        foreach (LTD_InfoSection item in importLtdInfoSectionData)
-                        {
-                            LTD_InfoSection itemLtdInfoSectionExisting = DataSource.GetLtdInfoSection(0, " WHERE InfoSectionGUID=@0", item.InfoSectionGUID);
-                            if (itemLtdInfoSectionExisting == null)
-                            {
-                                GetDb.Insert(item);
-                            }
-                            else
-                            {
-                                item.InfoSectionID = itemLtdInfoSectionExisting.InfoSectionID;
-                                GetDb.Update(item) ;
-                            }
-                        }
-                        scope.Complete();
-                    }
-                    break ;
+					case "LTD_INFODETAIL":
+						LTD_InfoDetail[] importLtdInfoDetailData = SimpleJson.DeserializeObject<LTD_InfoDetail[]>(jsonRecordList);
+						using (ITransaction scope = db.GetTransaction())
+						{
+							foreach (LTD_InfoDetail item in importLtdInfoDetailData)
+							{
+								LTD_InfoDetail itemLtdInfoDetailExisting = DataSource.GetLtdInfoDetail(0, " WHERE InfoDetailGUID=@0", item.InfoDetailGUID);
+								if (itemLtdInfoDetailExisting == null)
+								{
+									db.Insert(item);
+								}
+								else
+								{
+									item.InfoDetailID = itemLtdInfoDetailExisting.InfoDetailID;
+									db.Update(item) ;
+								}
+							}
+							scope.Complete();
+						}
+						break ;
      
-                case "CNS_DATAREFTYPE":
-                    CNS_DataRefType[] importCnsDataRefTypeData = SimpleJson.DeserializeObject<CNS_DataRefType[]>(jsonRecordList);
-                    using (ITransaction scope = GetDb.GetTransaction())
-                    {
-                        foreach (CNS_DataRefType item in importCnsDataRefTypeData)
-                        {
-                            CNS_DataRefType itemCnsDataRefTypeExisting = DataSource.GetCnsDataRefType(0, " WHERE DataRefTypeGUID=@0", item.DataRefTypeGUID);
-                            if (itemCnsDataRefTypeExisting == null)
-                            {
-                                GetDb.Insert(item);
-                            }
-                            else
-                            {
-                                item.DataRefTypeID = itemCnsDataRefTypeExisting.DataRefTypeID;
-                                GetDb.Update(item) ;
-                            }
-                        }
-                        scope.Complete();
-                    }
-                    break ;
+					case "CNS_DATATYPE":
+						CNS_DataType[] importCnsDataTypeData = SimpleJson.DeserializeObject<CNS_DataType[]>(jsonRecordList);
+						using (ITransaction scope = db.GetTransaction())
+						{
+							foreach (CNS_DataType item in importCnsDataTypeData)
+							{
+								CNS_DataType itemCnsDataTypeExisting = DataSource.GetCnsDataType(0, " WHERE DataTypeGUID=@0", item.DataTypeGUID);
+								if (itemCnsDataTypeExisting == null)
+								{
+									db.Insert(item);
+								}
+								else
+								{
+									item.DataTypeID = itemCnsDataTypeExisting.DataTypeID;
+									db.Update(item) ;
+								}
+							}
+							scope.Complete();
+						}
+						break ;
      
-                case "CND_DATA":
-                    CND_Data[] importCndDataData = SimpleJson.DeserializeObject<CND_Data[]>(jsonRecordList);
-                    using (ITransaction scope = GetDb.GetTransaction())
-                    {
-                        foreach (CND_Data item in importCndDataData)
-                        {
-                            CND_Data itemCndDataExisting = DataSource.GetCndData(0, " WHERE DataGUID=@0", item.DataGUID);
-                            if (itemCndDataExisting == null)
-                            {
-                                GetDb.Insert(item);
-                            }
-                            else
-                            {
-                                item.DataID = itemCndDataExisting.DataID;
-                                GetDb.Update(item) ;
-                            }
-                        }
-                        scope.Complete();
-                    }
-                    break ;
+					case "CNS_DATAREFTYPE":
+						CNS_DataRefType[] importCnsDataRefTypeData = SimpleJson.DeserializeObject<CNS_DataRefType[]>(jsonRecordList);
+						using (ITransaction scope = db.GetTransaction())
+						{
+							foreach (CNS_DataRefType item in importCnsDataRefTypeData)
+							{
+								CNS_DataRefType itemCnsDataRefTypeExisting = DataSource.GetCnsDataRefType(0, " WHERE DataRefTypeGUID=@0", item.DataRefTypeGUID);
+								if (itemCnsDataRefTypeExisting == null)
+								{
+									db.Insert(item);
+								}
+								else
+								{
+									item.DataRefTypeID = itemCnsDataRefTypeExisting.DataRefTypeID;
+									db.Update(item) ;
+								}
+							}
+							scope.Complete();
+						}
+						break ;
      
-                case "LTD_INFODETAIL":
-                    LTD_InfoDetail[] importLtdInfoDetailData = SimpleJson.DeserializeObject<LTD_InfoDetail[]>(jsonRecordList);
-                    using (ITransaction scope = GetDb.GetTransaction())
-                    {
-                        foreach (LTD_InfoDetail item in importLtdInfoDetailData)
-                        {
-                            LTD_InfoDetail itemLtdInfoDetailExisting = DataSource.GetLtdInfoDetail(0, " WHERE InfoDetailGUID=@0", item.InfoDetailGUID);
-                            if (itemLtdInfoDetailExisting == null)
-                            {
-                                GetDb.Insert(item);
-                            }
-                            else
-                            {
-                                item.InfoDetailID = itemLtdInfoDetailExisting.InfoDetailID;
-                                GetDb.Update(item) ;
-                            }
-                        }
-                        scope.Complete();
-                    }
-                    break ;
+					case "CND_DATA":
+						CND_Data[] importCndDataData = SimpleJson.DeserializeObject<CND_Data[]>(jsonRecordList);
+						using (ITransaction scope = db.GetTransaction())
+						{
+							foreach (CND_Data item in importCndDataData)
+							{
+								CND_Data itemCndDataExisting = DataSource.GetCndData(0, " WHERE DataGUID=@0", item.DataGUID);
+								if (itemCndDataExisting == null)
+								{
+									db.Insert(item);
+								}
+								else
+								{
+									item.DataID = itemCndDataExisting.DataID;
+									db.Update(item) ;
+								}
+							}
+							scope.Complete();
+						}
+						break ;
      
-                case "LTD_INFOPAGE":
-                    LTD_InfoPage[] importLtdInfoPageData = SimpleJson.DeserializeObject<LTD_InfoPage[]>(jsonRecordList);
-                    using (ITransaction scope = GetDb.GetTransaction())
-                    {
-                        foreach (LTD_InfoPage item in importLtdInfoPageData)
-                        {
-                            LTD_InfoPage itemLtdInfoPageExisting = DataSource.GetLtdInfoPage(0, " WHERE InfoPageGUID=@0", item.InfoPageGUID);
-                            if (itemLtdInfoPageExisting == null)
-                            {
-                                GetDb.Insert(item);
-                            }
-                            else
-                            {
-                                item.InfoPageID = itemLtdInfoPageExisting.InfoPageID;
-                                GetDb.Update(item) ;
-                            }
-                        }
-                        scope.Complete();
-                    }
-                    break ;
+					case "LTD_INFOPAGE":
+						LTD_InfoPage[] importLtdInfoPageData = SimpleJson.DeserializeObject<LTD_InfoPage[]>(jsonRecordList);
+						using (ITransaction scope = db.GetTransaction())
+						{
+							foreach (LTD_InfoPage item in importLtdInfoPageData)
+							{
+								LTD_InfoPage itemLtdInfoPageExisting = DataSource.GetLtdInfoPage(0, " WHERE InfoPageGUID=@0", item.InfoPageGUID);
+								if (itemLtdInfoPageExisting == null)
+								{
+									db.Insert(item);
+								}
+								else
+								{
+									item.InfoPageID = itemLtdInfoPageExisting.InfoPageID;
+									db.Update(item) ;
+								}
+							}
+							scope.Complete();
+						}
+						break ;
      
-                case "LTD_SUBSCRIBER":
-                    LTD_Subscriber[] importLtdSubscriberData = SimpleJson.DeserializeObject<LTD_Subscriber[]>(jsonRecordList);
-                    using (ITransaction scope = GetDb.GetTransaction())
-                    {
-                        foreach (LTD_Subscriber item in importLtdSubscriberData)
-                        {
-                            LTD_Subscriber itemLtdSubscriberExisting = DataSource.GetLtdSubscriber(0, " WHERE SubscriberGUID=@0", item.SubscriberGUID);
-                            if (itemLtdSubscriberExisting == null)
-                            {
-                                GetDb.Insert(item);
-                            }
-                            else
-                            {
-                                item.SubscriberID = itemLtdSubscriberExisting.SubscriberID;
-                                GetDb.Update(item) ;
-                            }
-                        }
-                        scope.Complete();
-                    }
-                    break ;
+					case "LTD_SUBSCRIBER":
+						LTD_Subscriber[] importLtdSubscriberData = SimpleJson.DeserializeObject<LTD_Subscriber[]>(jsonRecordList);
+						using (ITransaction scope = db.GetTransaction())
+						{
+							foreach (LTD_Subscriber item in importLtdSubscriberData)
+							{
+								LTD_Subscriber itemLtdSubscriberExisting = DataSource.GetLtdSubscriber(0, " WHERE SubscriberGUID=@0", item.SubscriberGUID);
+								if (itemLtdSubscriberExisting == null)
+								{
+									db.Insert(item);
+								}
+								else
+								{
+									item.SubscriberID = itemLtdSubscriberExisting.SubscriberID;
+									db.Update(item) ;
+								}
+							}
+							scope.Complete();
+						}
+						break ;
      
-                case "LTD_INFOCATEGORY":
-                    LTD_InfoCategory[] importLtdInfoCategoryData = SimpleJson.DeserializeObject<LTD_InfoCategory[]>(jsonRecordList);
-                    using (ITransaction scope = GetDb.GetTransaction())
-                    {
-                        foreach (LTD_InfoCategory item in importLtdInfoCategoryData)
-                        {
-                            LTD_InfoCategory itemLtdInfoCategoryExisting = DataSource.GetLtdInfoCategory(0, " WHERE InfoCategoryGUID=@0", item.InfoCategoryGUID);
-                            if (itemLtdInfoCategoryExisting == null)
-                            {
-                                GetDb.Insert(item);
-                            }
-                            else
-                            {
-                                item.InfoCategoryID = itemLtdInfoCategoryExisting.InfoCategoryID;
-                                GetDb.Update(item) ;
-                            }
-                        }
-                        scope.Complete();
-                    }
-                    break ;
+					case "LTD_INFOCATEGORY":
+						LTD_InfoCategory[] importLtdInfoCategoryData = SimpleJson.DeserializeObject<LTD_InfoCategory[]>(jsonRecordList);
+						using (ITransaction scope = db.GetTransaction())
+						{
+							foreach (LTD_InfoCategory item in importLtdInfoCategoryData)
+							{
+								LTD_InfoCategory itemLtdInfoCategoryExisting = DataSource.GetLtdInfoCategory(0, " WHERE InfoCategoryGUID=@0", item.InfoCategoryGUID);
+								if (itemLtdInfoCategoryExisting == null)
+								{
+									db.Insert(item);
+								}
+								else
+								{
+									item.InfoCategoryID = itemLtdInfoCategoryExisting.InfoCategoryID;
+									db.Update(item) ;
+								}
+							}
+							scope.Complete();
+						}
+						break ;
   
-                default:
-                    break;
-            }
+					default:
+						break;
+				}
+			}
         }
 
         #endregion
 
         #region Utilities
-
+      
         private static Dictionary<string, string> GetWhereList(string whereClause, params object[] whereArgs)
         {
             Dictionary<string, string> whereList = new Dictionary<string, string>();
@@ -549,6 +550,924 @@ namespace Priya.InfoList.Data
 
 
   
+        #region LTD_InfoSection Query Related
+
+        #region Get
+
+        public static LTD_InfoSection GetLtdInfoSection(long infoSectionID, string orWhereClause, params object[] orWhereArgs)
+        {
+            LTD_InfoSection ltdInfoSection = null;
+            
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if (orWhereClause.Trim().Length == 0)
+                {
+                    ltdInfoSection = db.SingleOrDefault<LTD_InfoSection>("SELECT * FROM LTD_InfoSection Where InfoSectionID=@0", infoSectionID);
+                }
+                else
+                {
+                    if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
+                    ltdInfoSection = db.SingleOrDefault<LTD_InfoSection>("SELECT * FROM LTD_InfoSection " + orWhereClause, orWhereArgs);
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoSection> fileLTDInfoSectionList = FileSource.LoadLTDInfoSectionData();
+                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLTDInfoSectionList)
+                {
+                    bool found = true ;
+                    if (orWhereClause.Trim().Length > 0)
+                    {
+                        Dictionary<string, string> whereList = GetWhereList(orWhereClause, orWhereArgs);
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    found = false;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                found = false;
+                            }
+                        }
+                        if (found ==true)
+                        {
+                            ltdInfoSection = item.Value;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (item.Value.InfoSectionID == infoSectionID)
+                        {
+                            ltdInfoSection = item.Value;
+                            break;
+                        }
+                    }                    
+                }
+            }
+
+            return ltdInfoSection;
+        }
+
+        public static long GetMaxLtdInfoSectionId(string whereClause, params object[] whereArgs)
+        {
+            long maxLtdInfoSectionId = 0;
+           
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                maxLtdInfoSectionId = db.Single<long>("SELECT MAX(InfoSectionID) AS MAX_ID FROM LTD_InfoSection " + whereClause, whereArgs);
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoSection> fileLTDInfoSectionList = FileSource.LoadLTDInfoSectionData();
+                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLTDInfoSectionList)
+                {
+                    bool found = true ;
+                    if (whereClause.Trim().Length > 0)
+                    {
+                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    found = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                found = false;
+                            }
+                        }
+                    }
+                    
+                    if (found ==true)
+                    {
+                        if (item.Value.InfoSectionID >= maxLtdInfoSectionId)
+                        {
+                            maxLtdInfoSectionId = item.Value.InfoSectionID;
+                        }
+                    }
+                }
+            }
+            return maxLtdInfoSectionId;
+        }
+          
+        private static long GetMaxLtdInfoSectionRevisionNo()
+        {
+            long maxLtdInfoSectionRevisionNo = 0;
+            Database db = HaveDb();
+            if (db != null)
+            {
+                maxLtdInfoSectionRevisionNo = db.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM LTD_InfoSection");
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoSection> fileLTDInfoSectionList = FileSource.LoadLTDInfoSectionData();
+                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLTDInfoSectionList)
+                {
+                    if (item.Value.RevisionNo >= maxLtdInfoSectionRevisionNo)
+                    {
+                        maxLtdInfoSectionRevisionNo = item.Value.RevisionNo;
+                    }
+                }
+            }
+            return maxLtdInfoSectionRevisionNo;
+        }
+          
+
+      
+        /*    
+        private static DateTime GetLtdInfoSectionLastUpdateDate()
+        {
+            DateTime LtdInfoSectionLastUpdateDate = DateTime.MinValue;
+            Database db = HaveDb();
+            if (db != null)
+            {
+                LtdInfoSectionLastUpdateDate = db.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM LTD_InfoSection");
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoSection> fileLTDInfoSectionList = FileSource.LoadLTDInfoSectionData();
+                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLTDInfoSectionList)
+                {
+                    //Less than zero(-1) - This instance is earlier than passed value.
+                    //Zero (0)	- This instance is the same as value. 
+                    //Greater than zero(1) - This instance is later than value. 
+                    if (item.Value.LastUpdateDate.CompareTo(LtdInfoSectionLastUpdateDate) > 0)
+                    {
+                        LtdInfoSectionLastUpdateDate = item.Value.LastUpdateDate;
+                    }
+                }
+            }
+            return LtdInfoSectionLastUpdateDate;
+        }
+        */
+          
+		
+		/*
+        public static long GetLtdInfoSectionCount(string whereClause, params object[] whereArgs)
+        {
+            long ltdInfoSectionCount = 0;
+            
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                ltdInfoSectionCount = db.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_InfoSection " + whereClause, whereArgs);
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoSection> fileLTDInfoSectionList = FileSource.LoadLTDInfoSectionData();
+                if (whereClause.Trim().Length > 0)
+                {
+                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                    Dictionary<Guid, LTD_InfoSection> filteredLTDInfoSectionList = new Dictionary<Guid, LTD_InfoSection>();
+                    foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLTDInfoSectionList)
+                    {
+                        bool add =true ;
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    add = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                add = false;
+                            }
+                        }
+                        if (add == true) filteredLTDInfoSectionList.Add(item.Key, item.Value);
+                    }
+                    ltdInfoSectionCount = filteredLTDInfoSectionList.Count;
+                }
+                else
+                {
+                    ltdInfoSectionCount = fileLTDInfoSectionList.Count;
+                }
+            }
+            return ltdInfoSectionCount;
+        }
+		*/
+
+        #endregion
+
+        #region Get All
+
+		/*
+        public static List<LTD_InfoSection> GetAllLtdInfoSection(string orderByClause, string whereClause, params object[] whereArgs)
+        {
+            List<LTD_InfoSection> allLtdInfoSectionList = new List<LTD_InfoSection>();
+          
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                allLtdInfoSectionList = db.Fetch<LTD_InfoSection>("SELECT * FROM LTD_InfoSection " + whereClause + " " + orderByClause, whereArgs);
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoSection> fileLtdInfoSectionList = FileSource.LoadLTDInfoSectionData();
+                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLtdInfoSectionList)
+                {
+                    if (whereClause.Trim().Length > 0)
+                    {
+                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                        bool add =true ;
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    add = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                add = false;
+                            }
+                        }
+                        if (add == true) allLtdInfoSectionList.Add(item.Value);
+                    }
+                    else
+                    {
+                        allLtdInfoSectionList.Add(item.Value);
+                    }
+                }
+            }
+
+            return allLtdInfoSectionList;
+        }
+		*/
+
+        #endregion
+
+        #region Get Paged
+
+        public static List<LTD_InfoSection> GetPagedLtdInfoSection(long pageNo, long itemsPerPage, out long totalPages, out long totalItems, string orderByClause, string whereClause, params object[] whereArgs)
+        {
+            List<LTD_InfoSection> pagedLtdInfoSectionList = new List<LTD_InfoSection>();
+            if (pageNo <= 0) pageNo = 1;
+            if (itemsPerPage <= 0) itemsPerPage = 1;
+
+            long retTotalPages = 0;
+            long retTotalItems = 0;
+
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
+                Page<LTD_InfoSection> pagedData = db.Page<LTD_InfoSection>(pageNo, itemsPerPage, "SELECT * FROM LTD_InfoSection " + whereClause + " " + orderByClause, whereArgs);
+                totalPages = pagedData.TotalPages;
+                totalItems = pagedData.TotalItems;
+                if ((pagedData.Items.Count == 0) && (totalPages == 1))
+                {
+                    pagedData = db.Page<LTD_InfoSection>(1, itemsPerPage, "SELECT * FROM LTD_InfoSection " + whereClause + " " + orderByClause, whereArgs);
+                    totalPages = pagedData.TotalPages;
+                    totalItems = pagedData.TotalItems;
+                }
+                pagedLtdInfoSectionList = pagedData.Items;
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoSection> fileLtdInfoSectionList = FileSource.LoadLTDInfoSectionData();
+                if (whereClause.Trim().Length > 0)
+                {
+                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                    Dictionary<Guid, LTD_InfoSection> filteredLTDInfoSectionList = new Dictionary<Guid, LTD_InfoSection>();
+                    foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLtdInfoSectionList)
+                    {
+                        bool add =true ;
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    add = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                add = false;
+                            }
+                        }
+                        if (add == true) filteredLTDInfoSectionList.Add(item.Key, item.Value);
+                    }
+                    pagedLtdInfoSectionList = FileSource.GetPagedLTDInfoSection(filteredLTDInfoSectionList, pageNo, itemsPerPage, out totalPages, out totalItems);
+                }
+                else
+                {
+                    pagedLtdInfoSectionList = FileSource.GetPagedLTDInfoSection(fileLtdInfoSectionList, pageNo, itemsPerPage, out totalPages, out totalItems);
+                }
+            }
+
+            retTotalPages = totalPages;
+            retTotalItems = totalItems;
+            return pagedLtdInfoSectionList;
+        }
+
+        #endregion
+
+        #region Insert
+
+        public static long InsertLtdInfoSection(LTD_InfoSection ltdInfoSection)
+        {
+            long id = 0;
+            if (ltdInfoSection.InfoSectionGUID != Guid.Empty) throw new Exception("Cannot Set the GUID for a Insert");
+            ltdInfoSection.InfoSectionGUID = Guid.NewGuid();
+          
+			 UserInfo userInfo = GetUserInfo();
+            ltdInfoSection.UserID = userInfo.Id;
+            ltdInfoSection.UserGUID = userInfo.Guid;
+            ltdInfoSection.CreatedDate = DateTime.UtcNow;
+            ltdInfoSection.LastUpdateDate = DateTime.UtcNow;
+            ltdInfoSection.RevisionNo = GetMaxLtdInfoSectionRevisionNo() + 1;
+
+            Database db = HaveDb();
+            if (db != null)
+            {
+                using (ITransaction scope = db.GetTransaction())
+                {
+                    db.Insert(ltdInfoSection);
+                    id = ltdInfoSection.InfoSectionID;
+                    scope.Complete();
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoSection> fileLtdInfoSectionList = FileSource.LoadLTDInfoSectionData();
+	  			ltdInfoSection.InfoSectionID = GetMaxLtdInfoSectionId("") + 1;
+  
+                fileLtdInfoSectionList.Add(ltdInfoSection.InfoSectionGUID, ltdInfoSection);
+                FileSource.SaveLTDInfoSectionData(fileLtdInfoSectionList);
+
+                id = ltdInfoSection.InfoSectionID;
+            }
+
+            return id;
+        }
+
+        #endregion
+
+        #region Update
+
+        public static bool UpdateLtdInfoSection(LTD_InfoSection ltdInfoSection)
+        {
+            bool ret = false;
+          
+			 UserInfo userInfo = GetUserInfo();
+            ltdInfoSection.UserID = userInfo.Id;
+            ltdInfoSection.UserGUID = userInfo.Guid;
+            ltdInfoSection.LastUpdateDate = DateTime.UtcNow;
+            Database db = HaveDb();
+            if (db != null)
+            {
+                LTD_InfoSection ltdInfoSectionExisting = GetLtdInfoSection(ltdInfoSection.InfoSectionID, "");
+                if (ltdInfoSectionExisting != null)
+                {
+					ltdInfoSection.RevisionNo = GetMaxLtdInfoSectionRevisionNo() + 1;                      
+					using (ITransaction scope = db.GetTransaction())
+					{
+                        db.Update(ltdInfoSection);
+                        scope.Complete();
+                        ret = true;
+                    }
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoSection> fileLtdInfoSectionList = FileSource.LoadLTDInfoSectionData();                
+                if (fileLtdInfoSectionList.ContainsKey(ltdInfoSection.InfoSectionGUID) == true)
+                {
+                    fileLtdInfoSectionList.Remove(ltdInfoSection.InfoSectionGUID);
+                    fileLtdInfoSectionList.Add(ltdInfoSection.InfoSectionGUID, ltdInfoSection);
+                    FileSource.SaveLTDInfoSectionData(fileLtdInfoSectionList);
+                }
+            }
+
+            return ret;
+        }
+
+        #endregion
+
+        #region Delete
+
+        public static void DeleteLtdInfoSection(long ltdInfoSectionId)
+        {
+            Database db = HaveDb();
+            if (db != null)
+            {
+                using (ITransaction scope = db.GetTransaction())
+                {
+                    db.Delete<LTD_InfoSection>(ltdInfoSectionId);
+                    scope.Complete();
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoSection> fileLtdInfoSectionList = FileSource.LoadLTDInfoSectionData();
+                Guid ltdInfoSectionGuidToRemove = Guid.Empty;
+                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLtdInfoSectionList)
+                {
+                    if (item.Value.InfoSectionID == ltdInfoSectionId)
+                    {
+                        ltdInfoSectionGuidToRemove = item.Key;
+                        break;
+                    }
+                }
+                if (ltdInfoSectionGuidToRemove != Guid.Empty)
+                {
+                    fileLtdInfoSectionList.Remove(ltdInfoSectionGuidToRemove);
+                    FileSource.SaveLTDInfoSectionData(fileLtdInfoSectionList);
+                }
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+  
+        #region LTD_InfoDetail Query Related
+
+        #region Get
+
+        public static LTD_InfoDetail GetLtdInfoDetail(long infoDetailID, string orWhereClause, params object[] orWhereArgs)
+        {
+            LTD_InfoDetail ltdInfoDetail = null;
+            
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if (orWhereClause.Trim().Length == 0)
+                {
+                    ltdInfoDetail = db.SingleOrDefault<LTD_InfoDetail>("SELECT * FROM LTD_InfoDetail Where InfoDetailID=@0", infoDetailID);
+                }
+                else
+                {
+                    if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
+                    ltdInfoDetail = db.SingleOrDefault<LTD_InfoDetail>("SELECT * FROM LTD_InfoDetail " + orWhereClause, orWhereArgs);
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoDetail> fileLTDInfoDetailList = FileSource.LoadLTDInfoDetailData();
+                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLTDInfoDetailList)
+                {
+                    bool found = true ;
+                    if (orWhereClause.Trim().Length > 0)
+                    {
+                        Dictionary<string, string> whereList = GetWhereList(orWhereClause, orWhereArgs);
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    found = false;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                found = false;
+                            }
+                        }
+                        if (found ==true)
+                        {
+                            ltdInfoDetail = item.Value;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (item.Value.InfoDetailID == infoDetailID)
+                        {
+                            ltdInfoDetail = item.Value;
+                            break;
+                        }
+                    }                    
+                }
+            }
+
+            return ltdInfoDetail;
+        }
+
+        public static long GetMaxLtdInfoDetailId(string whereClause, params object[] whereArgs)
+        {
+            long maxLtdInfoDetailId = 0;
+           
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                maxLtdInfoDetailId = db.Single<long>("SELECT MAX(InfoDetailID) AS MAX_ID FROM LTD_InfoDetail " + whereClause, whereArgs);
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoDetail> fileLTDInfoDetailList = FileSource.LoadLTDInfoDetailData();
+                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLTDInfoDetailList)
+                {
+                    bool found = true ;
+                    if (whereClause.Trim().Length > 0)
+                    {
+                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    found = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                found = false;
+                            }
+                        }
+                    }
+                    
+                    if (found ==true)
+                    {
+                        if (item.Value.InfoDetailID >= maxLtdInfoDetailId)
+                        {
+                            maxLtdInfoDetailId = item.Value.InfoDetailID;
+                        }
+                    }
+                }
+            }
+            return maxLtdInfoDetailId;
+        }
+          
+        private static long GetMaxLtdInfoDetailRevisionNo()
+        {
+            long maxLtdInfoDetailRevisionNo = 0;
+            Database db = HaveDb();
+            if (db != null)
+            {
+                maxLtdInfoDetailRevisionNo = db.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM LTD_InfoDetail");
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoDetail> fileLTDInfoDetailList = FileSource.LoadLTDInfoDetailData();
+                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLTDInfoDetailList)
+                {
+                    if (item.Value.RevisionNo >= maxLtdInfoDetailRevisionNo)
+                    {
+                        maxLtdInfoDetailRevisionNo = item.Value.RevisionNo;
+                    }
+                }
+            }
+            return maxLtdInfoDetailRevisionNo;
+        }
+          
+
+      
+        /*    
+        private static DateTime GetLtdInfoDetailLastUpdateDate()
+        {
+            DateTime LtdInfoDetailLastUpdateDate = DateTime.MinValue;
+            Database db = HaveDb();
+            if (db != null)
+            {
+                LtdInfoDetailLastUpdateDate = db.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM LTD_InfoDetail");
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoDetail> fileLTDInfoDetailList = FileSource.LoadLTDInfoDetailData();
+                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLTDInfoDetailList)
+                {
+                    //Less than zero(-1) - This instance is earlier than passed value.
+                    //Zero (0)	- This instance is the same as value. 
+                    //Greater than zero(1) - This instance is later than value. 
+                    if (item.Value.LastUpdateDate.CompareTo(LtdInfoDetailLastUpdateDate) > 0)
+                    {
+                        LtdInfoDetailLastUpdateDate = item.Value.LastUpdateDate;
+                    }
+                }
+            }
+            return LtdInfoDetailLastUpdateDate;
+        }
+        */
+          
+		
+		/*
+        public static long GetLtdInfoDetailCount(string whereClause, params object[] whereArgs)
+        {
+            long ltdInfoDetailCount = 0;
+            
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                ltdInfoDetailCount = db.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_InfoDetail " + whereClause, whereArgs);
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoDetail> fileLTDInfoDetailList = FileSource.LoadLTDInfoDetailData();
+                if (whereClause.Trim().Length > 0)
+                {
+                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                    Dictionary<Guid, LTD_InfoDetail> filteredLTDInfoDetailList = new Dictionary<Guid, LTD_InfoDetail>();
+                    foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLTDInfoDetailList)
+                    {
+                        bool add =true ;
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    add = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                add = false;
+                            }
+                        }
+                        if (add == true) filteredLTDInfoDetailList.Add(item.Key, item.Value);
+                    }
+                    ltdInfoDetailCount = filteredLTDInfoDetailList.Count;
+                }
+                else
+                {
+                    ltdInfoDetailCount = fileLTDInfoDetailList.Count;
+                }
+            }
+            return ltdInfoDetailCount;
+        }
+		*/
+
+        #endregion
+
+        #region Get All
+
+		/*
+        public static List<LTD_InfoDetail> GetAllLtdInfoDetail(string orderByClause, string whereClause, params object[] whereArgs)
+        {
+            List<LTD_InfoDetail> allLtdInfoDetailList = new List<LTD_InfoDetail>();
+          
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                allLtdInfoDetailList = db.Fetch<LTD_InfoDetail>("SELECT * FROM LTD_InfoDetail " + whereClause + " " + orderByClause, whereArgs);
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoDetail> fileLtdInfoDetailList = FileSource.LoadLTDInfoDetailData();
+                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLtdInfoDetailList)
+                {
+                    if (whereClause.Trim().Length > 0)
+                    {
+                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                        bool add =true ;
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    add = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                add = false;
+                            }
+                        }
+                        if (add == true) allLtdInfoDetailList.Add(item.Value);
+                    }
+                    else
+                    {
+                        allLtdInfoDetailList.Add(item.Value);
+                    }
+                }
+            }
+
+            return allLtdInfoDetailList;
+        }
+		*/
+
+        #endregion
+
+        #region Get Paged
+
+        public static List<LTD_InfoDetail> GetPagedLtdInfoDetail(long pageNo, long itemsPerPage, out long totalPages, out long totalItems, string orderByClause, string whereClause, params object[] whereArgs)
+        {
+            List<LTD_InfoDetail> pagedLtdInfoDetailList = new List<LTD_InfoDetail>();
+            if (pageNo <= 0) pageNo = 1;
+            if (itemsPerPage <= 0) itemsPerPage = 1;
+
+            long retTotalPages = 0;
+            long retTotalItems = 0;
+
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
+                Page<LTD_InfoDetail> pagedData = db.Page<LTD_InfoDetail>(pageNo, itemsPerPage, "SELECT * FROM LTD_InfoDetail " + whereClause + " " + orderByClause, whereArgs);
+                totalPages = pagedData.TotalPages;
+                totalItems = pagedData.TotalItems;
+                if ((pagedData.Items.Count == 0) && (totalPages == 1))
+                {
+                    pagedData = db.Page<LTD_InfoDetail>(1, itemsPerPage, "SELECT * FROM LTD_InfoDetail " + whereClause + " " + orderByClause, whereArgs);
+                    totalPages = pagedData.TotalPages;
+                    totalItems = pagedData.TotalItems;
+                }
+                pagedLtdInfoDetailList = pagedData.Items;
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoDetail> fileLtdInfoDetailList = FileSource.LoadLTDInfoDetailData();
+                if (whereClause.Trim().Length > 0)
+                {
+                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                    Dictionary<Guid, LTD_InfoDetail> filteredLTDInfoDetailList = new Dictionary<Guid, LTD_InfoDetail>();
+                    foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLtdInfoDetailList)
+                    {
+                        bool add =true ;
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    add = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                add = false;
+                            }
+                        }
+                        if (add == true) filteredLTDInfoDetailList.Add(item.Key, item.Value);
+                    }
+                    pagedLtdInfoDetailList = FileSource.GetPagedLTDInfoDetail(filteredLTDInfoDetailList, pageNo, itemsPerPage, out totalPages, out totalItems);
+                }
+                else
+                {
+                    pagedLtdInfoDetailList = FileSource.GetPagedLTDInfoDetail(fileLtdInfoDetailList, pageNo, itemsPerPage, out totalPages, out totalItems);
+                }
+            }
+
+            retTotalPages = totalPages;
+            retTotalItems = totalItems;
+            return pagedLtdInfoDetailList;
+        }
+
+        #endregion
+
+        #region Insert
+
+        public static long InsertLtdInfoDetail(LTD_InfoDetail ltdInfoDetail)
+        {
+            long id = 0;
+            if (ltdInfoDetail.InfoDetailGUID != Guid.Empty) throw new Exception("Cannot Set the GUID for a Insert");
+            ltdInfoDetail.InfoDetailGUID = Guid.NewGuid();
+          
+			 UserInfo userInfo = GetUserInfo();
+            ltdInfoDetail.UserID = userInfo.Id;
+            ltdInfoDetail.UserGUID = userInfo.Guid;
+            ltdInfoDetail.CreatedDate = DateTime.UtcNow;
+            ltdInfoDetail.LastUpdateDate = DateTime.UtcNow;
+            ltdInfoDetail.RevisionNo = GetMaxLtdInfoDetailRevisionNo() + 1;
+
+            Database db = HaveDb();
+            if (db != null)
+            {
+                using (ITransaction scope = db.GetTransaction())
+                {
+                    db.Insert(ltdInfoDetail);
+                    id = ltdInfoDetail.InfoDetailID;
+                    scope.Complete();
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoDetail> fileLtdInfoDetailList = FileSource.LoadLTDInfoDetailData();
+	  			ltdInfoDetail.InfoDetailID = GetMaxLtdInfoDetailId("") + 1;
+  
+                fileLtdInfoDetailList.Add(ltdInfoDetail.InfoDetailGUID, ltdInfoDetail);
+                FileSource.SaveLTDInfoDetailData(fileLtdInfoDetailList);
+
+                id = ltdInfoDetail.InfoDetailID;
+            }
+
+            return id;
+        }
+
+        #endregion
+
+        #region Update
+
+        public static bool UpdateLtdInfoDetail(LTD_InfoDetail ltdInfoDetail)
+        {
+            bool ret = false;
+          
+			 UserInfo userInfo = GetUserInfo();
+            ltdInfoDetail.UserID = userInfo.Id;
+            ltdInfoDetail.UserGUID = userInfo.Guid;
+            ltdInfoDetail.LastUpdateDate = DateTime.UtcNow;
+            Database db = HaveDb();
+            if (db != null)
+            {
+                LTD_InfoDetail ltdInfoDetailExisting = GetLtdInfoDetail(ltdInfoDetail.InfoDetailID, "");
+                if (ltdInfoDetailExisting != null)
+                {
+					ltdInfoDetail.RevisionNo = GetMaxLtdInfoDetailRevisionNo() + 1;                      
+					using (ITransaction scope = db.GetTransaction())
+					{
+                        db.Update(ltdInfoDetail);
+                        scope.Complete();
+                        ret = true;
+                    }
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoDetail> fileLtdInfoDetailList = FileSource.LoadLTDInfoDetailData();                
+                if (fileLtdInfoDetailList.ContainsKey(ltdInfoDetail.InfoDetailGUID) == true)
+                {
+                    fileLtdInfoDetailList.Remove(ltdInfoDetail.InfoDetailGUID);
+                    fileLtdInfoDetailList.Add(ltdInfoDetail.InfoDetailGUID, ltdInfoDetail);
+                    FileSource.SaveLTDInfoDetailData(fileLtdInfoDetailList);
+                }
+            }
+
+            return ret;
+        }
+
+        #endregion
+
+        #region Delete
+
+        public static void DeleteLtdInfoDetail(long ltdInfoDetailId)
+        {
+            Database db = HaveDb();
+            if (db != null)
+            {
+                using (ITransaction scope = db.GetTransaction())
+                {
+                    db.Delete<LTD_InfoDetail>(ltdInfoDetailId);
+                    scope.Complete();
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoDetail> fileLtdInfoDetailList = FileSource.LoadLTDInfoDetailData();
+                Guid ltdInfoDetailGuidToRemove = Guid.Empty;
+                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLtdInfoDetailList)
+                {
+                    if (item.Value.InfoDetailID == ltdInfoDetailId)
+                    {
+                        ltdInfoDetailGuidToRemove = item.Key;
+                        break;
+                    }
+                }
+                if (ltdInfoDetailGuidToRemove != Guid.Empty)
+                {
+                    fileLtdInfoDetailList.Remove(ltdInfoDetailGuidToRemove);
+                    FileSource.SaveLTDInfoDetailData(fileLtdInfoDetailList);
+                }
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+  
         #region CNS_DataType Query Related
 
         #region Get
@@ -557,16 +1476,17 @@ namespace Priya.InfoList.Data
         {
             CNS_DataType cnsDataType = null;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if (orWhereClause.Trim().Length == 0)
                 {
-                    cnsDataType = GetDb.SingleOrDefault<CNS_DataType>("SELECT * FROM CNS_DataType Where DataTypeID=@0", dataTypeID);
+                    cnsDataType = db.SingleOrDefault<CNS_DataType>("SELECT * FROM CNS_DataType Where DataTypeID=@0", dataTypeID);
                 }
                 else
                 {
                     if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
-                    cnsDataType = GetDb.SingleOrDefault<CNS_DataType>("SELECT * FROM CNS_DataType " + orWhereClause, orWhereArgs);
+                    cnsDataType = db.SingleOrDefault<CNS_DataType>("SELECT * FROM CNS_DataType " + orWhereClause, orWhereArgs);
                 }
             }
             else
@@ -618,10 +1538,11 @@ namespace Priya.InfoList.Data
         {
             long maxCnsDataTypeId = 0;
            
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                maxCnsDataTypeId = GetDb.Single<long>("SELECT MAX(DataTypeID) AS MAX_ID FROM CNS_DataType " + whereClause, whereArgs);
+                maxCnsDataTypeId = db.Single<long>("SELECT MAX(DataTypeID) AS MAX_ID FROM CNS_DataType " + whereClause, whereArgs);
             }
             else
             {
@@ -664,9 +1585,10 @@ namespace Priya.InfoList.Data
         private static long GetMaxCnsDataTypeRevisionNo()
         {
             long maxCnsDataTypeRevisionNo = 0;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                maxCnsDataTypeRevisionNo = GetDb.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM CNS_DataType");
+                maxCnsDataTypeRevisionNo = db.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM CNS_DataType");
             }
             else
             {
@@ -690,10 +1612,11 @@ namespace Priya.InfoList.Data
         {
             long cnsDataTypeCount = 0;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                cnsDataTypeCount = GetDb.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM CNS_DataType " + whereClause, whereArgs);
+                cnsDataTypeCount = db.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM CNS_DataType " + whereClause, whereArgs);
             }
             else
             {
@@ -742,11 +1665,12 @@ namespace Priya.InfoList.Data
         {
             List<CNS_DataType> allCnsDataTypeList = new List<CNS_DataType>();
           
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                allCnsDataTypeList = GetDb.Fetch<CNS_DataType>("SELECT * FROM CNS_DataType " + whereClause + " " + orderByClause, whereArgs);
+                allCnsDataTypeList = db.Fetch<CNS_DataType>("SELECT * FROM CNS_DataType " + whereClause + " " + orderByClause, whereArgs);
             }
             else
             {
@@ -797,16 +1721,18 @@ namespace Priya.InfoList.Data
 
             long retTotalPages = 0;
             long retTotalItems = 0;
-            if (HaveDb == true)
+
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
                 if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
-                Page<CNS_DataType> pagedData = GetDb.Page<CNS_DataType>(pageNo, itemsPerPage, "SELECT * FROM CNS_DataType " + whereClause + " " + orderByClause, whereArgs);
+                Page<CNS_DataType> pagedData = db.Page<CNS_DataType>(pageNo, itemsPerPage, "SELECT * FROM CNS_DataType " + whereClause + " " + orderByClause, whereArgs);
                 totalPages = pagedData.TotalPages;
                 totalItems = pagedData.TotalItems;
                 if ((pagedData.Items.Count == 0) && (totalPages == 1))
                 {
-                    pagedData = GetDb.Page<CNS_DataType>(1, itemsPerPage, "SELECT * FROM CNS_DataType " + whereClause + " " + orderByClause, whereArgs);
+                    pagedData = db.Page<CNS_DataType>(1, itemsPerPage, "SELECT * FROM CNS_DataType " + whereClause + " " + orderByClause, whereArgs);
                     totalPages = pagedData.TotalPages;
                     totalItems = pagedData.TotalItems;
                 }
@@ -863,11 +1789,12 @@ namespace Priya.InfoList.Data
             cnsDataType.DataTypeGUID = Guid.NewGuid();
             cnsDataType.RevisionNo = GetMaxCnsDataTypeRevisionNo() + 1;
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Insert(cnsDataType);
+                    db.Insert(cnsDataType);
                     id = cnsDataType.DataTypeID;
                     scope.Complete();
                 }
@@ -892,15 +1819,16 @@ namespace Priya.InfoList.Data
         public static bool UpdateCnsDataType(CNS_DataType cnsDataType)
         {
             bool ret = false;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 CNS_DataType cnsDataTypeExisting = GetCnsDataType(cnsDataType.DataTypeID, "");
                 if (cnsDataTypeExisting != null)
                 {
 					cnsDataType.RevisionNo = GetMaxCnsDataTypeRevisionNo() + 1;                      
-					using (ITransaction scope = GetDb.GetTransaction())
+					using (ITransaction scope = db.GetTransaction())
 					{
-                        GetDb.Update(cnsDataType);
+                        db.Update(cnsDataType);
                         scope.Complete();
                         ret = true;
                     }
@@ -926,11 +1854,12 @@ namespace Priya.InfoList.Data
 
         public static void DeleteCnsDataType(long cnsDataTypeId)
         {
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Delete<CNS_DataType>(cnsDataTypeId);
+                    db.Delete<CNS_DataType>(cnsDataTypeId);
                     scope.Complete();
                 }
             }
@@ -959,454 +1888,6 @@ namespace Priya.InfoList.Data
 
         #endregion
   
-        #region LTD_InfoSection Query Related
-
-        #region Get
-
-        public static LTD_InfoSection GetLtdInfoSection(long infoSectionID, string orWhereClause, params object[] orWhereArgs)
-        {
-            LTD_InfoSection ltdInfoSection = null;
-            
-            if (HaveDb == true)
-            {
-                if (orWhereClause.Trim().Length == 0)
-                {
-                    ltdInfoSection = GetDb.SingleOrDefault<LTD_InfoSection>("SELECT * FROM LTD_InfoSection Where InfoSectionID=@0", infoSectionID);
-                }
-                else
-                {
-                    if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
-                    ltdInfoSection = GetDb.SingleOrDefault<LTD_InfoSection>("SELECT * FROM LTD_InfoSection " + orWhereClause, orWhereArgs);
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoSection> fileLTDInfoSectionList = FileSource.LoadLTDInfoSectionData();
-                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLTDInfoSectionList)
-                {
-                    bool found = true ;
-                    if (orWhereClause.Trim().Length > 0)
-                    {
-                        Dictionary<string, string> whereList = GetWhereList(orWhereClause, orWhereArgs);
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    found = false;
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                found = false;
-                            }
-                        }
-                        if (found ==true)
-                        {
-                            ltdInfoSection = item.Value;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        if (item.Value.InfoSectionID == infoSectionID)
-                        {
-                            ltdInfoSection = item.Value;
-                            break;
-                        }
-                    }                    
-                }
-            }
-
-            return ltdInfoSection;
-        }
-
-        public static long GetMaxLtdInfoSectionId(string whereClause, params object[] whereArgs)
-        {
-            long maxLtdInfoSectionId = 0;
-           
-            if (HaveDb == true)
-            {
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                maxLtdInfoSectionId = GetDb.Single<long>("SELECT MAX(InfoSectionID) AS MAX_ID FROM LTD_InfoSection " + whereClause, whereArgs);
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoSection> fileLTDInfoSectionList = FileSource.LoadLTDInfoSectionData();
-                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLTDInfoSectionList)
-                {
-                    bool found = true ;
-                    if (whereClause.Trim().Length > 0)
-                    {
-                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    found = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                found = false;
-                            }
-                        }
-                    }
-                    
-                    if (found ==true)
-                    {
-                        if (item.Value.InfoSectionID >= maxLtdInfoSectionId)
-                        {
-                            maxLtdInfoSectionId = item.Value.InfoSectionID;
-                        }
-                    }
-                }
-            }
-            return maxLtdInfoSectionId;
-        }
-          
-        private static long GetMaxLtdInfoSectionRevisionNo()
-        {
-            long maxLtdInfoSectionRevisionNo = 0;
-            if (HaveDb == true)
-            {
-                maxLtdInfoSectionRevisionNo = GetDb.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM LTD_InfoSection");
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoSection> fileLTDInfoSectionList = FileSource.LoadLTDInfoSectionData();
-                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLTDInfoSectionList)
-                {
-                    if (item.Value.RevisionNo >= maxLtdInfoSectionRevisionNo)
-                    {
-                        maxLtdInfoSectionRevisionNo = item.Value.RevisionNo;
-                    }
-                }
-            }
-            return maxLtdInfoSectionRevisionNo;
-        }
-          
-
-      
-        /*    
-        private static DateTime GetLtdInfoSectionLastUpdateDate()
-        {
-            DateTime LtdInfoSectionLastUpdateDate = DateTime.MinValue;
-            if (HaveDb == true)
-            {
-                LtdInfoSectionLastUpdateDate = GetDb.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM LTD_InfoSection");
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoSection> fileLTDInfoSectionList = FileSource.LoadLTDInfoSectionData();
-                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLTDInfoSectionList)
-                {
-                    //Less than zero(-1) - This instance is earlier than passed value.
-                    //Zero (0)	- This instance is the same as value. 
-                    //Greater than zero(1) - This instance is later than value. 
-                    if (item.Value.LastUpdateDate.CompareTo(LtdInfoSectionLastUpdateDate) > 0)
-                    {
-                        LtdInfoSectionLastUpdateDate = item.Value.LastUpdateDate;
-                    }
-                }
-            }
-            return LtdInfoSectionLastUpdateDate;
-        }
-        */
-          
-		
-		/*
-        public static long GetLtdInfoSectionCount(string whereClause, params object[] whereArgs)
-        {
-            long ltdInfoSectionCount = 0;
-            
-            if (HaveDb == true)
-            {
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                ltdInfoSectionCount = GetDb.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_InfoSection " + whereClause, whereArgs);
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoSection> fileLTDInfoSectionList = FileSource.LoadLTDInfoSectionData();
-                if (whereClause.Trim().Length > 0)
-                {
-                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                    Dictionary<Guid, LTD_InfoSection> filteredLTDInfoSectionList = new Dictionary<Guid, LTD_InfoSection>();
-                    foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLTDInfoSectionList)
-                    {
-                        bool add =true ;
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    add = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                add = false;
-                            }
-                        }
-                        if (add == true) filteredLTDInfoSectionList.Add(item.Key, item.Value);
-                    }
-                    ltdInfoSectionCount = filteredLTDInfoSectionList.Count;
-                }
-                else
-                {
-                    ltdInfoSectionCount = fileLTDInfoSectionList.Count;
-                }
-            }
-            return ltdInfoSectionCount;
-        }
-		*/
-
-        #endregion
-
-        #region Get All
-
-		/*
-        public static List<LTD_InfoSection> GetAllLtdInfoSection(string orderByClause, string whereClause, params object[] whereArgs)
-        {
-            List<LTD_InfoSection> allLtdInfoSectionList = new List<LTD_InfoSection>();
-          
-            if (HaveDb == true)
-            {
-                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                allLtdInfoSectionList = GetDb.Fetch<LTD_InfoSection>("SELECT * FROM LTD_InfoSection " + whereClause + " " + orderByClause, whereArgs);
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoSection> fileLtdInfoSectionList = FileSource.LoadLTDInfoSectionData();
-                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLtdInfoSectionList)
-                {
-                    if (whereClause.Trim().Length > 0)
-                    {
-                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                        bool add =true ;
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    add = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                add = false;
-                            }
-                        }
-                        if (add == true) allLtdInfoSectionList.Add(item.Value);
-                    }
-                    else
-                    {
-                        allLtdInfoSectionList.Add(item.Value);
-                    }
-                }
-            }
-
-            return allLtdInfoSectionList;
-        }
-		*/
-
-        #endregion
-
-        #region Get Paged
-
-        public static List<LTD_InfoSection> GetPagedLtdInfoSection(long pageNo, long itemsPerPage, out long totalPages, out long totalItems, string orderByClause, string whereClause, params object[] whereArgs)
-        {
-            List<LTD_InfoSection> pagedLtdInfoSectionList = new List<LTD_InfoSection>();
-            if (pageNo <= 0) pageNo = 1;
-            if (itemsPerPage <= 0) itemsPerPage = 1;
-
-            long retTotalPages = 0;
-            long retTotalItems = 0;
-            if (HaveDb == true)
-            {
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
-                Page<LTD_InfoSection> pagedData = GetDb.Page<LTD_InfoSection>(pageNo, itemsPerPage, "SELECT * FROM LTD_InfoSection " + whereClause + " " + orderByClause, whereArgs);
-                totalPages = pagedData.TotalPages;
-                totalItems = pagedData.TotalItems;
-                if ((pagedData.Items.Count == 0) && (totalPages == 1))
-                {
-                    pagedData = GetDb.Page<LTD_InfoSection>(1, itemsPerPage, "SELECT * FROM LTD_InfoSection " + whereClause + " " + orderByClause, whereArgs);
-                    totalPages = pagedData.TotalPages;
-                    totalItems = pagedData.TotalItems;
-                }
-                pagedLtdInfoSectionList = pagedData.Items;
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoSection> fileLtdInfoSectionList = FileSource.LoadLTDInfoSectionData();
-                if (whereClause.Trim().Length > 0)
-                {
-                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                    Dictionary<Guid, LTD_InfoSection> filteredLTDInfoSectionList = new Dictionary<Guid, LTD_InfoSection>();
-                    foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLtdInfoSectionList)
-                    {
-                        bool add =true ;
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    add = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                add = false;
-                            }
-                        }
-                        if (add == true) filteredLTDInfoSectionList.Add(item.Key, item.Value);
-                    }
-                    pagedLtdInfoSectionList = FileSource.GetPagedLTDInfoSection(filteredLTDInfoSectionList, pageNo, itemsPerPage, out totalPages, out totalItems);
-                }
-                else
-                {
-                    pagedLtdInfoSectionList = FileSource.GetPagedLTDInfoSection(fileLtdInfoSectionList, pageNo, itemsPerPage, out totalPages, out totalItems);
-                }
-            }
-
-            retTotalPages = totalPages;
-            retTotalItems = totalItems;
-            return pagedLtdInfoSectionList;
-        }
-
-        #endregion
-
-        #region Insert
-
-        public static long InsertLtdInfoSection(LTD_InfoSection ltdInfoSection)
-        {
-            long id = 0;
-            if (ltdInfoSection.InfoSectionGUID != Guid.Empty) throw new Exception("Cannot Set the GUID for a Insert");
-            ltdInfoSection.InfoSectionGUID = Guid.NewGuid();
-          
-			 UserInfo userInfo = OnGetUserInfo();
-            ltdInfoSection.UserID = userInfo.Id;
-            ltdInfoSection.UserGUID = userInfo.Guid;
-            ltdInfoSection.CreatedDate = DateTime.UtcNow;
-            ltdInfoSection.LastUpdateDate = DateTime.UtcNow;
-            ltdInfoSection.RevisionNo = GetMaxLtdInfoSectionRevisionNo() + 1;
-
-            if (HaveDb == true)
-            {
-                using (ITransaction scope = GetDb.GetTransaction())
-                {
-                    GetDb.Insert(ltdInfoSection);
-                    id = ltdInfoSection.InfoSectionID;
-                    scope.Complete();
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoSection> fileLtdInfoSectionList = FileSource.LoadLTDInfoSectionData();
-	  			ltdInfoSection.InfoSectionID = GetMaxLtdInfoSectionId("") + 1;
-  
-                fileLtdInfoSectionList.Add(ltdInfoSection.InfoSectionGUID, ltdInfoSection);
-                FileSource.SaveLTDInfoSectionData(fileLtdInfoSectionList);
-
-                id = ltdInfoSection.InfoSectionID;
-            }
-
-            return id;
-        }
-
-        #endregion
-
-        #region Update
-
-        public static bool UpdateLtdInfoSection(LTD_InfoSection ltdInfoSection)
-        {
-            bool ret = false;
-          
-			 UserInfo userInfo = OnGetUserInfo();
-            ltdInfoSection.UserID = userInfo.Id;
-            ltdInfoSection.UserGUID = userInfo.Guid;
-            ltdInfoSection.LastUpdateDate = DateTime.UtcNow;
-            if (HaveDb == true)
-            {
-                LTD_InfoSection ltdInfoSectionExisting = GetLtdInfoSection(ltdInfoSection.InfoSectionID, "");
-                if (ltdInfoSectionExisting != null)
-                {
-					ltdInfoSection.RevisionNo = GetMaxLtdInfoSectionRevisionNo() + 1;                      
-					using (ITransaction scope = GetDb.GetTransaction())
-					{
-                        GetDb.Update(ltdInfoSection);
-                        scope.Complete();
-                        ret = true;
-                    }
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoSection> fileLtdInfoSectionList = FileSource.LoadLTDInfoSectionData();                
-                if (fileLtdInfoSectionList.ContainsKey(ltdInfoSection.InfoSectionGUID) == true)
-                {
-                    fileLtdInfoSectionList.Remove(ltdInfoSection.InfoSectionGUID);
-                    fileLtdInfoSectionList.Add(ltdInfoSection.InfoSectionGUID, ltdInfoSection);
-                    FileSource.SaveLTDInfoSectionData(fileLtdInfoSectionList);
-                }
-            }
-
-            return ret;
-        }
-
-        #endregion
-
-        #region Delete
-
-        public static void DeleteLtdInfoSection(long ltdInfoSectionId)
-        {
-            if (HaveDb == true)
-            {
-                using (ITransaction scope = GetDb.GetTransaction())
-                {
-                    GetDb.Delete<LTD_InfoSection>(ltdInfoSectionId);
-                    scope.Complete();
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoSection> fileLtdInfoSectionList = FileSource.LoadLTDInfoSectionData();
-                Guid ltdInfoSectionGuidToRemove = Guid.Empty;
-                foreach (KeyValuePair<Guid, LTD_InfoSection> item in fileLtdInfoSectionList)
-                {
-                    if (item.Value.InfoSectionID == ltdInfoSectionId)
-                    {
-                        ltdInfoSectionGuidToRemove = item.Key;
-                        break;
-                    }
-                }
-                if (ltdInfoSectionGuidToRemove != Guid.Empty)
-                {
-                    fileLtdInfoSectionList.Remove(ltdInfoSectionGuidToRemove);
-                    FileSource.SaveLTDInfoSectionData(fileLtdInfoSectionList);
-                }
-            }
-
-        }
-
-        #endregion
-
-        #endregion
-  
         #region CNS_DataRefType Query Related
 
         #region Get
@@ -1415,16 +1896,17 @@ namespace Priya.InfoList.Data
         {
             CNS_DataRefType cnsDataRefType = null;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if (orWhereClause.Trim().Length == 0)
                 {
-                    cnsDataRefType = GetDb.SingleOrDefault<CNS_DataRefType>("SELECT * FROM CNS_DataRefType Where DataRefTypeID=@0", dataRefTypeID);
+                    cnsDataRefType = db.SingleOrDefault<CNS_DataRefType>("SELECT * FROM CNS_DataRefType Where DataRefTypeID=@0", dataRefTypeID);
                 }
                 else
                 {
                     if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
-                    cnsDataRefType = GetDb.SingleOrDefault<CNS_DataRefType>("SELECT * FROM CNS_DataRefType " + orWhereClause, orWhereArgs);
+                    cnsDataRefType = db.SingleOrDefault<CNS_DataRefType>("SELECT * FROM CNS_DataRefType " + orWhereClause, orWhereArgs);
                 }
             }
             else
@@ -1476,10 +1958,11 @@ namespace Priya.InfoList.Data
         {
             long maxCnsDataRefTypeId = 0;
            
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                maxCnsDataRefTypeId = GetDb.Single<long>("SELECT MAX(DataRefTypeID) AS MAX_ID FROM CNS_DataRefType " + whereClause, whereArgs);
+                maxCnsDataRefTypeId = db.Single<long>("SELECT MAX(DataRefTypeID) AS MAX_ID FROM CNS_DataRefType " + whereClause, whereArgs);
             }
             else
             {
@@ -1522,9 +2005,10 @@ namespace Priya.InfoList.Data
         private static long GetMaxCnsDataRefTypeRevisionNo()
         {
             long maxCnsDataRefTypeRevisionNo = 0;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                maxCnsDataRefTypeRevisionNo = GetDb.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM CNS_DataRefType");
+                maxCnsDataRefTypeRevisionNo = db.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM CNS_DataRefType");
             }
             else
             {
@@ -1548,10 +2032,11 @@ namespace Priya.InfoList.Data
         {
             long cnsDataRefTypeCount = 0;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                cnsDataRefTypeCount = GetDb.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM CNS_DataRefType " + whereClause, whereArgs);
+                cnsDataRefTypeCount = db.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM CNS_DataRefType " + whereClause, whereArgs);
             }
             else
             {
@@ -1600,11 +2085,12 @@ namespace Priya.InfoList.Data
         {
             List<CNS_DataRefType> allCnsDataRefTypeList = new List<CNS_DataRefType>();
           
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                allCnsDataRefTypeList = GetDb.Fetch<CNS_DataRefType>("SELECT * FROM CNS_DataRefType " + whereClause + " " + orderByClause, whereArgs);
+                allCnsDataRefTypeList = db.Fetch<CNS_DataRefType>("SELECT * FROM CNS_DataRefType " + whereClause + " " + orderByClause, whereArgs);
             }
             else
             {
@@ -1655,16 +2141,18 @@ namespace Priya.InfoList.Data
 
             long retTotalPages = 0;
             long retTotalItems = 0;
-            if (HaveDb == true)
+
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
                 if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
-                Page<CNS_DataRefType> pagedData = GetDb.Page<CNS_DataRefType>(pageNo, itemsPerPage, "SELECT * FROM CNS_DataRefType " + whereClause + " " + orderByClause, whereArgs);
+                Page<CNS_DataRefType> pagedData = db.Page<CNS_DataRefType>(pageNo, itemsPerPage, "SELECT * FROM CNS_DataRefType " + whereClause + " " + orderByClause, whereArgs);
                 totalPages = pagedData.TotalPages;
                 totalItems = pagedData.TotalItems;
                 if ((pagedData.Items.Count == 0) && (totalPages == 1))
                 {
-                    pagedData = GetDb.Page<CNS_DataRefType>(1, itemsPerPage, "SELECT * FROM CNS_DataRefType " + whereClause + " " + orderByClause, whereArgs);
+                    pagedData = db.Page<CNS_DataRefType>(1, itemsPerPage, "SELECT * FROM CNS_DataRefType " + whereClause + " " + orderByClause, whereArgs);
                     totalPages = pagedData.TotalPages;
                     totalItems = pagedData.TotalItems;
                 }
@@ -1721,11 +2209,12 @@ namespace Priya.InfoList.Data
             cnsDataRefType.DataRefTypeGUID = Guid.NewGuid();
             cnsDataRefType.RevisionNo = GetMaxCnsDataRefTypeRevisionNo() + 1;
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Insert(cnsDataRefType);
+                    db.Insert(cnsDataRefType);
                     id = cnsDataRefType.DataRefTypeID;
                     scope.Complete();
                 }
@@ -1750,15 +2239,16 @@ namespace Priya.InfoList.Data
         public static bool UpdateCnsDataRefType(CNS_DataRefType cnsDataRefType)
         {
             bool ret = false;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 CNS_DataRefType cnsDataRefTypeExisting = GetCnsDataRefType(cnsDataRefType.DataRefTypeID, "");
                 if (cnsDataRefTypeExisting != null)
                 {
 					cnsDataRefType.RevisionNo = GetMaxCnsDataRefTypeRevisionNo() + 1;                      
-					using (ITransaction scope = GetDb.GetTransaction())
+					using (ITransaction scope = db.GetTransaction())
 					{
-                        GetDb.Update(cnsDataRefType);
+                        db.Update(cnsDataRefType);
                         scope.Complete();
                         ret = true;
                     }
@@ -1784,11 +2274,12 @@ namespace Priya.InfoList.Data
 
         public static void DeleteCnsDataRefType(long cnsDataRefTypeId)
         {
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Delete<CNS_DataRefType>(cnsDataRefTypeId);
+                    db.Delete<CNS_DataRefType>(cnsDataRefTypeId);
                     scope.Complete();
                 }
             }
@@ -1825,16 +2316,17 @@ namespace Priya.InfoList.Data
         {
             CND_Data cndData = null;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if (orWhereClause.Trim().Length == 0)
                 {
-                    cndData = GetDb.SingleOrDefault<CND_Data>("SELECT * FROM CND_Data Where DataID=@0", dataID);
+                    cndData = db.SingleOrDefault<CND_Data>("SELECT * FROM CND_Data Where DataID=@0", dataID);
                 }
                 else
                 {
                     if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
-                    cndData = GetDb.SingleOrDefault<CND_Data>("SELECT * FROM CND_Data " + orWhereClause, orWhereArgs);
+                    cndData = db.SingleOrDefault<CND_Data>("SELECT * FROM CND_Data " + orWhereClause, orWhereArgs);
                 }
             }
             else
@@ -1886,10 +2378,11 @@ namespace Priya.InfoList.Data
         {
             long maxCndDataId = 0;
            
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                maxCndDataId = GetDb.Single<long>("SELECT MAX(DataID) AS MAX_ID FROM CND_Data " + whereClause, whereArgs);
+                maxCndDataId = db.Single<long>("SELECT MAX(DataID) AS MAX_ID FROM CND_Data " + whereClause, whereArgs);
             }
             else
             {
@@ -1932,9 +2425,10 @@ namespace Priya.InfoList.Data
         private static long GetMaxCndDataRevisionNo()
         {
             long maxCndDataRevisionNo = 0;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                maxCndDataRevisionNo = GetDb.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM CND_Data");
+                maxCndDataRevisionNo = db.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM CND_Data");
             }
             else
             {
@@ -1956,9 +2450,10 @@ namespace Priya.InfoList.Data
         private static DateTime GetCndDataLastUpdateDate()
         {
             DateTime CndDataLastUpdateDate = DateTime.MinValue;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                CndDataLastUpdateDate = GetDb.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM CND_Data");
+                CndDataLastUpdateDate = db.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM CND_Data");
             }
             else
             {
@@ -1984,10 +2479,11 @@ namespace Priya.InfoList.Data
         {
             long cndDataCount = 0;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                cndDataCount = GetDb.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM CND_Data " + whereClause, whereArgs);
+                cndDataCount = db.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM CND_Data " + whereClause, whereArgs);
             }
             else
             {
@@ -2036,11 +2532,12 @@ namespace Priya.InfoList.Data
         {
             List<CND_Data> allCndDataList = new List<CND_Data>();
           
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                allCndDataList = GetDb.Fetch<CND_Data>("SELECT * FROM CND_Data " + whereClause + " " + orderByClause, whereArgs);
+                allCndDataList = db.Fetch<CND_Data>("SELECT * FROM CND_Data " + whereClause + " " + orderByClause, whereArgs);
             }
             else
             {
@@ -2091,16 +2588,18 @@ namespace Priya.InfoList.Data
 
             long retTotalPages = 0;
             long retTotalItems = 0;
-            if (HaveDb == true)
+
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
                 if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
-                Page<CND_Data> pagedData = GetDb.Page<CND_Data>(pageNo, itemsPerPage, "SELECT * FROM CND_Data " + whereClause + " " + orderByClause, whereArgs);
+                Page<CND_Data> pagedData = db.Page<CND_Data>(pageNo, itemsPerPage, "SELECT * FROM CND_Data " + whereClause + " " + orderByClause, whereArgs);
                 totalPages = pagedData.TotalPages;
                 totalItems = pagedData.TotalItems;
                 if ((pagedData.Items.Count == 0) && (totalPages == 1))
                 {
-                    pagedData = GetDb.Page<CND_Data>(1, itemsPerPage, "SELECT * FROM CND_Data " + whereClause + " " + orderByClause, whereArgs);
+                    pagedData = db.Page<CND_Data>(1, itemsPerPage, "SELECT * FROM CND_Data " + whereClause + " " + orderByClause, whereArgs);
                     totalPages = pagedData.TotalPages;
                     totalItems = pagedData.TotalItems;
                 }
@@ -2156,18 +2655,19 @@ namespace Priya.InfoList.Data
             if (cndData.DataGUID != Guid.Empty) throw new Exception("Cannot Set the GUID for a Insert");
             cndData.DataGUID = Guid.NewGuid();
           
-			 UserInfo userInfo = OnGetUserInfo();
+			 UserInfo userInfo = GetUserInfo();
             cndData.UserID = userInfo.Id;
             cndData.UserGUID = userInfo.Guid;
             cndData.CreatedDate = DateTime.UtcNow;
             cndData.LastUpdateDate = DateTime.UtcNow;
             cndData.RevisionNo = GetMaxCndDataRevisionNo() + 1;
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Insert(cndData);
+                    db.Insert(cndData);
                     id = cndData.DataID;
                     scope.Complete();
                 }
@@ -2194,19 +2694,20 @@ namespace Priya.InfoList.Data
         {
             bool ret = false;
           
-			 UserInfo userInfo = OnGetUserInfo();
+			 UserInfo userInfo = GetUserInfo();
             cndData.UserID = userInfo.Id;
             cndData.UserGUID = userInfo.Guid;
             cndData.LastUpdateDate = DateTime.UtcNow;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 CND_Data cndDataExisting = GetCndData(cndData.DataID, "");
                 if (cndDataExisting != null)
                 {
 					cndData.RevisionNo = GetMaxCndDataRevisionNo() + 1;                      
-					using (ITransaction scope = GetDb.GetTransaction())
+					using (ITransaction scope = db.GetTransaction())
 					{
-                        GetDb.Update(cndData);
+                        db.Update(cndData);
                         scope.Complete();
                         ret = true;
                     }
@@ -2232,11 +2733,12 @@ namespace Priya.InfoList.Data
 
         public static void DeleteCndData(long cndDataId)
         {
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Delete<CND_Data>(cndDataId);
+                    db.Delete<CND_Data>(cndDataId);
                     scope.Complete();
                 }
             }
@@ -2265,6 +2767,465 @@ namespace Priya.InfoList.Data
 
         #endregion
   
+        #region LTD_InfoPage Query Related
+
+        #region Get
+
+        public static LTD_InfoPage GetLtdInfoPage(long infoPageID, string orWhereClause, params object[] orWhereArgs)
+        {
+            LTD_InfoPage ltdInfoPage = null;
+            
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if (orWhereClause.Trim().Length == 0)
+                {
+                    ltdInfoPage = db.SingleOrDefault<LTD_InfoPage>("SELECT * FROM LTD_InfoPage Where InfoPageID=@0", infoPageID);
+                }
+                else
+                {
+                    if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
+                    ltdInfoPage = db.SingleOrDefault<LTD_InfoPage>("SELECT * FROM LTD_InfoPage " + orWhereClause, orWhereArgs);
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoPage> fileLTDInfoPageList = FileSource.LoadLTDInfoPageData();
+                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLTDInfoPageList)
+                {
+                    bool found = true ;
+                    if (orWhereClause.Trim().Length > 0)
+                    {
+                        Dictionary<string, string> whereList = GetWhereList(orWhereClause, orWhereArgs);
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    found = false;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                found = false;
+                            }
+                        }
+                        if (found ==true)
+                        {
+                            ltdInfoPage = item.Value;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (item.Value.InfoPageID == infoPageID)
+                        {
+                            ltdInfoPage = item.Value;
+                            break;
+                        }
+                    }                    
+                }
+            }
+
+            return ltdInfoPage;
+        }
+
+        public static long GetMaxLtdInfoPageId(string whereClause, params object[] whereArgs)
+        {
+            long maxLtdInfoPageId = 0;
+           
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                maxLtdInfoPageId = db.Single<long>("SELECT MAX(InfoPageID) AS MAX_ID FROM LTD_InfoPage " + whereClause, whereArgs);
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoPage> fileLTDInfoPageList = FileSource.LoadLTDInfoPageData();
+                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLTDInfoPageList)
+                {
+                    bool found = true ;
+                    if (whereClause.Trim().Length > 0)
+                    {
+                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    found = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                found = false;
+                            }
+                        }
+                    }
+                    
+                    if (found ==true)
+                    {
+                        if (item.Value.InfoPageID >= maxLtdInfoPageId)
+                        {
+                            maxLtdInfoPageId = item.Value.InfoPageID;
+                        }
+                    }
+                }
+            }
+            return maxLtdInfoPageId;
+        }
+          
+        private static long GetMaxLtdInfoPageRevisionNo()
+        {
+            long maxLtdInfoPageRevisionNo = 0;
+            Database db = HaveDb();
+            if (db != null)
+            {
+                maxLtdInfoPageRevisionNo = db.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM LTD_InfoPage");
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoPage> fileLTDInfoPageList = FileSource.LoadLTDInfoPageData();
+                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLTDInfoPageList)
+                {
+                    if (item.Value.RevisionNo >= maxLtdInfoPageRevisionNo)
+                    {
+                        maxLtdInfoPageRevisionNo = item.Value.RevisionNo;
+                    }
+                }
+            }
+            return maxLtdInfoPageRevisionNo;
+        }
+          
+
+      
+        /*    
+        private static DateTime GetLtdInfoPageLastUpdateDate()
+        {
+            DateTime LtdInfoPageLastUpdateDate = DateTime.MinValue;
+            Database db = HaveDb();
+            if (db != null)
+            {
+                LtdInfoPageLastUpdateDate = db.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM LTD_InfoPage");
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoPage> fileLTDInfoPageList = FileSource.LoadLTDInfoPageData();
+                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLTDInfoPageList)
+                {
+                    //Less than zero(-1) - This instance is earlier than passed value.
+                    //Zero (0)	- This instance is the same as value. 
+                    //Greater than zero(1) - This instance is later than value. 
+                    if (item.Value.LastUpdateDate.CompareTo(LtdInfoPageLastUpdateDate) > 0)
+                    {
+                        LtdInfoPageLastUpdateDate = item.Value.LastUpdateDate;
+                    }
+                }
+            }
+            return LtdInfoPageLastUpdateDate;
+        }
+        */
+          
+		
+		/*
+        public static long GetLtdInfoPageCount(string whereClause, params object[] whereArgs)
+        {
+            long ltdInfoPageCount = 0;
+            
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                ltdInfoPageCount = db.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_InfoPage " + whereClause, whereArgs);
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoPage> fileLTDInfoPageList = FileSource.LoadLTDInfoPageData();
+                if (whereClause.Trim().Length > 0)
+                {
+                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                    Dictionary<Guid, LTD_InfoPage> filteredLTDInfoPageList = new Dictionary<Guid, LTD_InfoPage>();
+                    foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLTDInfoPageList)
+                    {
+                        bool add =true ;
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    add = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                add = false;
+                            }
+                        }
+                        if (add == true) filteredLTDInfoPageList.Add(item.Key, item.Value);
+                    }
+                    ltdInfoPageCount = filteredLTDInfoPageList.Count;
+                }
+                else
+                {
+                    ltdInfoPageCount = fileLTDInfoPageList.Count;
+                }
+            }
+            return ltdInfoPageCount;
+        }
+		*/
+
+        #endregion
+
+        #region Get All
+
+		/*
+        public static List<LTD_InfoPage> GetAllLtdInfoPage(string orderByClause, string whereClause, params object[] whereArgs)
+        {
+            List<LTD_InfoPage> allLtdInfoPageList = new List<LTD_InfoPage>();
+          
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                allLtdInfoPageList = db.Fetch<LTD_InfoPage>("SELECT * FROM LTD_InfoPage " + whereClause + " " + orderByClause, whereArgs);
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoPage> fileLtdInfoPageList = FileSource.LoadLTDInfoPageData();
+                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLtdInfoPageList)
+                {
+                    if (whereClause.Trim().Length > 0)
+                    {
+                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                        bool add =true ;
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    add = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                add = false;
+                            }
+                        }
+                        if (add == true) allLtdInfoPageList.Add(item.Value);
+                    }
+                    else
+                    {
+                        allLtdInfoPageList.Add(item.Value);
+                    }
+                }
+            }
+
+            return allLtdInfoPageList;
+        }
+		*/
+
+        #endregion
+
+        #region Get Paged
+
+        public static List<LTD_InfoPage> GetPagedLtdInfoPage(long pageNo, long itemsPerPage, out long totalPages, out long totalItems, string orderByClause, string whereClause, params object[] whereArgs)
+        {
+            List<LTD_InfoPage> pagedLtdInfoPageList = new List<LTD_InfoPage>();
+            if (pageNo <= 0) pageNo = 1;
+            if (itemsPerPage <= 0) itemsPerPage = 1;
+
+            long retTotalPages = 0;
+            long retTotalItems = 0;
+
+            Database db = HaveDb();
+            if (db != null)
+            {
+                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
+                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
+                Page<LTD_InfoPage> pagedData = db.Page<LTD_InfoPage>(pageNo, itemsPerPage, "SELECT * FROM LTD_InfoPage " + whereClause + " " + orderByClause, whereArgs);
+                totalPages = pagedData.TotalPages;
+                totalItems = pagedData.TotalItems;
+                if ((pagedData.Items.Count == 0) && (totalPages == 1))
+                {
+                    pagedData = db.Page<LTD_InfoPage>(1, itemsPerPage, "SELECT * FROM LTD_InfoPage " + whereClause + " " + orderByClause, whereArgs);
+                    totalPages = pagedData.TotalPages;
+                    totalItems = pagedData.TotalItems;
+                }
+                pagedLtdInfoPageList = pagedData.Items;
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoPage> fileLtdInfoPageList = FileSource.LoadLTDInfoPageData();
+                if (whereClause.Trim().Length > 0)
+                {
+                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
+                    Dictionary<Guid, LTD_InfoPage> filteredLTDInfoPageList = new Dictionary<Guid, LTD_InfoPage>();
+                    foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLtdInfoPageList)
+                    {
+                        bool add =true ;
+                        foreach (KeyValuePair<string, string> whereCol in whereList)
+                        {
+                            bool match = false;
+                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
+                            {
+                                if (match == false)
+                                {
+                                    add = false;
+                                    break;
+                                }
+                            }else
+                            {
+                                add = false;
+                            }
+                        }
+                        if (add == true) filteredLTDInfoPageList.Add(item.Key, item.Value);
+                    }
+                    pagedLtdInfoPageList = FileSource.GetPagedLTDInfoPage(filteredLTDInfoPageList, pageNo, itemsPerPage, out totalPages, out totalItems);
+                }
+                else
+                {
+                    pagedLtdInfoPageList = FileSource.GetPagedLTDInfoPage(fileLtdInfoPageList, pageNo, itemsPerPage, out totalPages, out totalItems);
+                }
+            }
+
+            retTotalPages = totalPages;
+            retTotalItems = totalItems;
+            return pagedLtdInfoPageList;
+        }
+
+        #endregion
+
+        #region Insert
+
+        public static long InsertLtdInfoPage(LTD_InfoPage ltdInfoPage)
+        {
+            long id = 0;
+            if (ltdInfoPage.InfoPageGUID != Guid.Empty) throw new Exception("Cannot Set the GUID for a Insert");
+            ltdInfoPage.InfoPageGUID = Guid.NewGuid();
+          
+			 UserInfo userInfo = GetUserInfo();
+            ltdInfoPage.UserID = userInfo.Id;
+            ltdInfoPage.UserGUID = userInfo.Guid;
+            ltdInfoPage.CreatedDate = DateTime.UtcNow;
+            ltdInfoPage.LastUpdateDate = DateTime.UtcNow;
+            ltdInfoPage.RevisionNo = GetMaxLtdInfoPageRevisionNo() + 1;
+
+            Database db = HaveDb();
+            if (db != null)
+            {
+                using (ITransaction scope = db.GetTransaction())
+                {
+                    db.Insert(ltdInfoPage);
+                    id = ltdInfoPage.InfoPageID;
+                    scope.Complete();
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoPage> fileLtdInfoPageList = FileSource.LoadLTDInfoPageData();
+	  			ltdInfoPage.InfoPageID = GetMaxLtdInfoPageId("") + 1;
+  
+                fileLtdInfoPageList.Add(ltdInfoPage.InfoPageGUID, ltdInfoPage);
+                FileSource.SaveLTDInfoPageData(fileLtdInfoPageList);
+
+                id = ltdInfoPage.InfoPageID;
+            }
+
+            return id;
+        }
+
+        #endregion
+
+        #region Update
+
+        public static bool UpdateLtdInfoPage(LTD_InfoPage ltdInfoPage)
+        {
+            bool ret = false;
+          
+			 UserInfo userInfo = GetUserInfo();
+            ltdInfoPage.UserID = userInfo.Id;
+            ltdInfoPage.UserGUID = userInfo.Guid;
+            ltdInfoPage.LastUpdateDate = DateTime.UtcNow;
+            Database db = HaveDb();
+            if (db != null)
+            {
+                LTD_InfoPage ltdInfoPageExisting = GetLtdInfoPage(ltdInfoPage.InfoPageID, "");
+                if (ltdInfoPageExisting != null)
+                {
+					ltdInfoPage.RevisionNo = GetMaxLtdInfoPageRevisionNo() + 1;                      
+					using (ITransaction scope = db.GetTransaction())
+					{
+                        db.Update(ltdInfoPage);
+                        scope.Complete();
+                        ret = true;
+                    }
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoPage> fileLtdInfoPageList = FileSource.LoadLTDInfoPageData();                
+                if (fileLtdInfoPageList.ContainsKey(ltdInfoPage.InfoPageGUID) == true)
+                {
+                    fileLtdInfoPageList.Remove(ltdInfoPage.InfoPageGUID);
+                    fileLtdInfoPageList.Add(ltdInfoPage.InfoPageGUID, ltdInfoPage);
+                    FileSource.SaveLTDInfoPageData(fileLtdInfoPageList);
+                }
+            }
+
+            return ret;
+        }
+
+        #endregion
+
+        #region Delete
+
+        public static void DeleteLtdInfoPage(long ltdInfoPageId)
+        {
+            Database db = HaveDb();
+            if (db != null)
+            {
+                using (ITransaction scope = db.GetTransaction())
+                {
+                    db.Delete<LTD_InfoPage>(ltdInfoPageId);
+                    scope.Complete();
+                }
+            }
+            else
+            {
+                Dictionary<Guid, LTD_InfoPage> fileLtdInfoPageList = FileSource.LoadLTDInfoPageData();
+                Guid ltdInfoPageGuidToRemove = Guid.Empty;
+                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLtdInfoPageList)
+                {
+                    if (item.Value.InfoPageID == ltdInfoPageId)
+                    {
+                        ltdInfoPageGuidToRemove = item.Key;
+                        break;
+                    }
+                }
+                if (ltdInfoPageGuidToRemove != Guid.Empty)
+                {
+                    fileLtdInfoPageList.Remove(ltdInfoPageGuidToRemove);
+                    FileSource.SaveLTDInfoPageData(fileLtdInfoPageList);
+                }
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+  
         #region SYS_Version Query Related
 
         #region Get
@@ -2273,16 +3234,17 @@ namespace Priya.InfoList.Data
         {
             SYS_Version sysVersion = null;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if (orWhereClause.Trim().Length == 0)
                 {
-                    sysVersion = GetDb.SingleOrDefault<SYS_Version>("SELECT * FROM SYS_Version Where VersionNo=@0", versionNo);
+                    sysVersion = db.SingleOrDefault<SYS_Version>("SELECT * FROM SYS_Version Where VersionNo=@0", versionNo);
                 }
                 else
                 {
                     if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
-                    sysVersion = GetDb.SingleOrDefault<SYS_Version>("SELECT * FROM SYS_Version " + orWhereClause, orWhereArgs);
+                    sysVersion = db.SingleOrDefault<SYS_Version>("SELECT * FROM SYS_Version " + orWhereClause, orWhereArgs);
                 }
             }
             else
@@ -2334,10 +3296,11 @@ namespace Priya.InfoList.Data
         {
             double maxSysVersionId = 0;
            
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                maxSysVersionId = GetDb.Single<long>("SELECT MAX(VersionNo) AS MAX_ID FROM SYS_Version " + whereClause, whereArgs);
+                maxSysVersionId = db.Single<long>("SELECT MAX(VersionNo) AS MAX_ID FROM SYS_Version " + whereClause, whereArgs);
             }
             else
             {
@@ -2385,10 +3348,11 @@ namespace Priya.InfoList.Data
         {
             long sysVersionCount = 0;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                sysVersionCount = GetDb.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM SYS_Version " + whereClause, whereArgs);
+                sysVersionCount = db.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM SYS_Version " + whereClause, whereArgs);
             }
             else
             {
@@ -2437,11 +3401,12 @@ namespace Priya.InfoList.Data
         {
             List<SYS_Version> allSysVersionList = new List<SYS_Version>();
           
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                                 
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                allSysVersionList = GetDb.Fetch<SYS_Version>("SELECT * FROM SYS_Version " + whereClause + " " + orderByClause, whereArgs);
+                allSysVersionList = db.Fetch<SYS_Version>("SELECT * FROM SYS_Version " + whereClause + " " + orderByClause, whereArgs);
             }
             else
             {
@@ -2492,16 +3457,18 @@ namespace Priya.InfoList.Data
 
             long retTotalPages = 0;
             long retTotalItems = 0;
-            if (HaveDb == true)
+
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
                                 
-                Page<SYS_Version> pagedData = GetDb.Page<SYS_Version>(pageNo, itemsPerPage, "SELECT * FROM SYS_Version " + whereClause + " " + orderByClause, whereArgs);
+                Page<SYS_Version> pagedData = db.Page<SYS_Version>(pageNo, itemsPerPage, "SELECT * FROM SYS_Version " + whereClause + " " + orderByClause, whereArgs);
                 totalPages = pagedData.TotalPages;
                 totalItems = pagedData.TotalItems;
                 if ((pagedData.Items.Count == 0) && (totalPages == 1))
                 {
-                    pagedData = GetDb.Page<SYS_Version>(1, itemsPerPage, "SELECT * FROM SYS_Version " + whereClause + " " + orderByClause, whereArgs);
+                    pagedData = db.Page<SYS_Version>(1, itemsPerPage, "SELECT * FROM SYS_Version " + whereClause + " " + orderByClause, whereArgs);
                     totalPages = pagedData.TotalPages;
                     totalItems = pagedData.TotalItems;
                 }
@@ -2558,11 +3525,12 @@ namespace Priya.InfoList.Data
             sysVersion.VersionNoGUID = Guid.NewGuid();
 
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Insert(sysVersion);
+                    db.Insert(sysVersion);
                     id = sysVersion.VersionNo;
                     scope.Complete();
                 }
@@ -2587,15 +3555,16 @@ namespace Priya.InfoList.Data
         public static bool UpdateSysVersion(SYS_Version sysVersion)
         {
             bool ret = false;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 SYS_Version sysVersionExisting = GetSysVersion(sysVersion.VersionNo, "");
                 if (sysVersionExisting != null)
                 {
                       
-					using (ITransaction scope = GetDb.GetTransaction())
+					using (ITransaction scope = db.GetTransaction())
 					{
-                        GetDb.Update(sysVersion);
+                        db.Update(sysVersion);
                         scope.Complete();
                         ret = true;
                     }
@@ -2621,11 +3590,12 @@ namespace Priya.InfoList.Data
 
         public static void DeleteSysVersion(long sysVersionId)
         {
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Delete<SYS_Version>(sysVersionId);
+                    db.Delete<SYS_Version>(sysVersionId);
                     scope.Complete();
                 }
             }
@@ -2654,902 +3624,6 @@ namespace Priya.InfoList.Data
 
         #endregion
   
-        #region LTD_InfoDetail Query Related
-
-        #region Get
-
-        public static LTD_InfoDetail GetLtdInfoDetail(long infoDetailID, string orWhereClause, params object[] orWhereArgs)
-        {
-            LTD_InfoDetail ltdInfoDetail = null;
-            
-            if (HaveDb == true)
-            {
-                if (orWhereClause.Trim().Length == 0)
-                {
-                    ltdInfoDetail = GetDb.SingleOrDefault<LTD_InfoDetail>("SELECT * FROM LTD_InfoDetail Where InfoDetailID=@0", infoDetailID);
-                }
-                else
-                {
-                    if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
-                    ltdInfoDetail = GetDb.SingleOrDefault<LTD_InfoDetail>("SELECT * FROM LTD_InfoDetail " + orWhereClause, orWhereArgs);
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoDetail> fileLTDInfoDetailList = FileSource.LoadLTDInfoDetailData();
-                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLTDInfoDetailList)
-                {
-                    bool found = true ;
-                    if (orWhereClause.Trim().Length > 0)
-                    {
-                        Dictionary<string, string> whereList = GetWhereList(orWhereClause, orWhereArgs);
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    found = false;
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                found = false;
-                            }
-                        }
-                        if (found ==true)
-                        {
-                            ltdInfoDetail = item.Value;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        if (item.Value.InfoDetailID == infoDetailID)
-                        {
-                            ltdInfoDetail = item.Value;
-                            break;
-                        }
-                    }                    
-                }
-            }
-
-            return ltdInfoDetail;
-        }
-
-        public static long GetMaxLtdInfoDetailId(string whereClause, params object[] whereArgs)
-        {
-            long maxLtdInfoDetailId = 0;
-           
-            if (HaveDb == true)
-            {
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                maxLtdInfoDetailId = GetDb.Single<long>("SELECT MAX(InfoDetailID) AS MAX_ID FROM LTD_InfoDetail " + whereClause, whereArgs);
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoDetail> fileLTDInfoDetailList = FileSource.LoadLTDInfoDetailData();
-                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLTDInfoDetailList)
-                {
-                    bool found = true ;
-                    if (whereClause.Trim().Length > 0)
-                    {
-                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    found = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                found = false;
-                            }
-                        }
-                    }
-                    
-                    if (found ==true)
-                    {
-                        if (item.Value.InfoDetailID >= maxLtdInfoDetailId)
-                        {
-                            maxLtdInfoDetailId = item.Value.InfoDetailID;
-                        }
-                    }
-                }
-            }
-            return maxLtdInfoDetailId;
-        }
-          
-        private static long GetMaxLtdInfoDetailRevisionNo()
-        {
-            long maxLtdInfoDetailRevisionNo = 0;
-            if (HaveDb == true)
-            {
-                maxLtdInfoDetailRevisionNo = GetDb.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM LTD_InfoDetail");
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoDetail> fileLTDInfoDetailList = FileSource.LoadLTDInfoDetailData();
-                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLTDInfoDetailList)
-                {
-                    if (item.Value.RevisionNo >= maxLtdInfoDetailRevisionNo)
-                    {
-                        maxLtdInfoDetailRevisionNo = item.Value.RevisionNo;
-                    }
-                }
-            }
-            return maxLtdInfoDetailRevisionNo;
-        }
-          
-
-      
-        /*    
-        private static DateTime GetLtdInfoDetailLastUpdateDate()
-        {
-            DateTime LtdInfoDetailLastUpdateDate = DateTime.MinValue;
-            if (HaveDb == true)
-            {
-                LtdInfoDetailLastUpdateDate = GetDb.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM LTD_InfoDetail");
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoDetail> fileLTDInfoDetailList = FileSource.LoadLTDInfoDetailData();
-                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLTDInfoDetailList)
-                {
-                    //Less than zero(-1) - This instance is earlier than passed value.
-                    //Zero (0)	- This instance is the same as value. 
-                    //Greater than zero(1) - This instance is later than value. 
-                    if (item.Value.LastUpdateDate.CompareTo(LtdInfoDetailLastUpdateDate) > 0)
-                    {
-                        LtdInfoDetailLastUpdateDate = item.Value.LastUpdateDate;
-                    }
-                }
-            }
-            return LtdInfoDetailLastUpdateDate;
-        }
-        */
-          
-		
-		/*
-        public static long GetLtdInfoDetailCount(string whereClause, params object[] whereArgs)
-        {
-            long ltdInfoDetailCount = 0;
-            
-            if (HaveDb == true)
-            {
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                ltdInfoDetailCount = GetDb.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_InfoDetail " + whereClause, whereArgs);
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoDetail> fileLTDInfoDetailList = FileSource.LoadLTDInfoDetailData();
-                if (whereClause.Trim().Length > 0)
-                {
-                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                    Dictionary<Guid, LTD_InfoDetail> filteredLTDInfoDetailList = new Dictionary<Guid, LTD_InfoDetail>();
-                    foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLTDInfoDetailList)
-                    {
-                        bool add =true ;
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    add = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                add = false;
-                            }
-                        }
-                        if (add == true) filteredLTDInfoDetailList.Add(item.Key, item.Value);
-                    }
-                    ltdInfoDetailCount = filteredLTDInfoDetailList.Count;
-                }
-                else
-                {
-                    ltdInfoDetailCount = fileLTDInfoDetailList.Count;
-                }
-            }
-            return ltdInfoDetailCount;
-        }
-		*/
-
-        #endregion
-
-        #region Get All
-
-		/*
-        public static List<LTD_InfoDetail> GetAllLtdInfoDetail(string orderByClause, string whereClause, params object[] whereArgs)
-        {
-            List<LTD_InfoDetail> allLtdInfoDetailList = new List<LTD_InfoDetail>();
-          
-            if (HaveDb == true)
-            {
-                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                allLtdInfoDetailList = GetDb.Fetch<LTD_InfoDetail>("SELECT * FROM LTD_InfoDetail " + whereClause + " " + orderByClause, whereArgs);
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoDetail> fileLtdInfoDetailList = FileSource.LoadLTDInfoDetailData();
-                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLtdInfoDetailList)
-                {
-                    if (whereClause.Trim().Length > 0)
-                    {
-                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                        bool add =true ;
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    add = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                add = false;
-                            }
-                        }
-                        if (add == true) allLtdInfoDetailList.Add(item.Value);
-                    }
-                    else
-                    {
-                        allLtdInfoDetailList.Add(item.Value);
-                    }
-                }
-            }
-
-            return allLtdInfoDetailList;
-        }
-		*/
-
-        #endregion
-
-        #region Get Paged
-
-        public static List<LTD_InfoDetail> GetPagedLtdInfoDetail(long pageNo, long itemsPerPage, out long totalPages, out long totalItems, string orderByClause, string whereClause, params object[] whereArgs)
-        {
-            List<LTD_InfoDetail> pagedLtdInfoDetailList = new List<LTD_InfoDetail>();
-            if (pageNo <= 0) pageNo = 1;
-            if (itemsPerPage <= 0) itemsPerPage = 1;
-
-            long retTotalPages = 0;
-            long retTotalItems = 0;
-            if (HaveDb == true)
-            {
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
-                Page<LTD_InfoDetail> pagedData = GetDb.Page<LTD_InfoDetail>(pageNo, itemsPerPage, "SELECT * FROM LTD_InfoDetail " + whereClause + " " + orderByClause, whereArgs);
-                totalPages = pagedData.TotalPages;
-                totalItems = pagedData.TotalItems;
-                if ((pagedData.Items.Count == 0) && (totalPages == 1))
-                {
-                    pagedData = GetDb.Page<LTD_InfoDetail>(1, itemsPerPage, "SELECT * FROM LTD_InfoDetail " + whereClause + " " + orderByClause, whereArgs);
-                    totalPages = pagedData.TotalPages;
-                    totalItems = pagedData.TotalItems;
-                }
-                pagedLtdInfoDetailList = pagedData.Items;
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoDetail> fileLtdInfoDetailList = FileSource.LoadLTDInfoDetailData();
-                if (whereClause.Trim().Length > 0)
-                {
-                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                    Dictionary<Guid, LTD_InfoDetail> filteredLTDInfoDetailList = new Dictionary<Guid, LTD_InfoDetail>();
-                    foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLtdInfoDetailList)
-                    {
-                        bool add =true ;
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    add = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                add = false;
-                            }
-                        }
-                        if (add == true) filteredLTDInfoDetailList.Add(item.Key, item.Value);
-                    }
-                    pagedLtdInfoDetailList = FileSource.GetPagedLTDInfoDetail(filteredLTDInfoDetailList, pageNo, itemsPerPage, out totalPages, out totalItems);
-                }
-                else
-                {
-                    pagedLtdInfoDetailList = FileSource.GetPagedLTDInfoDetail(fileLtdInfoDetailList, pageNo, itemsPerPage, out totalPages, out totalItems);
-                }
-            }
-
-            retTotalPages = totalPages;
-            retTotalItems = totalItems;
-            return pagedLtdInfoDetailList;
-        }
-
-        #endregion
-
-        #region Insert
-
-        public static long InsertLtdInfoDetail(LTD_InfoDetail ltdInfoDetail)
-        {
-            long id = 0;
-            if (ltdInfoDetail.InfoDetailGUID != Guid.Empty) throw new Exception("Cannot Set the GUID for a Insert");
-            ltdInfoDetail.InfoDetailGUID = Guid.NewGuid();
-          
-			 UserInfo userInfo = OnGetUserInfo();
-            ltdInfoDetail.UserID = userInfo.Id;
-            ltdInfoDetail.UserGUID = userInfo.Guid;
-            ltdInfoDetail.CreatedDate = DateTime.UtcNow;
-            ltdInfoDetail.LastUpdateDate = DateTime.UtcNow;
-            ltdInfoDetail.RevisionNo = GetMaxLtdInfoDetailRevisionNo() + 1;
-
-            if (HaveDb == true)
-            {
-                using (ITransaction scope = GetDb.GetTransaction())
-                {
-                    GetDb.Insert(ltdInfoDetail);
-                    id = ltdInfoDetail.InfoDetailID;
-                    scope.Complete();
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoDetail> fileLtdInfoDetailList = FileSource.LoadLTDInfoDetailData();
-	  			ltdInfoDetail.InfoDetailID = GetMaxLtdInfoDetailId("") + 1;
-  
-                fileLtdInfoDetailList.Add(ltdInfoDetail.InfoDetailGUID, ltdInfoDetail);
-                FileSource.SaveLTDInfoDetailData(fileLtdInfoDetailList);
-
-                id = ltdInfoDetail.InfoDetailID;
-            }
-
-            return id;
-        }
-
-        #endregion
-
-        #region Update
-
-        public static bool UpdateLtdInfoDetail(LTD_InfoDetail ltdInfoDetail)
-        {
-            bool ret = false;
-          
-			 UserInfo userInfo = OnGetUserInfo();
-            ltdInfoDetail.UserID = userInfo.Id;
-            ltdInfoDetail.UserGUID = userInfo.Guid;
-            ltdInfoDetail.LastUpdateDate = DateTime.UtcNow;
-            if (HaveDb == true)
-            {
-                LTD_InfoDetail ltdInfoDetailExisting = GetLtdInfoDetail(ltdInfoDetail.InfoDetailID, "");
-                if (ltdInfoDetailExisting != null)
-                {
-					ltdInfoDetail.RevisionNo = GetMaxLtdInfoDetailRevisionNo() + 1;                      
-					using (ITransaction scope = GetDb.GetTransaction())
-					{
-                        GetDb.Update(ltdInfoDetail);
-                        scope.Complete();
-                        ret = true;
-                    }
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoDetail> fileLtdInfoDetailList = FileSource.LoadLTDInfoDetailData();                
-                if (fileLtdInfoDetailList.ContainsKey(ltdInfoDetail.InfoDetailGUID) == true)
-                {
-                    fileLtdInfoDetailList.Remove(ltdInfoDetail.InfoDetailGUID);
-                    fileLtdInfoDetailList.Add(ltdInfoDetail.InfoDetailGUID, ltdInfoDetail);
-                    FileSource.SaveLTDInfoDetailData(fileLtdInfoDetailList);
-                }
-            }
-
-            return ret;
-        }
-
-        #endregion
-
-        #region Delete
-
-        public static void DeleteLtdInfoDetail(long ltdInfoDetailId)
-        {
-            if (HaveDb == true)
-            {
-                using (ITransaction scope = GetDb.GetTransaction())
-                {
-                    GetDb.Delete<LTD_InfoDetail>(ltdInfoDetailId);
-                    scope.Complete();
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoDetail> fileLtdInfoDetailList = FileSource.LoadLTDInfoDetailData();
-                Guid ltdInfoDetailGuidToRemove = Guid.Empty;
-                foreach (KeyValuePair<Guid, LTD_InfoDetail> item in fileLtdInfoDetailList)
-                {
-                    if (item.Value.InfoDetailID == ltdInfoDetailId)
-                    {
-                        ltdInfoDetailGuidToRemove = item.Key;
-                        break;
-                    }
-                }
-                if (ltdInfoDetailGuidToRemove != Guid.Empty)
-                {
-                    fileLtdInfoDetailList.Remove(ltdInfoDetailGuidToRemove);
-                    FileSource.SaveLTDInfoDetailData(fileLtdInfoDetailList);
-                }
-            }
-
-        }
-
-        #endregion
-
-        #endregion
-  
-        #region LTD_InfoPage Query Related
-
-        #region Get
-
-        public static LTD_InfoPage GetLtdInfoPage(long infoPageID, string orWhereClause, params object[] orWhereArgs)
-        {
-            LTD_InfoPage ltdInfoPage = null;
-            
-            if (HaveDb == true)
-            {
-                if (orWhereClause.Trim().Length == 0)
-                {
-                    ltdInfoPage = GetDb.SingleOrDefault<LTD_InfoPage>("SELECT * FROM LTD_InfoPage Where InfoPageID=@0", infoPageID);
-                }
-                else
-                {
-                    if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
-                    ltdInfoPage = GetDb.SingleOrDefault<LTD_InfoPage>("SELECT * FROM LTD_InfoPage " + orWhereClause, orWhereArgs);
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoPage> fileLTDInfoPageList = FileSource.LoadLTDInfoPageData();
-                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLTDInfoPageList)
-                {
-                    bool found = true ;
-                    if (orWhereClause.Trim().Length > 0)
-                    {
-                        Dictionary<string, string> whereList = GetWhereList(orWhereClause, orWhereArgs);
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    found = false;
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                found = false;
-                            }
-                        }
-                        if (found ==true)
-                        {
-                            ltdInfoPage = item.Value;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        if (item.Value.InfoPageID == infoPageID)
-                        {
-                            ltdInfoPage = item.Value;
-                            break;
-                        }
-                    }                    
-                }
-            }
-
-            return ltdInfoPage;
-        }
-
-        public static long GetMaxLtdInfoPageId(string whereClause, params object[] whereArgs)
-        {
-            long maxLtdInfoPageId = 0;
-           
-            if (HaveDb == true)
-            {
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                maxLtdInfoPageId = GetDb.Single<long>("SELECT MAX(InfoPageID) AS MAX_ID FROM LTD_InfoPage " + whereClause, whereArgs);
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoPage> fileLTDInfoPageList = FileSource.LoadLTDInfoPageData();
-                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLTDInfoPageList)
-                {
-                    bool found = true ;
-                    if (whereClause.Trim().Length > 0)
-                    {
-                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    found = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                found = false;
-                            }
-                        }
-                    }
-                    
-                    if (found ==true)
-                    {
-                        if (item.Value.InfoPageID >= maxLtdInfoPageId)
-                        {
-                            maxLtdInfoPageId = item.Value.InfoPageID;
-                        }
-                    }
-                }
-            }
-            return maxLtdInfoPageId;
-        }
-          
-        private static long GetMaxLtdInfoPageRevisionNo()
-        {
-            long maxLtdInfoPageRevisionNo = 0;
-            if (HaveDb == true)
-            {
-                maxLtdInfoPageRevisionNo = GetDb.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM LTD_InfoPage");
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoPage> fileLTDInfoPageList = FileSource.LoadLTDInfoPageData();
-                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLTDInfoPageList)
-                {
-                    if (item.Value.RevisionNo >= maxLtdInfoPageRevisionNo)
-                    {
-                        maxLtdInfoPageRevisionNo = item.Value.RevisionNo;
-                    }
-                }
-            }
-            return maxLtdInfoPageRevisionNo;
-        }
-          
-
-      
-        /*    
-        private static DateTime GetLtdInfoPageLastUpdateDate()
-        {
-            DateTime LtdInfoPageLastUpdateDate = DateTime.MinValue;
-            if (HaveDb == true)
-            {
-                LtdInfoPageLastUpdateDate = GetDb.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM LTD_InfoPage");
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoPage> fileLTDInfoPageList = FileSource.LoadLTDInfoPageData();
-                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLTDInfoPageList)
-                {
-                    //Less than zero(-1) - This instance is earlier than passed value.
-                    //Zero (0)	- This instance is the same as value. 
-                    //Greater than zero(1) - This instance is later than value. 
-                    if (item.Value.LastUpdateDate.CompareTo(LtdInfoPageLastUpdateDate) > 0)
-                    {
-                        LtdInfoPageLastUpdateDate = item.Value.LastUpdateDate;
-                    }
-                }
-            }
-            return LtdInfoPageLastUpdateDate;
-        }
-        */
-          
-		
-		/*
-        public static long GetLtdInfoPageCount(string whereClause, params object[] whereArgs)
-        {
-            long ltdInfoPageCount = 0;
-            
-            if (HaveDb == true)
-            {
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                ltdInfoPageCount = GetDb.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_InfoPage " + whereClause, whereArgs);
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoPage> fileLTDInfoPageList = FileSource.LoadLTDInfoPageData();
-                if (whereClause.Trim().Length > 0)
-                {
-                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                    Dictionary<Guid, LTD_InfoPage> filteredLTDInfoPageList = new Dictionary<Guid, LTD_InfoPage>();
-                    foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLTDInfoPageList)
-                    {
-                        bool add =true ;
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    add = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                add = false;
-                            }
-                        }
-                        if (add == true) filteredLTDInfoPageList.Add(item.Key, item.Value);
-                    }
-                    ltdInfoPageCount = filteredLTDInfoPageList.Count;
-                }
-                else
-                {
-                    ltdInfoPageCount = fileLTDInfoPageList.Count;
-                }
-            }
-            return ltdInfoPageCount;
-        }
-		*/
-
-        #endregion
-
-        #region Get All
-
-		/*
-        public static List<LTD_InfoPage> GetAllLtdInfoPage(string orderByClause, string whereClause, params object[] whereArgs)
-        {
-            List<LTD_InfoPage> allLtdInfoPageList = new List<LTD_InfoPage>();
-          
-            if (HaveDb == true)
-            {
-                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                allLtdInfoPageList = GetDb.Fetch<LTD_InfoPage>("SELECT * FROM LTD_InfoPage " + whereClause + " " + orderByClause, whereArgs);
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoPage> fileLtdInfoPageList = FileSource.LoadLTDInfoPageData();
-                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLtdInfoPageList)
-                {
-                    if (whereClause.Trim().Length > 0)
-                    {
-                        Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                        bool add =true ;
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    add = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                add = false;
-                            }
-                        }
-                        if (add == true) allLtdInfoPageList.Add(item.Value);
-                    }
-                    else
-                    {
-                        allLtdInfoPageList.Add(item.Value);
-                    }
-                }
-            }
-
-            return allLtdInfoPageList;
-        }
-		*/
-
-        #endregion
-
-        #region Get Paged
-
-        public static List<LTD_InfoPage> GetPagedLtdInfoPage(long pageNo, long itemsPerPage, out long totalPages, out long totalItems, string orderByClause, string whereClause, params object[] whereArgs)
-        {
-            List<LTD_InfoPage> pagedLtdInfoPageList = new List<LTD_InfoPage>();
-            if (pageNo <= 0) pageNo = 1;
-            if (itemsPerPage <= 0) itemsPerPage = 1;
-
-            long retTotalPages = 0;
-            long retTotalItems = 0;
-            if (HaveDb == true)
-            {
-                if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
-                Page<LTD_InfoPage> pagedData = GetDb.Page<LTD_InfoPage>(pageNo, itemsPerPage, "SELECT * FROM LTD_InfoPage " + whereClause + " " + orderByClause, whereArgs);
-                totalPages = pagedData.TotalPages;
-                totalItems = pagedData.TotalItems;
-                if ((pagedData.Items.Count == 0) && (totalPages == 1))
-                {
-                    pagedData = GetDb.Page<LTD_InfoPage>(1, itemsPerPage, "SELECT * FROM LTD_InfoPage " + whereClause + " " + orderByClause, whereArgs);
-                    totalPages = pagedData.TotalPages;
-                    totalItems = pagedData.TotalItems;
-                }
-                pagedLtdInfoPageList = pagedData.Items;
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoPage> fileLtdInfoPageList = FileSource.LoadLTDInfoPageData();
-                if (whereClause.Trim().Length > 0)
-                {
-                    Dictionary<string, string> whereList = GetWhereList(whereClause, whereArgs);
-                    Dictionary<Guid, LTD_InfoPage> filteredLTDInfoPageList = new Dictionary<Guid, LTD_InfoPage>();
-                    foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLtdInfoPageList)
-                    {
-                        bool add =true ;
-                        foreach (KeyValuePair<string, string> whereCol in whereList)
-                        {
-                            bool match = false;
-                            if (item.Value.HaveColumn(whereCol.Key, whereCol.Value, out match) == true)
-                            {
-                                if (match == false)
-                                {
-                                    add = false;
-                                    break;
-                                }
-                            }else
-                            {
-                                add = false;
-                            }
-                        }
-                        if (add == true) filteredLTDInfoPageList.Add(item.Key, item.Value);
-                    }
-                    pagedLtdInfoPageList = FileSource.GetPagedLTDInfoPage(filteredLTDInfoPageList, pageNo, itemsPerPage, out totalPages, out totalItems);
-                }
-                else
-                {
-                    pagedLtdInfoPageList = FileSource.GetPagedLTDInfoPage(fileLtdInfoPageList, pageNo, itemsPerPage, out totalPages, out totalItems);
-                }
-            }
-
-            retTotalPages = totalPages;
-            retTotalItems = totalItems;
-            return pagedLtdInfoPageList;
-        }
-
-        #endregion
-
-        #region Insert
-
-        public static long InsertLtdInfoPage(LTD_InfoPage ltdInfoPage)
-        {
-            long id = 0;
-            if (ltdInfoPage.InfoPageGUID != Guid.Empty) throw new Exception("Cannot Set the GUID for a Insert");
-            ltdInfoPage.InfoPageGUID = Guid.NewGuid();
-          
-			 UserInfo userInfo = OnGetUserInfo();
-            ltdInfoPage.UserID = userInfo.Id;
-            ltdInfoPage.UserGUID = userInfo.Guid;
-            ltdInfoPage.CreatedDate = DateTime.UtcNow;
-            ltdInfoPage.LastUpdateDate = DateTime.UtcNow;
-            ltdInfoPage.RevisionNo = GetMaxLtdInfoPageRevisionNo() + 1;
-
-            if (HaveDb == true)
-            {
-                using (ITransaction scope = GetDb.GetTransaction())
-                {
-                    GetDb.Insert(ltdInfoPage);
-                    id = ltdInfoPage.InfoPageID;
-                    scope.Complete();
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoPage> fileLtdInfoPageList = FileSource.LoadLTDInfoPageData();
-	  			ltdInfoPage.InfoPageID = GetMaxLtdInfoPageId("") + 1;
-  
-                fileLtdInfoPageList.Add(ltdInfoPage.InfoPageGUID, ltdInfoPage);
-                FileSource.SaveLTDInfoPageData(fileLtdInfoPageList);
-
-                id = ltdInfoPage.InfoPageID;
-            }
-
-            return id;
-        }
-
-        #endregion
-
-        #region Update
-
-        public static bool UpdateLtdInfoPage(LTD_InfoPage ltdInfoPage)
-        {
-            bool ret = false;
-          
-			 UserInfo userInfo = OnGetUserInfo();
-            ltdInfoPage.UserID = userInfo.Id;
-            ltdInfoPage.UserGUID = userInfo.Guid;
-            ltdInfoPage.LastUpdateDate = DateTime.UtcNow;
-            if (HaveDb == true)
-            {
-                LTD_InfoPage ltdInfoPageExisting = GetLtdInfoPage(ltdInfoPage.InfoPageID, "");
-                if (ltdInfoPageExisting != null)
-                {
-					ltdInfoPage.RevisionNo = GetMaxLtdInfoPageRevisionNo() + 1;                      
-					using (ITransaction scope = GetDb.GetTransaction())
-					{
-                        GetDb.Update(ltdInfoPage);
-                        scope.Complete();
-                        ret = true;
-                    }
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoPage> fileLtdInfoPageList = FileSource.LoadLTDInfoPageData();                
-                if (fileLtdInfoPageList.ContainsKey(ltdInfoPage.InfoPageGUID) == true)
-                {
-                    fileLtdInfoPageList.Remove(ltdInfoPage.InfoPageGUID);
-                    fileLtdInfoPageList.Add(ltdInfoPage.InfoPageGUID, ltdInfoPage);
-                    FileSource.SaveLTDInfoPageData(fileLtdInfoPageList);
-                }
-            }
-
-            return ret;
-        }
-
-        #endregion
-
-        #region Delete
-
-        public static void DeleteLtdInfoPage(long ltdInfoPageId)
-        {
-            if (HaveDb == true)
-            {
-                using (ITransaction scope = GetDb.GetTransaction())
-                {
-                    GetDb.Delete<LTD_InfoPage>(ltdInfoPageId);
-                    scope.Complete();
-                }
-            }
-            else
-            {
-                Dictionary<Guid, LTD_InfoPage> fileLtdInfoPageList = FileSource.LoadLTDInfoPageData();
-                Guid ltdInfoPageGuidToRemove = Guid.Empty;
-                foreach (KeyValuePair<Guid, LTD_InfoPage> item in fileLtdInfoPageList)
-                {
-                    if (item.Value.InfoPageID == ltdInfoPageId)
-                    {
-                        ltdInfoPageGuidToRemove = item.Key;
-                        break;
-                    }
-                }
-                if (ltdInfoPageGuidToRemove != Guid.Empty)
-                {
-                    fileLtdInfoPageList.Remove(ltdInfoPageGuidToRemove);
-                    FileSource.SaveLTDInfoPageData(fileLtdInfoPageList);
-                }
-            }
-
-        }
-
-        #endregion
-
-        #endregion
-  
         #region LTD_Subscriber Query Related
 
         #region Get
@@ -3558,16 +3632,17 @@ namespace Priya.InfoList.Data
         {
             LTD_Subscriber ltdSubscriber = null;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if (orWhereClause.Trim().Length == 0)
                 {
-                    ltdSubscriber = GetDb.SingleOrDefault<LTD_Subscriber>("SELECT * FROM LTD_Subscriber Where SubscriberID=@0", subscriberID);
+                    ltdSubscriber = db.SingleOrDefault<LTD_Subscriber>("SELECT * FROM LTD_Subscriber Where SubscriberID=@0", subscriberID);
                 }
                 else
                 {
                     if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
-                    ltdSubscriber = GetDb.SingleOrDefault<LTD_Subscriber>("SELECT * FROM LTD_Subscriber " + orWhereClause, orWhereArgs);
+                    ltdSubscriber = db.SingleOrDefault<LTD_Subscriber>("SELECT * FROM LTD_Subscriber " + orWhereClause, orWhereArgs);
                 }
             }
             else
@@ -3619,10 +3694,11 @@ namespace Priya.InfoList.Data
         {
             long maxLtdSubscriberId = 0;
            
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                maxLtdSubscriberId = GetDb.Single<long>("SELECT MAX(SubscriberID) AS MAX_ID FROM LTD_Subscriber " + whereClause, whereArgs);
+                maxLtdSubscriberId = db.Single<long>("SELECT MAX(SubscriberID) AS MAX_ID FROM LTD_Subscriber " + whereClause, whereArgs);
             }
             else
             {
@@ -3665,9 +3741,10 @@ namespace Priya.InfoList.Data
         private static long GetMaxLtdSubscriberRevisionNo()
         {
             long maxLtdSubscriberRevisionNo = 0;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                maxLtdSubscriberRevisionNo = GetDb.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM LTD_Subscriber");
+                maxLtdSubscriberRevisionNo = db.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM LTD_Subscriber");
             }
             else
             {
@@ -3689,9 +3766,10 @@ namespace Priya.InfoList.Data
         private static DateTime GetLtdSubscriberLastUpdateDate()
         {
             DateTime LtdSubscriberLastUpdateDate = DateTime.MinValue;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                LtdSubscriberLastUpdateDate = GetDb.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM LTD_Subscriber");
+                LtdSubscriberLastUpdateDate = db.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM LTD_Subscriber");
             }
             else
             {
@@ -3717,10 +3795,11 @@ namespace Priya.InfoList.Data
         {
             long ltdSubscriberCount = 0;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                ltdSubscriberCount = GetDb.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_Subscriber " + whereClause, whereArgs);
+                ltdSubscriberCount = db.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_Subscriber " + whereClause, whereArgs);
             }
             else
             {
@@ -3769,11 +3848,12 @@ namespace Priya.InfoList.Data
         {
             List<LTD_Subscriber> allLtdSubscriberList = new List<LTD_Subscriber>();
           
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                                 
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                allLtdSubscriberList = GetDb.Fetch<LTD_Subscriber>("SELECT * FROM LTD_Subscriber " + whereClause + " " + orderByClause, whereArgs);
+                allLtdSubscriberList = db.Fetch<LTD_Subscriber>("SELECT * FROM LTD_Subscriber " + whereClause + " " + orderByClause, whereArgs);
             }
             else
             {
@@ -3824,16 +3904,18 @@ namespace Priya.InfoList.Data
 
             long retTotalPages = 0;
             long retTotalItems = 0;
-            if (HaveDb == true)
+
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
                                 
-                Page<LTD_Subscriber> pagedData = GetDb.Page<LTD_Subscriber>(pageNo, itemsPerPage, "SELECT * FROM LTD_Subscriber " + whereClause + " " + orderByClause, whereArgs);
+                Page<LTD_Subscriber> pagedData = db.Page<LTD_Subscriber>(pageNo, itemsPerPage, "SELECT * FROM LTD_Subscriber " + whereClause + " " + orderByClause, whereArgs);
                 totalPages = pagedData.TotalPages;
                 totalItems = pagedData.TotalItems;
                 if ((pagedData.Items.Count == 0) && (totalPages == 1))
                 {
-                    pagedData = GetDb.Page<LTD_Subscriber>(1, itemsPerPage, "SELECT * FROM LTD_Subscriber " + whereClause + " " + orderByClause, whereArgs);
+                    pagedData = db.Page<LTD_Subscriber>(1, itemsPerPage, "SELECT * FROM LTD_Subscriber " + whereClause + " " + orderByClause, whereArgs);
                     totalPages = pagedData.TotalPages;
                     totalItems = pagedData.TotalItems;
                 }
@@ -3892,11 +3974,12 @@ namespace Priya.InfoList.Data
             ltdSubscriber.LastUpdateDate = DateTime.UtcNow;
             ltdSubscriber.RevisionNo = GetMaxLtdSubscriberRevisionNo() + 1;
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Insert(ltdSubscriber);
+                    db.Insert(ltdSubscriber);
                     id = ltdSubscriber.SubscriberID;
                     scope.Complete();
                 }
@@ -3923,15 +4006,16 @@ namespace Priya.InfoList.Data
         {
             bool ret = false;
             ltdSubscriber.LastUpdateDate = DateTime.UtcNow;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 LTD_Subscriber ltdSubscriberExisting = GetLtdSubscriber(ltdSubscriber.SubscriberID, "");
                 if (ltdSubscriberExisting != null)
                 {
 					ltdSubscriber.RevisionNo = GetMaxLtdSubscriberRevisionNo() + 1;                      
-					using (ITransaction scope = GetDb.GetTransaction())
+					using (ITransaction scope = db.GetTransaction())
 					{
-                        GetDb.Update(ltdSubscriber);
+                        db.Update(ltdSubscriber);
                         scope.Complete();
                         ret = true;
                     }
@@ -3957,11 +4041,12 @@ namespace Priya.InfoList.Data
 
         public static void DeleteLtdSubscriber(long ltdSubscriberId)
         {
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Delete<LTD_Subscriber>(ltdSubscriberId);
+                    db.Delete<LTD_Subscriber>(ltdSubscriberId);
                     scope.Complete();
                 }
             }
@@ -3998,16 +4083,17 @@ namespace Priya.InfoList.Data
         {
             LTD_InfoCategory ltdInfoCategory = null;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if (orWhereClause.Trim().Length == 0)
                 {
-                    ltdInfoCategory = GetDb.SingleOrDefault<LTD_InfoCategory>("SELECT * FROM LTD_InfoCategory Where InfoCategoryID=@0", infoCategoryID);
+                    ltdInfoCategory = db.SingleOrDefault<LTD_InfoCategory>("SELECT * FROM LTD_InfoCategory Where InfoCategoryID=@0", infoCategoryID);
                 }
                 else
                 {
                     if ((string.IsNullOrEmpty(orWhereClause) ==false) && (orWhereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) orWhereClause = " WHERE " + orWhereClause;
-                    ltdInfoCategory = GetDb.SingleOrDefault<LTD_InfoCategory>("SELECT * FROM LTD_InfoCategory " + orWhereClause, orWhereArgs);
+                    ltdInfoCategory = db.SingleOrDefault<LTD_InfoCategory>("SELECT * FROM LTD_InfoCategory " + orWhereClause, orWhereArgs);
                 }
             }
             else
@@ -4059,10 +4145,11 @@ namespace Priya.InfoList.Data
         {
             long maxLtdInfoCategoryId = 0;
            
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                maxLtdInfoCategoryId = GetDb.Single<long>("SELECT MAX(InfoCategoryID) AS MAX_ID FROM LTD_InfoCategory " + whereClause, whereArgs);
+                maxLtdInfoCategoryId = db.Single<long>("SELECT MAX(InfoCategoryID) AS MAX_ID FROM LTD_InfoCategory " + whereClause, whereArgs);
             }
             else
             {
@@ -4105,9 +4192,10 @@ namespace Priya.InfoList.Data
         private static long GetMaxLtdInfoCategoryRevisionNo()
         {
             long maxLtdInfoCategoryRevisionNo = 0;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                maxLtdInfoCategoryRevisionNo = GetDb.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM LTD_InfoCategory");
+                maxLtdInfoCategoryRevisionNo = db.Single<long>("SELECT MAX(RevisionNo) AS MAX_ID FROM LTD_InfoCategory");
             }
             else
             {
@@ -4129,9 +4217,10 @@ namespace Priya.InfoList.Data
         private static DateTime GetLtdInfoCategoryLastUpdateDate()
         {
             DateTime LtdInfoCategoryLastUpdateDate = DateTime.MinValue;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                LtdInfoCategoryLastUpdateDate = GetDb.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM LTD_InfoCategory");
+                LtdInfoCategoryLastUpdateDate = db.Single<DateTime>("SELECT MAX(LastUpdateDate) AS MAX_DATE FROM LTD_InfoCategory");
             }
             else
             {
@@ -4157,10 +4246,11 @@ namespace Priya.InfoList.Data
         {
             long ltdInfoCategoryCount = 0;
             
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                ltdInfoCategoryCount = GetDb.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_InfoCategory " + whereClause, whereArgs);
+                ltdInfoCategoryCount = db.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_InfoCategory " + whereClause, whereArgs);
             }
             else
             {
@@ -4209,11 +4299,12 @@ namespace Priya.InfoList.Data
         {
             List<LTD_InfoCategory> allLtdInfoCategoryList = new List<LTD_InfoCategory>();
           
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
-                allLtdInfoCategoryList = GetDb.Fetch<LTD_InfoCategory>("SELECT * FROM LTD_InfoCategory " + whereClause + " " + orderByClause, whereArgs);
+                allLtdInfoCategoryList = db.Fetch<LTD_InfoCategory>("SELECT * FROM LTD_InfoCategory " + whereClause + " " + orderByClause, whereArgs);
             }
             else
             {
@@ -4264,16 +4355,18 @@ namespace Priya.InfoList.Data
 
             long retTotalPages = 0;
             long retTotalItems = 0;
-            if (HaveDb == true)
+
+            Database db = HaveDb();
+            if (db != null)
             {
                 if ((string.IsNullOrEmpty(whereClause) ==false) && (whereClause.Trim().ToUpper().StartsWith("Where".ToUpper()) == false)) whereClause = " WHERE " + whereClause;
                 if (String.IsNullOrEmpty(orderByClause) ==true) {orderByClause = " Order By Sequence Desc";}                 
-                Page<LTD_InfoCategory> pagedData = GetDb.Page<LTD_InfoCategory>(pageNo, itemsPerPage, "SELECT * FROM LTD_InfoCategory " + whereClause + " " + orderByClause, whereArgs);
+                Page<LTD_InfoCategory> pagedData = db.Page<LTD_InfoCategory>(pageNo, itemsPerPage, "SELECT * FROM LTD_InfoCategory " + whereClause + " " + orderByClause, whereArgs);
                 totalPages = pagedData.TotalPages;
                 totalItems = pagedData.TotalItems;
                 if ((pagedData.Items.Count == 0) && (totalPages == 1))
                 {
-                    pagedData = GetDb.Page<LTD_InfoCategory>(1, itemsPerPage, "SELECT * FROM LTD_InfoCategory " + whereClause + " " + orderByClause, whereArgs);
+                    pagedData = db.Page<LTD_InfoCategory>(1, itemsPerPage, "SELECT * FROM LTD_InfoCategory " + whereClause + " " + orderByClause, whereArgs);
                     totalPages = pagedData.TotalPages;
                     totalItems = pagedData.TotalItems;
                 }
@@ -4329,18 +4422,19 @@ namespace Priya.InfoList.Data
             if (ltdInfoCategory.InfoCategoryGUID != Guid.Empty) throw new Exception("Cannot Set the GUID for a Insert");
             ltdInfoCategory.InfoCategoryGUID = Guid.NewGuid();
           
-			 UserInfo userInfo = OnGetUserInfo();
+			 UserInfo userInfo = GetUserInfo();
             ltdInfoCategory.UserID = userInfo.Id;
             ltdInfoCategory.UserGUID = userInfo.Guid;
             ltdInfoCategory.CreatedDate = DateTime.UtcNow;
             ltdInfoCategory.LastUpdateDate = DateTime.UtcNow;
             ltdInfoCategory.RevisionNo = GetMaxLtdInfoCategoryRevisionNo() + 1;
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Insert(ltdInfoCategory);
+                    db.Insert(ltdInfoCategory);
                     id = ltdInfoCategory.InfoCategoryID;
                     scope.Complete();
                 }
@@ -4367,19 +4461,20 @@ namespace Priya.InfoList.Data
         {
             bool ret = false;
           
-			 UserInfo userInfo = OnGetUserInfo();
+			 UserInfo userInfo = GetUserInfo();
             ltdInfoCategory.UserID = userInfo.Id;
             ltdInfoCategory.UserGUID = userInfo.Guid;
             ltdInfoCategory.LastUpdateDate = DateTime.UtcNow;
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 LTD_InfoCategory ltdInfoCategoryExisting = GetLtdInfoCategory(ltdInfoCategory.InfoCategoryID, "");
                 if (ltdInfoCategoryExisting != null)
                 {
 					ltdInfoCategory.RevisionNo = GetMaxLtdInfoCategoryRevisionNo() + 1;                      
-					using (ITransaction scope = GetDb.GetTransaction())
+					using (ITransaction scope = db.GetTransaction())
 					{
-                        GetDb.Update(ltdInfoCategory);
+                        db.Update(ltdInfoCategory);
                         scope.Complete();
                         ret = true;
                     }
@@ -4405,11 +4500,12 @@ namespace Priya.InfoList.Data
 
         public static void DeleteLtdInfoCategory(long ltdInfoCategoryId)
         {
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                using (ITransaction scope = GetDb.GetTransaction())
+                using (ITransaction scope = db.GetTransaction())
                 {
-                    GetDb.Delete<LTD_InfoCategory>(ltdInfoCategoryId);
+                    db.Delete<LTD_InfoCategory>(ltdInfoCategoryId);
                     scope.Complete();
                 }
             }

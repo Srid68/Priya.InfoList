@@ -7,7 +7,7 @@ using Arshu.Core.Common;
 
 using Priya.Generic.Utils;
 using Priya.Generic.Views;
-using Priya.JQMobile.Views;
+using Priya.Mobile.Views;
 using Priya.Security.Entity;
 using Priya.Security.Utils;
 using Priya.Security.Views;
@@ -17,125 +17,8 @@ using Priya.InfoList.Data;
 
 namespace Priya.InfoList.Views
 {
-    public class InfoPageView : IPageView
+    public class InfoPageView
     {
-        #region IView Interface
-
-        public string RawUrl { get; set; }
-        public string ThemeName { get; set; }
-        public string TemplateSuffix { get; set; }
-        public string PageName { get; set; }
-        public string PageContent { get; set; }
-
-        public void InitView(bool reInit)
-        {
-            DataSource.OnGetUserInfo -= UtilsSecurity.UtilsSecurity_OnGetUserInfo;
-            DataSource.OnGetUserInfo += UtilsSecurity.UtilsSecurity_OnGetUserInfo;                
-        }
-
-        public string GetPageView()
-        {
-            string pageTitle = UtilsGeneric.GetCurrentText("InfoList");
-            string afterAction = UtilsGeneric.RefreshFunctionWithMessage;
-            string helpUrl = UtilsGeneric.HelpUrl;
-
-            if (UtilsSecurity.HaveAdminRole() == true)
-            {
-                SecurityHeaderView.AfterLoginHeaderLinks.Clear();
-                SecurityHeaderView.AfterLoginHeaderLinks.Add(new ViewInfo
-                {
-                    ViewName = "DataView",
-                    ViewIconName = "comment"
-                });
-            }
-
-            return GetPageView(TemplateSuffix, ThemeName, pageTitle, pageTitle, helpUrl, afterAction);
-        }
-
-        #endregion
-
-        #region Get Page View
-
-        public static string GetPageView(string templateSuffix, string themeName, string pageTitle, string headerTitle, string helpUrl, string afterAction)
-        {
-            #region Variables
-
-            bool enablejQMobileAddress = false;
-            int dataIndex = 0;
-
-            #endregion
-
-            #region Get JQ Js/Css Resources
-
-            string cssResourcesLink = "";
-            string jsResourcesLink = "";
-            string currentThemeName = JQueryMobileTheme.Default.ToString();
-            if (string.IsNullOrEmpty(themeName) == false) currentThemeName = themeName;
-            JQMobileView.GetJQHeaderResource(enablejQMobileAddress, currentThemeName, out cssResourcesLink, out jsResourcesLink);
-
-            #endregion
-
-            #region Set JQPage Header Html
-
-            string htmlJQPageHeader = "";  //"<h2>InfoList Manager</h2>";
-
-            #endregion
-
-            #region Get JQPage Security Html
-
-            string htmlJQPageSecure = "";
-
-            htmlJQPageSecure = SecurityView.GetView(dataIndex, templateSuffix, headerTitle, helpUrl, afterAction, "");
-
-            #endregion
-
-            #region Get JQPage Content Html
-
-            string htmlJQPageContent = "";
-
-            if ((UtilsGeneric.ForceLogin == false) || (UtilsSecurity.IsAuthenticated() == true))
-            {
-                if (UtilsSecurity.HaveAdminRole() == true)
-                {
-                    string infoCategoryView = InfoCategoryView.GetView(dataIndex, templateSuffix);
-                    htmlJQPageContent += infoCategoryView;
-                }
-
-                string pageView = InfoPageView.GetView(dataIndex + 1, templateSuffix);
-                htmlJQPageContent += pageView;
-            }
-
-            #endregion
-
-            #region Get JQPage Html
-
-            string htmlJQPage = JQMobileView.GetView(templateSuffix, htmlJQPageHeader, htmlJQPageSecure, htmlJQPageContent, "");
-
-            #endregion
-
-            #region Get IndexPage Content Html
-
-            string htmlPageContent = htmlJQPage;
-
-            #endregion
-
-            #region Get IndexPage Footer Html
-
-            string htmlPageFooter = "";
-
-            #endregion
-
-            #region Get IndexPage Html
-
-            string htmlText = GenericView.GetView(templateSuffix, pageTitle, cssResourcesLink, jsResourcesLink, htmlPageContent, htmlPageFooter, enablejQMobileAddress, true);
-
-            #endregion
-
-            return htmlText;
-        }
-
-        #endregion
-
         #region Variables
 
         public const string ServiceUrl = "/Apps/InfoList/InfoPage/JsonInfoPage.ashx";
@@ -176,7 +59,7 @@ namespace Priya.InfoList.Views
 
         public static string GetView(long dataIndex, string templateSuffix)
         {
-            long id = 0 ;
+            long id = 0;
             long pageNo = 1;
             long itemsPerPage = UtilsGeneric.DefaultItemsPerPage;
 
@@ -235,20 +118,27 @@ namespace Priya.InfoList.Views
         {
             string message = "";
             string htmlSaveDetail = "";
+            bool firstRecord = true;
+            bool showAdditional = (infoPageId != 0);
+
             long revisionNo = 0;
+
             string infoPageName = "";
             string infoPageDescription = "";
-            DateTime expiryDate = DateTime.Now.AddYears(3);
+
+            long accessGroupId = 0;
+            bool asyncLoading = false;
             bool commentable = false;
             string commentorRoleList = UtilsSecurity.AdminRole;
-            bool asyncLoading = false;
-            bool isPublic = false;
+
             bool isActive = true;
+            DateTime expiryDate = DateTime.Now.AddYears(3);
+
+            bool isPublic = false;
+            bool isCommon = false;
             bool isDeleted = false;
             long sequence = 0;
-            long accessGroupId = 0;
-            bool showAdditional = (infoPageId != 0);
-            bool firstRecord = true;
+
 
             if ((UtilsSecurity.HaveAdminRole() == false) && (UtilsSecurity.HaveAuthorRoleEnabled() == false))
             {
@@ -278,6 +168,7 @@ namespace Priya.InfoList.Views
                         commentorRoleList = ltdInfoPageExisting.CommentorRoleList;
                         asyncLoading = ltdInfoPageExisting.AsyncLoading;
                         isPublic = ltdInfoPageExisting.IsPublic;
+                        isCommon = ltdInfoPageExisting.IsCommon;
                         isActive = ltdInfoPageExisting.IsActive;
                         isDeleted = ltdInfoPageExisting.IsDeleted;
                         sequence = ltdInfoPageExisting.Sequence;
@@ -383,6 +274,8 @@ namespace Priya.InfoList.Views
 
                 #endregion
 
+                #region Get Add Info Category List
+
                 List<TemplateInfoPageSaveDetail.AddInfoCategory> addInfoCategoryList = new List<TemplateInfoPageSaveDetail.AddInfoCategory>();
                 string htmlInfoCategorySaveDetail = "";
                 if (UtilsSecurity.HaveAdminRole() == true)
@@ -403,15 +296,17 @@ namespace Priya.InfoList.Views
 
                     #region Set Info Category Save Details
 
-                    string refreshCallback = "refreshInfoPageCategoryList(" + infoPageId + ", '" + templateSuffix + "')";
+                    string refreshCallback = "refreshInfoPageCategoryOptionList(" + infoPageId + ", '" + templateSuffix + "')";
                     htmlInfoCategorySaveDetail = InfoCategoryView.GetSaveView(infoCategoryId, pageNo, itemsPerPage, infoCategoryDataIndex, templateSuffix, true, refreshCallback);
 
                     #endregion
                 }
 
+                #endregion
+
                 #region Set Action
 
-                bool showDeleted = false;
+                bool showAdmin = false;
                 bool showUserInfo = false;
                 bool enableSave = true;
                 bool enableDelete = true;
@@ -422,7 +317,7 @@ namespace Priya.InfoList.Views
                     enableDelete = false;
                 }
 
-                showDeleted = (!UtilsSecurity.HaveAdminRole() && (infoPageId > 0));
+                showAdmin = (UtilsSecurity.HaveAdminRole() && (infoPageId > 0));
 
                 #endregion
 
@@ -448,7 +343,7 @@ namespace Priya.InfoList.Views
                         });
                     }
                     else
-                    {                        
+                    {
                         groupItemList.Add(new TemplateInfoPageSaveDetailMore.AccessGroupItem
                         {
                             AccessGroupText = "Select Access Group",
@@ -519,15 +414,19 @@ namespace Priya.InfoList.Views
                     var templateSaveDetailMore = new TemplateInfoPageSaveDetailMore
                     {
                         AccessGroupItemList = groupItemList,
+                        AsyncLoading = asyncLoading,
                         Commentable = commentable,
                         CommentorRoleItemList = commentorlRoleItemList,
-                        AsyncLoading = asyncLoading,
-                        IsPublicHidden = !UtilsSecurity.HaveAdminRole(),
-                        IsPublic = isPublic,
+
                         IsActiveHidden = (infoPageId == 0),
                         IsActive = isActive,
                         ExpiryDate = expiryDate.ToString(UtilsGeneric.DefaultDateFormat),
-                        IsDeletedHidden = !showDeleted,
+
+                        IsPublicHidden = !showAdmin,
+                        IsPublic = isPublic,
+                        IsCommonHidden = !showAdmin,
+                        IsCommon = isCommon,
+                        IsDeletedHidden = !showAdmin,
                         IsDeleted = isDeleted,
                         SequenceHidden = (infoPageId == 0),
                         Sequence = sequence.ToString(),
@@ -553,7 +452,7 @@ namespace Priya.InfoList.Views
                         PageNo = pageNo.ToString("N0", CultureInfo.InvariantCulture),
                         ItemsPerPage = itemsPerPage.ToString("N0", CultureInfo.InvariantCulture),
                         TemplateSuffix = templateSuffix,
-                        AsyncLoading = asyncLoading.ToString().ToLower()                        
+                        AsyncLoading = asyncLoading.ToString().ToLower()
                     };
                     addActionHtml = templateSaveDetailAdd.GetFilled(templateSuffix, UtilsGeneric.Validate, UtilsGeneric.ThrowException, out message);
                 }
@@ -567,7 +466,7 @@ namespace Priya.InfoList.Views
                         PageNo = pageNo.ToString("N0", CultureInfo.InvariantCulture),
                         ItemsPerPage = itemsPerPage.ToString("N0", CultureInfo.InvariantCulture),
                         TemplateSuffix = templateSuffix,
-                        AsyncLoading = asyncLoading.ToString().ToLower(),                        
+                        AsyncLoading = asyncLoading.ToString().ToLower(),
 
                         SaveActionDisabled = !enableSave,
                         DeleteActionDisabled = !enableDelete,
@@ -589,13 +488,14 @@ namespace Priya.InfoList.Views
                     InfoPageDescription = infoPageDescription,
                     InfoCategoryItemList = infoCategoryItemList,
                     //InfoCategorySelectDisable = (infoPageId > 0),
-                    AdditionalActionVisible = showAdditional,
-                    MoreDetails = saveDetailMore,
 
                     //AddMode = (infoPageId == 0) ? true : false,
                     AddAction = addActionHtml,
                     EditAction = editActionHtml,
                     ShowUserInfo = showUserInfo,
+
+                    AdditionalActionVisible = showAdditional,
+                    MoreDetails = saveDetailMore,
                 };
 
                 htmlSaveDetail = templateSaveDetail.GetFilled(templateSuffix, UtilsGeneric.Validate, UtilsGeneric.ThrowException,
@@ -630,7 +530,7 @@ namespace Priya.InfoList.Views
 
         public static string GetListDetailView(long pageNo, long itemsPerPage, long dataIndex, string templateSuffix)
         {
-            string htmlListAllItem = GetListAllItemView(pageNo, itemsPerPage, dataIndex, templateSuffix, true, 0, "", false, true);
+            string htmlListAllItem = GetListAllItemView(pageNo, itemsPerPage, dataIndex, templateSuffix, true, 0, "", false, 0, true);
 
             string message;
             var templateListDetail = new TemplateInfoPageListDetail
@@ -648,7 +548,7 @@ namespace Priya.InfoList.Views
 
         #region Item View
 
-        public static string GetListAllItemView(long pageNo, long itemsPerPage, long dataIndex, string templateSuffix, bool asyncLoading, long filterInfoCategoryId, string filterInfoPage, bool filterInfoPagePublic, bool hideFilter)
+        public static string GetListAllItemView(long pageNo, long itemsPerPage, long dataIndex, string templateSuffix, bool asyncLoading, long filterInfoCategoryId, string filterInfoPage, bool filterInfoPagePublic, long filterCreatedUserId, bool hideFilter)
         {
             string message = "";
             if (itemsPerPage == 0) itemsPerPage = UtilsGeneric.DefaultItemsPerPage;
@@ -659,7 +559,7 @@ namespace Priya.InfoList.Views
             string htmlFilterItemList = "";
 
             //if ((filterInfoCategoryId > 0) || (filterInfoPage.Trim().Length > 0) || (filterInfoPagePublic == true)) hideFilter = false;
-            
+
             #region Filter Section
 
             List<TemplateInfoPageListDetailFilter.ShowPublicChecked> showPublicCheckedList = new List<TemplateInfoPageListDetailFilter.ShowPublicChecked>();
@@ -757,6 +657,25 @@ namespace Priya.InfoList.Views
 
             #endregion
 
+            long selectedUserId = 0;
+            string selectUserDetailsHtml = "";
+            string userSelectNameId = "infoPageUserFilter";
+
+            if (UtilsSecurity.HaveAdminRole() == true)
+            {
+                selectedUserId = UtilsSecurity.GetUserId();
+                if (filterCreatedUserId > 0) selectedUserId = filterCreatedUserId;
+
+                #region User Select View
+
+                long userViewDataIndex = dataIndex + 5;
+                string showFunctionScript = "";
+                string selectChangeCallback = " filterInfoPageList(" + pageNo + "," + itemsPerPage + "," + dataIndex + ",'" + templateSuffix + "'," + asyncLoading.ToString().ToLower() + ") ";
+                selectUserDetailsHtml = UserAdminView.GetUserSelectView(userViewDataIndex, 1, 25, templateSuffix, selectedUserId, false, showFunctionScript, "", userSelectNameId, selectChangeCallback, out selectedUserId);
+
+                #endregion
+            }
+
             TemplateInfoPageListDetailFilter listDetailFilter = new TemplateInfoPageListDetailFilter
             {
                 InfoPageListFilterHidden = hideFilter,
@@ -770,7 +689,9 @@ namespace Priya.InfoList.Views
                 PageNo = pageNo.ToString(),
                 ItemsPerPage = itemsPerPage.ToString(),
                 TemplateSuffix = templateSuffix,
-                AsyncLoading = asyncLoading.ToString().ToLower()
+                AsyncLoading = asyncLoading.ToString().ToLower(),
+
+                UserSelect = selectUserDetailsHtml,
             };
             htmlFilterItemList = listDetailFilter.GetFilled(templateSuffix, UtilsGeneric.Validate, UtilsGeneric.ThrowException, out message);
 
@@ -787,7 +708,7 @@ namespace Priya.InfoList.Views
                     DataIndex = dataIndex.ToString(),
                     PageNo = pageNo.ToString(),
                     ItemsPerPage = itemsPerPage.ToString(),
-                    TemplateSuffix = templateSuffix,                                       
+                    TemplateSuffix = templateSuffix,
                 });
             }
 
@@ -809,23 +730,33 @@ namespace Priya.InfoList.Views
             {
                 if (filterInfoPagePublic == true)
                 {
-                    ltdInfoPageList = DataInfoList.GetPublicPagedLtdInfoPage(filterInfoCategoryId, filterInfoPage, pageNo, itemsPerPage, out totalPages, out totalItems);
+                    ltdInfoPageList = DataInfoList.GetPublicPagedLtdInfoPage(filterInfoCategoryId, filterInfoPage, selectedUserId, pageNo, itemsPerPage, out totalPages, out totalItems);
                 }
                 else
                 {
                     if (UtilsSecurity.HaveAdminRole() == true)
                     {
-                        ltdInfoPageList = DataInfoList.GetPagedLtdInfoPage(filterInfoCategoryId, filterInfoPage, pageNo, itemsPerPage, out totalPages, out totalItems);
+                        ltdInfoPageList = DataInfoList.GetPagedLtdInfoPage(filterInfoCategoryId, filterInfoPage, selectedUserId, pageNo, itemsPerPage, out totalPages, out totalItems);
                     }
                     else
                     {
                         ltdInfoPageList = DataInfoList.GetUserPagedLtdInfoPage(filterInfoCategoryId, filterInfoPage, pageNo, itemsPerPage, out totalPages, out totalItems);
                     }
+
+                    long commonTotalPages = 0;
+                    long commonTotalItems = 0;
+                    List<LTD_InfoPage> commonltdInfoPageList = DataInfoList.GetCommonPagedLtdInfoPage(filterInfoCategoryId, filterInfoPage, pageNo, itemsPerPage, out commonTotalPages, out commonTotalItems);
+                    if (commonltdInfoPageList.Count > 0)
+                    {
+                        ltdInfoPageList.AddRange(commonltdInfoPageList);
+                        totalItems = totalItems + commonTotalItems;
+                        if (commonTotalPages > 1) totalPages = totalPages + commonTotalPages - 1;
+                    }
                 }
             }
             else
             {
-                ltdInfoPageList = DataInfoList.GetPublicPagedLtdInfoPage(filterInfoCategoryId, filterInfoPage, pageNo, itemsPerPage, out totalPages, out totalItems);
+                ltdInfoPageList = DataInfoList.GetPublicPagedLtdInfoPage(filterInfoCategoryId, filterInfoPage, selectedUserId, pageNo, itemsPerPage, out totalPages, out totalItems);
             }
 
             #endregion
@@ -900,7 +831,7 @@ namespace Priya.InfoList.Views
                 List<TemplateInfoPageListDetailItem.EditAction> editActionList = new List<TemplateInfoPageListDetailItem.EditAction>();
                 List<TemplateInfoPageListDetailItem.AsyncAction> asyncActionList = new List<TemplateInfoPageListDetailItem.AsyncAction>();
 
-                if ((UtilsSecurity.HaveAdminRole() == true) || (UtilsSecurity.HaveAuthorRoleEnabled() == true))
+                if (((UtilsSecurity.HaveAdminRole() == true) && (UtilsSecurity.HaveAuthorRoleEnabled() == true)) || ((UtilsSecurity.HaveAuthorRoleEnabled() == true) && (ltdInfoPage.UserID == UtilsSecurity.GetUserId())))
                 {
                     editActionList.Add(new TemplateInfoPageListDetailItem.EditAction
                     {
@@ -930,7 +861,7 @@ namespace Priya.InfoList.Views
                 {
                     asyncActionList.Add(new TemplateInfoPageListDetailItem.AsyncAction
                     {
-                        DataIndex = dataIndex.ToString(), 
+                        DataIndex = dataIndex.ToString(),
                         PageNo = pageNo.ToString(),
                         ItemsPerPage = itemsPerPage.ToString(),
                         TemplateSuffix = templateSuffix,

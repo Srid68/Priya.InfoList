@@ -21,6 +21,11 @@ function filterInfoPageList(pageNo, itemsPerPage, dataIndex, templateSuffix, asy
     var filterInfoPagePublic = false;
     if ($('#filterInfoPagePublic').is(':checked')) filterInfoPagePublic = true;
 
+    var filterCreatedUserId = 0;
+    if ($('#infoPageUserFilter').length > 0) {
+        filterCreatedUserId = $('#infoPageUserFilter option:selected').val();
+    }
+
     var paramValues = '{"pageNo" : ' + pageNo;
     paramValues += ', "itemsPerPage" : ' + selectedItemsPerPage;
     paramValues += ', "dataIndex" : ' + dataIndex;
@@ -29,6 +34,7 @@ function filterInfoPageList(pageNo, itemsPerPage, dataIndex, templateSuffix, asy
     paramValues += ', "filterInfoCategoryId" : ' + filterInfoCategoryId;
     paramValues += ', "filterInfoPage" : "' + filterInfoPage + '"';
     paramValues += ', "filterInfoPagePublic" : ' + filterInfoPagePublic;
+    paramValues += ', "filterCreatedUserId" : ' + filterCreatedUserId;
     paramValues += '}';
 
     var postMethod = "GetInfoPageFilterListView";

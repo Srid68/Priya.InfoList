@@ -1,6 +1,6 @@
 window.requestId = 0;
 
-function refreshInfoPageCategoryList(infoPageId, templateSuffix) {
+function refreshInfoPageCategoryOptionList(infoPageId, templateSuffix) {
 
     var paramValues = '{"infoPageId" : ' + infoPageId ;
     paramValues += ', "templateSuffix":"' + templateSuffix + '"';
@@ -43,9 +43,9 @@ function refreshInfoPageCategoryList(infoPageId, templateSuffix) {
 
 function refreshInfoPageForm(pageNo, itemsPerPage, dataIndex, templateSuffix, asyncLoading) {
 
-    if (typeof (getInfoPageSaveView) == 'function') {
-        getInfoPageSaveView(0, pageNo, itemsPerPage, dataIndex, templateSuffix, false);
-    }
+    //if (typeof (getInfoPageSaveView) == 'function') {
+    //    getInfoPageSaveView(0, pageNo, itemsPerPage, dataIndex, templateSuffix, false);
+    //}
 
     if (typeof (refreshInfoPageList) == 'function') {
         refreshInfoPageList(pageNo, itemsPerPage, dataIndex, templateSuffix, asyncLoading);
@@ -128,25 +128,8 @@ function saveInfoPage(infoPageId, pageNo, itemsPerPage, dataIndex, templateSuffi
         accessGroupId = $('#accessGroupSelect option:selected').val();
     }
 
-    var infoPageCommentable = false;
-    if ($('#infoPageCommentable').is(':checked')) infoPageCommentable = true;
-
-    var commentorRoleList = "";
-    if ($('#commentorRoleSelect').length > 0) {
-        var commentorRoleArray = $('#commentorRoleSelect').val();
-        if (Object.prototype.toString.call(commentorRoleArray) === '[object Array]') {
-            commentorRoleList = commentorRoleArray.join();
-        }
-        else {
-            commentorRoleList = commentorRoleArray;
-        }
-    }
-
     var infoPageAsyncLoading = false;
     if ($('#infoPageAsyncLoading').is(':checked')) infoPageAsyncLoading = true;
-
-    var infoPageIsPublic = false;
-    if ($('#infoPageIsPublic').is(':checked')) infoPageIsPublic = true;
 
     var infoPageIsActive = false;
     if ($('#infoPageIsActive').is(':checked')) infoPageIsActive = true;
@@ -161,6 +144,26 @@ function saveInfoPage(infoPageId, pageNo, itemsPerPage, dataIndex, templateSuffi
             }
         }
     }
+
+    var infoPageCommentable = false;
+    if ($('#infoPageCommentable').is(':checked')) infoPageCommentable = true;
+
+    var commentorRoleList = "";
+    if ($('#commentorRoleSelect').length > 0) {
+        var commentorRoleArray = $('#commentorRoleSelect').val();
+        if (Object.prototype.toString.call(commentorRoleArray) === '[object Array]') {
+            commentorRoleList = commentorRoleArray.join();
+        }
+        else {
+            commentorRoleList = commentorRoleArray;
+        }
+    }
+
+    var infoPageIsPublic = false;
+    if ($('#infoPageIsPublic').is(':checked')) infoPageIsPublic = true;
+
+    var infoPageIsCommon = false;
+    if ($('#infoPageIsCommon').is(':checked')) infoPageIsCommon = true;
 
     var infoPageIsDeleted = false;
     if ($('#infoPageIsDeleted').is(':checked')) infoPageIsDeleted = true;
@@ -178,12 +181,13 @@ function saveInfoPage(infoPageId, pageNo, itemsPerPage, dataIndex, templateSuffi
         paramValues += ', "infoPageDescription" : "' + encodeURIComponent(infoPageDescription) + '"';
         paramValues += ', "infoPageCategoryId" : ' + infoPageCategoryId;
         paramValues += ', "accessGroupId" : ' + accessGroupId;
-        paramValues += ', "commentable" : ' + infoPageCommentable;
-        paramValues += ', "commentorRoleList" : "' + commentorRoleList + '"';
         paramValues += ', "asyncLoading" : ' + infoPageAsyncLoading;
-        paramValues += ', "isPublic" : ' + infoPageIsPublic;
         paramValues += ', "isActive" : ' + infoPageIsActive;
         paramValues += ', "expiryDate" : "' + infoPageExpiryDate + '"';
+        paramValues += ', "commentable" : ' + infoPageCommentable;
+        paramValues += ', "commentorRoleList" : "' + encodeURIComponent(commentorRoleList) + '"';
+        paramValues += ', "isPublic" : ' + infoPageIsPublic;
+        paramValues += ', "isCommon" : ' + infoPageIsCommon;
         paramValues += ', "isDeleted" : ' + infoPageIsDeleted;
         paramValues += ', "sequence" : ' + infoPageSequence;
         paramValues += ', "infoPageId" : ' + infoPageId;

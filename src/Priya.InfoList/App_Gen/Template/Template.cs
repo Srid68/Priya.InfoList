@@ -2,10 +2,8 @@
 
 using System;
 using System.Text;
-using System.Reflection;
 using System.Collections.Generic;
 
-using Arshu.Core.Basic.Log;
 using Arshu.Core.Basic.Compress;
 using Arshu.Core.Common;
 using Arshu.Core.Http;
@@ -200,7 +198,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -237,7 +235,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -1682,7 +1680,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -1719,7 +1717,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -4037,7 +4035,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -4074,7 +4072,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -4777,7 +4775,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -4814,7 +4812,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -6331,7 +6329,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -6368,7 +6366,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -7071,7 +7069,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -7108,7 +7106,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -8460,7 +8458,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -8497,7 +8495,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -9219,7 +9217,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -9256,7 +9254,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -10868,7 +10866,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -10905,7 +10903,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -11040,7 +11038,7 @@ namespace Priya.InfoList.Views
 		public const string RelativeFilePath = "App_View/HtmlInfoDetail/InfoDetailListDetail.html";
 		public const string ScriptRelativeFilePath = "";		
 		public const string MinScriptRelativeFilePath = "";										
-		private const string TemplateSource_216="GDx1bCBpZD0iaW5mb0RldGFpbExpc3R7e0kgDxhTZWN0aW9uSWR9fSIgZGF0YS1yb2xlPSJsICEEdmlldyKAFAtpbnNldD0idHJ1ZSKAEQh0aGVtZT0iYSKADgZjb250ZW50wBYCYiIgIABgTwlkaXZpZGVydGhlQC/APg5maWx0ZXI9ImZhbHNlIj4gLAMge3tMIHQKSXRlbX19PC91bD4=";
+		private const string TemplateSource_216="GDx1bCBpZD0iaW5mb0RldGFpbExpc3R7e0kgDxhTZWN0aW9uSWR9fSIgZGF0YS1yb2xlPSJsICEEdmlldyKAFAtpbnNldD0idHJ1ZSKAEQh0aGVtZT0iYyKADgZjb250ZW50wBYCYiIgIABgTwlkaXZpZGVydGhlQC/APg5maWx0ZXI9ImZhbHNlIj4gLAMge3tMIHQKSXRlbX19PC91bD4=";
 
 		#endregion		
 
@@ -11605,7 +11603,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -11642,7 +11640,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -13327,7 +13325,7 @@ namespace Priya.InfoList.Views
 		public const string ScriptRelativeFilePath = "App_View/HtmlInfoPage/InfoPageListScript.js";		
 		public const string MinScriptRelativeFilePath = "App_View/HtmlInfoPage/InfoPageListScript.min.js";										
 		private const string TemplateSource_104="Hnt7TGlzdFNjcmlwdH19PGRpdiBpZD0iaW5mb1BhZ2VAHBNWaWV3e3tEYXRhSW5kZXh9fSI+ICAAAXt7QBwFRGV0YWlsIDkEL2Rpdj4=";
-		private const string MinScriptSource_1600="H3dpbmRvdy5yZXF1ZXN0SWQ9MDtmdW5jdGlvbiBpbnB1H3RGaWx0ZXJJbmZvUGFnZUxpc3QoaCxjLGYsZCxiLGcpC3t2YXIgYT1oP2g6d4BKH2V2ZW50O2lmKGEua2V5Q29kZT09PTEzKXtyZXR1cm4gAGbgCVDgAU4AfaAkBHRydWV94ACI4AoyCWEsZCxsLG4sZSlggQNrPWQ7QIkKaD0iaXRlbXNQZXJArgIiK2xAiRQkKCIjIitoKS5sZW5ndGg+MCl7az2gFAUrIiBvcHQg7hI6c2VsZWN0ZWQiKS52YWwoKX12INoAZmAnAGZgswlDYXRlZ29yeVNlQCgAIOAONmCHAGNgNgFpboE1AEZgPsBXYCAHaj1mYWxzZTshJ0CIgGABSW6ALwVQdWJsaWMgLwlpcygiOmNoZWNrQJYDKXtqPWEYQJgYaT0neyJwYWdlTm8iIDogJythO2krPScsIOEFAGAaAWs7oBoIZGF0YUluZGV4gBcBbDugFyEyCXBsYXRlU3VmZmlgHAgiJytuKyciJzugIQthc3luY0xvYWRpbmeAPAFlO6AaAGZg3QNJbmZvwSABSWSAIgFmO+AIIgBQIkRAHCBfAWMr4AJf4AFEQCGhAGC8AWo7IEQCIn0iYTYHZz0iR2V0SW6BJ4FXAEwikwRWaWV3ImAhAmI9d4KH4gDSASsrYBgAbUEwB2pzb25ycGMiIIARMi4wIiwibWV0aG9kIjoiJytnII8ALCFSDXJhbXMiOicraSsnLCJpIBsfJytiKyJ9IjskLmFqYXgoe3R5cGU6IlBPU1QiLGNvbnQi7wFUeUASB2FwcGxpY2F0Ik0fL2pzb247IGNoYXJzZXQ9dXRmLTgiLHVybDoiLyohQFMNZXJ2aWNlVXJsQCovIixBlwE6bWAGAFRgSQBqID0JIixzdWNjZXNzOsMIAShvg28DcD1vOyI4GW8uaGFzT3duUHJvcGVydHkoImVycm9yIik9glwBKXvgDCQOZCIpKXtwPW8uZH1lbHNl4A0kBnJlc3VsdCKgKYANAX19IE8AcOAIdARodG1sIiAoBiQoIiNpbmZhwEQnBCIrbCkuQBxAMyAjASk74AwhAGwhvgR2aWV3KCBzAGYgaAJoIingDSgSdHJpZ2dlcigiY3JlYXRlIil9fWC/BXNob3dFciD4IRABZXIgBwoubmFtZSsiOiIrb6AQAG0hRQhhZ2UpfX19KTukYgBmQ38CfWZ1pOygfAFJbuABwCRkCGMsaSxrLGQpe4RcAWM7QAcBZj3jBWMBK2nDxgMiK2Yp5AJkAmg9JCETIBTkFmQAZ0KaAHDjBMsAZ+MPywFoO6AaQjPjAssBaTugF+MMywBrItsBJzugIeMJywFkOyAaACIi4kDeAGXjBGNByeMaXQBqQMIAaiK1AXJw4w1dAGUggeMDXSNtACzjY10AauMZXQJsKXtA/wJtPWxGNABs4gjo4wpd4AkkAWQiIwoDbT1sLuMBXeAJJCLmo11AKYANAH1DXQBt4Ah0QzkAIiBSQkkBaW7iAZwDIitpKWNWQDPjDl0gIeMdXSAoAHTjGF0BbC7jBl0AbKAQ4xBdAX07";				
+		private const string MinScriptSource_1672="H3dpbmRvdy5yZXF1ZXN0SWQ9MDtmdW5jdGlvbiBpbnB1H3RGaWx0ZXJJbmZvUGFnZUxpc3QoaCxjLGYsZCxiLGcpC3t2YXIgYT1oP2g6d4BKH2V2ZW50O2lmKGEua2V5Q29kZT09PTEzKXtyZXR1cm4gAGbgCVDgAU4AfaAkBHRydWV94ACI4AoyCWEsZCxtLG8sZSlggQNsPWQ7QIkKaT0iaXRlbXNQZXJArgMiK207IIkUJCgiIyIraSkubGVuZ3RoPjApe2w9oBQFKyIgb3B0IO4SOnNlbGVjdGVkIikudmFsKCl9diDaAGZgJwBmYLMJQ2F0ZWdvcnlTZUAoACDgDjZghwBjYDYBaW6BNQBGYD7AV2AgBms9ZmFsc2XAnYBgAUlugC8FUHVibGljIC8JaXMoIjpjaGVja0CWAyl7az1hGECYAGchqaDaAWlugDYEVXNlckbAauAB6gBn4ASL4AEkACDgDsBgXhhqPSd7InBhZ2VObyIgOiAnK2E7ais9Jywg4QVfYBoBbDugGghkYXRhSW5kZXiAFwFtO6AXIZEJcGxhdGVTdWZmaWAcCCInK28rJyInO6AhC2FzeW5jTG9hZGluZ4A8AWU7oBoAZmDRA0luZm/BfwFJZIAiAWY74AgiAFAio0AcIF8BYyvgAl/gAURAIaFfYLwBazvgBEQHQ3JlYXRlZFUhSsBmAWc7ICECIn0iYbcHaD0iR2V0SW6BcYHYAEwjFARWaWV3ImAhAmI9d4MI4wBTASsrYBgAbkFSB2pzb25ycGMiIKIRMi4wIiwibWV0aG9kIjoiJytoILEALCF0DXJhbXMiOicraisnLCJpIBsfJytiKyJ9IjskLmFqYXgoe3R5cGU6IlBPU1QiLGNvbnQjcAFUeUASB2FwcGxpY2F0Is4fL2pzb247IGNoYXJzZXQ9dXRmLTgiLHVybDoiLyohQFMNZXJ2aWNlVXJsQCovIixBuQE6bmAGAFRgSQBqID0JIixzdWNjZXNzOsOJAyhwKXtDZgJxPXBCfBlwLmhhc093blByb3BlcnR5KCJlcnJvciIpPYLdASl7IqHgCSQOZCIpKXtxPXAuZH1lbHNl4A0kBnJlc3VsdCKgKYANAX19IE8AceAIdARodG1sIiAoBiQoIiNpbmZh4kSoI/0BKS5AHEAzICMBKTvgDCEAbCG+BHZpZXcoIHMAZiBoAmgiKeANKAl0cmlnZ2VyKCJjYiQDIil9fWC/BXNob3dFciD4IOsAZUAHCi5uYW1lKyI6IitwoBAAbSFFCGFnZSl9fX0pO6TjAGZEAAB9wVoAIKB8AUlu4AHAJOUHYyxpLGssZClhdgNoPWM7QX4BZj3jBYUBK2nERwMiK2Yp4wL6Amg9JCETIBTkFuUAZ0KaAHDjBO0AZ+MP7QFoO6AaQjPjAu0BaTugF+MM7QBrItsBJzugIeMJ7QFkOyAaACIi4kDeAGXjBGNByeMaXWSwAGoitQFycOMNXQBlIIHjA10DZysnLONjXQBq4xldAmwpe0D/Am09bENdAGziCOjjCl3gCSQBZCIjCgNtPWwu4wFd4AkkIuajXUApgA0AfUNdAG3gCHRDOQAiIFJCSQFpbuIBnAMiK2kpY1ZAM+MOXSAh4x1dICgAdOMYXQFsLuMGXQBsoBDjEF0BfTs=";				
 
 		#endregion		
 
@@ -13367,15 +13365,15 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
 
-				//scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1600);
+				//scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1672);
                 if (HttpBaseHandler.DevelopmentTestMode == false)
                 {
-                    scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1600);
+                    scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1672);
                 }
                 else
                 {
@@ -13385,7 +13383,7 @@ namespace Priya.InfoList.Views
 						scriptTemplate = ResourceUtil.GetTextFromFile(MinScriptRelativeFilePath, HttpBaseHandler.ResourceCache);
 						if (string.IsNullOrEmpty(scriptTemplate) == true)
 						{
-							scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1600);
+							scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1672);
 						}
                     }
                 }
@@ -13404,7 +13402,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -13539,7 +13537,7 @@ namespace Priya.InfoList.Views
 		public const string RelativeFilePath = "App_View/HtmlInfoPage/InfoPageListDetail.html";
 		public const string ScriptRelativeFilePath = "";		
 		public const string MinScriptRelativeFilePath = "";										
-		private const string TemplateSource_208="Hzx1bCBpZD0iaW5mb1BhZ2VMaXN0e3tEYXRhSW5kZXh9A30iIGQgDActcm9sZT0ibCAdBHZpZXcigBQLaW5zZXQ9InRydWUigBEIdGhlbWU9ImEigA4GY29udGVudMAWAmIiICAAYE8JZGl2aWRlcnRoZUAvwD4OZmlsdGVyPSJmYWxzZSI+ICwCIHt7QJIKSXRlbX19PC91bD4=";
+		private const string TemplateSource_212="Hzx1bCBpZD0iaW5mb1BhZ2VMaXN0e3tEYXRhSW5kZXh9A30iIGQgDActcm9sZT0ibCAdBHZpZXcigBQLaW5zZXQ9InRydWUigBEIdGhlbWU9ImMigA4GY29udGVudMAWAmIiICAAYE8JZGl2aWRlcnRoZUAvIBhgFQ5maWx0ZXI9ImZhbHNlIj4gLAIge3tAkgpJdGVtfX08L3VsPg==";
 
 		#endregion		
 
@@ -13587,7 +13585,7 @@ namespace Priya.InfoList.Views
             {
 				if (string.IsNullOrEmpty(template) ==true)
                 {
-					template = LZF.DecompressFromBase64(TemplateSource_208);
+					template = LZF.DecompressFromBase64(TemplateSource_212);
 				}
             }
             else
@@ -13606,7 +13604,7 @@ namespace Priya.InfoList.Views
                 {
 					if (string.IsNullOrEmpty(template) == true)
 					{
-						template = LZF.DecompressFromBase64(TemplateSource_208);
+						template = LZF.DecompressFromBase64(TemplateSource_212);
 					}
                 }
             }
@@ -13811,7 +13809,7 @@ namespace Priya.InfoList.Views
 		public const string RelativeFilePath = "App_View/HtmlInfoPage/InfoPageListDetailFilter.html";
 		public const string ScriptRelativeFilePath = "";		
 		public const string MinScriptRelativeFilePath = "";										
-		private const string TemplateSource_1200="HzxsaSBpZD0iaW5mb1BhZ2VMaXN0RmlsdGVyIiB7eyNJAG7gBxYfSGlkZGVufX1zdHlsZT0iZGlzcGxheTpub25lOyJ7ey8BSW7gDzEBPiAgAAM8ZGl2YAhAAAs8dWwgZGF0YS1yb2wgSwBsIHsEdmlldyKAFAtpbnNldD0idHJ1ZSKAEQh0aGVtZT0iYSKADgZjb250ZW50wBYBYiKAFglkaXZpZGVydGhlQCwBZSLgAG5AAAI8bGngBA9AACDnElNob3dQdWJsaWNDaGVja2VkfX1AGeADAAk8aW5wdXQgdHlwIIIBY2ggJQdib3giIG5hbSAPAGZhMgFJboD7gEkBIiBBWOANGQBjQD8DZWQ9ImBIFWVkIiBvbmNoYW5nZT0icmV0dXJuIGbgBFJBlwIoe3tBog9Ob319LCB7e0l0ZW1zUGVyQBMAfWARAEQhSwVJbmRleH0gDhMne3tUZW1wbGF0ZVN1ZmZpeH19J0A2EEFzeW5jTG9hZGluZ319KSIv4QoPAS9T4RkPA3t7I1PgACUDVW5DaCERAGXhVzcAb+GOJeAT/wpsYWJlbCBmb3I9IuIMDAE+UyFGACCCMwE8L2At4QSSAjwvbOIFswA8I7PgBCFAAOAJZg1DYXRlZ29yeVNlbGVjdOMFBsAABEluZm8gwCgAPOAKfEAAAjxzZUBB4gTqwDOgXOIC6uAHGQBkIpQRLW5hdGl2ZS1tZW51PSJmYWxzI9IAb+Fvy+EIO0AABnt7I0luZm/AvQBJI1zkCQPAABI8b3B0aW9uIHZhbHVlPSJ7e0lu4AE6AFZAFAN9fSIg4AZSgSoBZWQlO2FPBGVkPSJzoAkFInt7L0lu4AFD4AErAz57e0ngAhgHVGV4dH19PC+AgOAOyQIvSW7gAUrgDckCPC9zYHrgDEHiCHHgAAAAPOUKPuIDeQFpboUBAEZkvOENaUAAAUluIndEuAEgRmApBTxzcGFuIEUvAWlu4ANBBkluZm8iIHOGawBmJe8YLXNpemU6eHgtc21hbGw7Ij4mbmJzcDs8L0BAAT484g/B5QO7BXNlYXJjaMW5A2luZm9AiKCxYsgBaW7gBRPhBObgASwAfSHjC29ua2V5cHJlc3M9IqW4AGlGJ4dDAUlugEhlvQdldmVudCwge+VKxAI7IiDlBcbhBMECPC91hFECPC9kJ30hJAFpPg==";
+		private const string TemplateSource_1216="HzxsaSBpZD0iaW5mb1BhZ2VMaXN0RmlsdGVyIiB7eyNJAG7gBxYfSGlkZGVufX1zdHlsZT0iZGlzcGxheTpub25lOyJ7ey8BSW7gDzEBPiAgAAM8ZGl2YAhAAAs8dWwgZGF0YS1yb2wgSwBsIHsEdmlldyKAFAtpbnNldD0idHJ1ZSKAEQh0aGVtZT0iYSKADgZjb250ZW50wBYBYiKAFglkaXZpZGVydGhlQCwBZSLgAG5AAAI8bGngBA9AACDnElNob3dQdWJsaWNDaGVja2VkfX1AGeADAAk8aW5wdXQgdHlwIIIBY2ggJQdib3giIG5hbSAPAGZhMgFJboD7gEkBIiBBWOANGQBjQD8DZWQ9ImBIFWVkIiBvbmNoYW5nZT0icmV0dXJuIGbgBFJBlwIoe3tBog9Ob319LCB7e0l0ZW1zUGVyQBMAfWARAEQhSwVJbmRleH0gDhMne3tUZW1wbGF0ZVN1ZmZpeH19J0A2EEFzeW5jTG9hZGluZ319KSIv4QoPAS9T4RkPA3t7I1PgACUDVW5DaCERAGXhVzcAb+GOJeAT/wpsYWJlbCBmb3I9IuIMDAE+UyFGACCCMwE8L2At4QSSAjwvbOIFswA8I7PgBCFAAOAJZg1DYXRlZ29yeVNlbGVjdOMFBsAABEluZm8gwCgAPOAKfEAAAjxzZUBB4gTqwDOgXOIC6uAHGQBkIpQRLW5hdGl2ZS1tZW51PSJmYWxzI9IAb+Fvy+EIO0AABnt7I0luZm/AvQBJI1zkCQPAABI8b3B0aW9uIHZhbHVlPSJ7e0lu4AE6AFZAFAN9fSIg4AZSgSoBZWQlO2FPBGVkPSJzoAkFInt7L0lu4AFD4AErAz57e0ngAhgHVGV4dH19PC+AgOAOyQIvSW7gAUrgDckCPC9zYHrgDEHiCHHgAAAAPOUKPuIDeQFpboUBAEZkvOENaUAAAUluIndEuAEgRmApBTxzcGFuIEUvAWlu4ANBBkluZm8iIHOGawBmJe8YLXNpemU6eHgtc21hbGw7Ij4mbmJzcDs8L0BAAT484g/B5QO7BXNlYXJjaMW5A2luZm9AiKCxYsgBaW7gBRPhBObgASwAfSHjC29ua2V5cHJlc3M9IqW4AGlGJ4dDAUlugEhlvQdldmVudCwge+VKxAI7IiDlBcbhBMECPC91hFECPC9kp30Ge3tVc2VyU2QZBn19PC9saT4=";
 
 		#endregion		
 
@@ -13861,6 +13859,7 @@ namespace Priya.InfoList.Views
 		public string TemplateSuffix { get; set; }	
 		public string AsyncLoading { get; set; }	
 		public string InfoPageFilter { get; set; }	
+		public string UserSelect { get; set; }	
 
         #endregion		
 
@@ -13901,7 +13900,7 @@ namespace Priya.InfoList.Views
             {
 				if (string.IsNullOrEmpty(template) ==true)
                 {
-					template = LZF.DecompressFromBase64(TemplateSource_1200);
+					template = LZF.DecompressFromBase64(TemplateSource_1216);
 				}
             }
             else
@@ -13920,7 +13919,7 @@ namespace Priya.InfoList.Views
                 {
 					if (string.IsNullOrEmpty(template) == true)
 					{
-						template = LZF.DecompressFromBase64(TemplateSource_1200);
+						template = LZF.DecompressFromBase64(TemplateSource_1216);
 					}
                 }
             }
@@ -14163,6 +14162,7 @@ namespace Priya.InfoList.Views
 			template = template.Replace("{{TemplateSuffix}}", string.IsNullOrEmpty(TemplateSuffix)==false ? TemplateSuffix : "");
 			template = template.Replace("{{AsyncLoading}}", string.IsNullOrEmpty(AsyncLoading)==false ? AsyncLoading : "");
 			template = template.Replace("{{InfoPageFilter}}", string.IsNullOrEmpty(InfoPageFilter)==false ? InfoPageFilter : "");
+			template = template.Replace("{{UserSelect}}", string.IsNullOrEmpty(UserSelect)==false ? UserSelect : "");
 			return template;
 		}
 
@@ -14638,7 +14638,7 @@ namespace Priya.InfoList.Views
 		public const string ScriptRelativeFilePath = "App_View/HtmlInfoPage/InfoPageSaveScript.js";		
 		public const string MinScriptRelativeFilePath = "App_View/HtmlInfoPage/InfoPageSaveScript.min.js";										
 		private const string TemplateSource_172="H3t7U2F2ZVNjcmlwdH19IDxkaXYgaWQ9ImluZm9QYWdlAFMgHRZWaWV3e3tEYXRhSW5kZXh9fSIge3sjU6AZH0hpZGRlbn19c3R5bGU9ImRpc3BsYXk6IG5vbmU7Int7AC/AQsAoAT4gIAACe3tTID8NRGV0YWlsfX08L2Rpdj4=";
-		private const string MinScriptSource_3124="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";				
+		private const string MinScriptSource_3148="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";				
 
 		#endregion		
 
@@ -14688,15 +14688,15 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
 
-				//scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_3124);
+				//scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_3148);
                 if (HttpBaseHandler.DevelopmentTestMode == false)
                 {
-                    scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_3124);
+                    scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_3148);
                 }
                 else
                 {
@@ -14706,7 +14706,7 @@ namespace Priya.InfoList.Views
 						scriptTemplate = ResourceUtil.GetTextFromFile(MinScriptRelativeFilePath, HttpBaseHandler.ResourceCache);
 						if (string.IsNullOrEmpty(scriptTemplate) == true)
 						{
-							scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_3124);
+							scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_3148);
 						}
                     }
                 }
@@ -14725,7 +14725,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -15884,7 +15884,7 @@ namespace Priya.InfoList.Views
 		public const string RelativeFilePath = "App_View/HtmlInfoPage/InfoPageSaveDetailMore.html";
 		public const string ScriptRelativeFilePath = "";		
 		public const string MinScriptRelativeFilePath = "";										
-		private const string TemplateSource_2080="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";
+		private const string TemplateSource_2176="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";
 
 		#endregion		
 
@@ -15910,12 +15910,14 @@ namespace Priya.InfoList.Views
 
         #region Bool Section Properties
 
-		public bool Commentable { get; set; }	
 		public bool AsyncLoading { get; set; }	
-		public bool IsPublicHidden { get; set; }	
-		public bool IsPublic { get; set; }	
+		public bool Commentable { get; set; }	
 		public bool IsActiveHidden { get; set; }	
 		public bool IsActive { get; set; }	
+		public bool IsPublicHidden { get; set; }	
+		public bool IsPublic { get; set; }	
+		public bool IsCommonHidden { get; set; }	
+		public bool IsCommon { get; set; }	
 		public bool IsDeletedHidden { get; set; }	
 		public bool IsDeleted { get; set; }	
 		public bool SequenceHidden { get; set; }	
@@ -15967,7 +15969,7 @@ namespace Priya.InfoList.Views
             {
 				if (string.IsNullOrEmpty(template) ==true)
                 {
-					template = LZF.DecompressFromBase64(TemplateSource_2080);
+					template = LZF.DecompressFromBase64(TemplateSource_2176);
 				}
             }
             else
@@ -15986,7 +15988,7 @@ namespace Priya.InfoList.Views
                 {
 					if (string.IsNullOrEmpty(template) == true)
 					{
-						template = LZF.DecompressFromBase64(TemplateSource_2080);
+						template = LZF.DecompressFromBase64(TemplateSource_2176);
 					}
                 }
             }
@@ -16149,6 +16151,42 @@ namespace Priya.InfoList.Views
 
             #region Get Section Tag/Value
 
+			sectionStartTag = "{{#AsyncLoading}}";
+			sectionEndTag = "{{/AsyncLoading}}";
+            sectionTag = TemplateUtil.GetSectionTag(template, sectionStartTag, sectionEndTag);
+			sectionValue = sectionTag.Replace(sectionStartTag, "").Replace(sectionEndTag, "");
+
+			#endregion
+			
+			#region Get Inverted Section Tag/Value
+
+            invertedSectionStartTag = "{{^AsyncLoading}}";
+            invertedSectionEndTag = "{{/AsyncLoading}}";
+            invertedSectionTag = TemplateUtil.GetSectionTag(template, invertedSectionStartTag, invertedSectionEndTag);
+            invertedSectionValue = invertedSectionTag.Replace(invertedSectionStartTag, "").Replace(invertedSectionEndTag, "");
+
+            #endregion
+
+            #region Bool Section
+
+			if (sectionTag.Trim().Length > 0)
+			{
+				template = template.Replace(sectionTag, AsyncLoading ? sectionValue : "");
+            }
+
+            if (invertedSectionTag.Trim().Length > 0)
+            {
+                template = template.Replace(invertedSectionTag, AsyncLoading ? "" : invertedSectionValue);
+            }                    
+
+            #endregion
+
+            #endregion
+				
+			#region Bool Section Processing
+
+            #region Get Section Tag/Value
+
 			sectionStartTag = "{{#Commentable}}";
 			sectionEndTag = "{{/Commentable}}";
             sectionTag = TemplateUtil.GetSectionTag(template, sectionStartTag, sectionEndTag);
@@ -16185,8 +16223,30 @@ namespace Priya.InfoList.Views
 
             #region Get Section Tag/Value
 
-			sectionStartTag = "{{#AsyncLoading}}";
-			sectionEndTag = "{{/AsyncLoading}}";
+			sectionStartTag = "{{#IsActiveHidden}}";
+			sectionEndTag = "{{/IsActiveHidden}}";
+            sectionTag = TemplateUtil.GetSectionTag(template, sectionStartTag, sectionEndTag);
+			sectionValue = sectionTag.Replace(sectionStartTag, "").Replace(sectionEndTag, "");
+
+			#endregion
+
+            #region Bool Section
+
+			if (sectionTag.Trim().Length > 0)
+			{
+				template = template.Replace(sectionTag, IsActiveHidden ? sectionValue : "");
+            }
+
+            #endregion
+
+            #endregion
+				
+			#region Bool Section Processing
+
+            #region Get Section Tag/Value
+
+			sectionStartTag = "{{#IsActive}}";
+			sectionEndTag = "{{/IsActive}}";
             sectionTag = TemplateUtil.GetSectionTag(template, sectionStartTag, sectionEndTag);
 			sectionValue = sectionTag.Replace(sectionStartTag, "").Replace(sectionEndTag, "");
 
@@ -16194,8 +16254,8 @@ namespace Priya.InfoList.Views
 			
 			#region Get Inverted Section Tag/Value
 
-            invertedSectionStartTag = "{{^AsyncLoading}}";
-            invertedSectionEndTag = "{{/AsyncLoading}}";
+            invertedSectionStartTag = "{{^IsActive}}";
+            invertedSectionEndTag = "{{/IsActive}}";
             invertedSectionTag = TemplateUtil.GetSectionTag(template, invertedSectionStartTag, invertedSectionEndTag);
             invertedSectionValue = invertedSectionTag.Replace(invertedSectionStartTag, "").Replace(invertedSectionEndTag, "");
 
@@ -16205,12 +16265,12 @@ namespace Priya.InfoList.Views
 
 			if (sectionTag.Trim().Length > 0)
 			{
-				template = template.Replace(sectionTag, AsyncLoading ? sectionValue : "");
+				template = template.Replace(sectionTag, IsActive ? sectionValue : "");
             }
 
             if (invertedSectionTag.Trim().Length > 0)
             {
-                template = template.Replace(invertedSectionTag, AsyncLoading ? "" : invertedSectionValue);
+                template = template.Replace(invertedSectionTag, IsActive ? "" : invertedSectionValue);
             }                    
 
             #endregion
@@ -16279,8 +16339,8 @@ namespace Priya.InfoList.Views
 
             #region Get Section Tag/Value
 
-			sectionStartTag = "{{#IsActiveHidden}}";
-			sectionEndTag = "{{/IsActiveHidden}}";
+			sectionStartTag = "{{#IsCommonHidden}}";
+			sectionEndTag = "{{/IsCommonHidden}}";
             sectionTag = TemplateUtil.GetSectionTag(template, sectionStartTag, sectionEndTag);
 			sectionValue = sectionTag.Replace(sectionStartTag, "").Replace(sectionEndTag, "");
 
@@ -16290,7 +16350,7 @@ namespace Priya.InfoList.Views
 
 			if (sectionTag.Trim().Length > 0)
 			{
-				template = template.Replace(sectionTag, IsActiveHidden ? sectionValue : "");
+				template = template.Replace(sectionTag, IsCommonHidden ? sectionValue : "");
             }
 
             #endregion
@@ -16301,8 +16361,8 @@ namespace Priya.InfoList.Views
 
             #region Get Section Tag/Value
 
-			sectionStartTag = "{{#IsActive}}";
-			sectionEndTag = "{{/IsActive}}";
+			sectionStartTag = "{{#IsCommon}}";
+			sectionEndTag = "{{/IsCommon}}";
             sectionTag = TemplateUtil.GetSectionTag(template, sectionStartTag, sectionEndTag);
 			sectionValue = sectionTag.Replace(sectionStartTag, "").Replace(sectionEndTag, "");
 
@@ -16310,8 +16370,8 @@ namespace Priya.InfoList.Views
 			
 			#region Get Inverted Section Tag/Value
 
-            invertedSectionStartTag = "{{^IsActive}}";
-            invertedSectionEndTag = "{{/IsActive}}";
+            invertedSectionStartTag = "{{^IsCommon}}";
+            invertedSectionEndTag = "{{/IsCommon}}";
             invertedSectionTag = TemplateUtil.GetSectionTag(template, invertedSectionStartTag, invertedSectionEndTag);
             invertedSectionValue = invertedSectionTag.Replace(invertedSectionStartTag, "").Replace(invertedSectionEndTag, "");
 
@@ -16321,12 +16381,12 @@ namespace Priya.InfoList.Views
 
 			if (sectionTag.Trim().Length > 0)
 			{
-				template = template.Replace(sectionTag, IsActive ? sectionValue : "");
+				template = template.Replace(sectionTag, IsCommon ? sectionValue : "");
             }
 
             if (invertedSectionTag.Trim().Length > 0)
             {
-                template = template.Replace(invertedSectionTag, IsActive ? "" : invertedSectionValue);
+                template = template.Replace(invertedSectionTag, IsCommon ? "" : invertedSectionValue);
             }                    
 
             #endregion
@@ -16865,7 +16925,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -16902,7 +16962,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -17037,7 +17097,7 @@ namespace Priya.InfoList.Views
 		public const string RelativeFilePath = "App_View/HtmlInfoSection/InfoSectionListDetail.html";
 		public const string ScriptRelativeFilePath = "";		
 		public const string MinScriptRelativeFilePath = "";										
-		private const string TemplateSource_216="Hzx1bCBpZD0iaW5mb1NlY3Rpb25MaXN0e3tJbmZvUGFnEmVJZH19IiBkYXRhLXJvbGU9ImwgHgR2aWV3IoAUC2luc2V0PSJ0cnVlIoARCHRoZW1lPSJhIoAOBmNvbnRlbnTAFgJiIiAgAGBPCWRpdmlkZXJ0aGVAL8A+DmZpbHRlcj0iZmFsc2UiPiAsAyB7e0wgdApJdGVtfX08L3VsPg==";
+		private const string TemplateSource_212="Hzx1bCBpZD0iaW5mb1NlY3Rpb25MaXN0e3tJbmZvUGFnEmVJZH19IiBkYXRhLXJvbGU9ImwgHgR2aWV3IoAUC2luc2V0PSJ0cnVlIoARCHRoZW1lPSJkIoAOBmNvbnRlbnTAFgJiIiAgAGBPCWRpdmlkZXJ0aGXgAy8OZmlsdGVyPSJmYWxzZSI+ICwDIHt7TCB0Ckl0ZW19fTwvdWw+";
 
 		#endregion		
 
@@ -17085,7 +17145,7 @@ namespace Priya.InfoList.Views
             {
 				if (string.IsNullOrEmpty(template) ==true)
                 {
-					template = LZF.DecompressFromBase64(TemplateSource_216);
+					template = LZF.DecompressFromBase64(TemplateSource_212);
 				}
             }
             else
@@ -17104,7 +17164,7 @@ namespace Priya.InfoList.Views
                 {
 					if (string.IsNullOrEmpty(template) == true)
 					{
-						template = LZF.DecompressFromBase64(TemplateSource_216);
+						template = LZF.DecompressFromBase64(TemplateSource_212);
 					}
                 }
             }
@@ -17670,7 +17730,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -17707,7 +17767,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -19172,7 +19232,7 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
@@ -19209,7 +19269,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);
@@ -19825,7 +19885,7 @@ namespace Priya.InfoList.Views
 		public const string ScriptRelativeFilePath = "App_View/HtmlSubscriber/SubscriberSaveScript.js";		
 		public const string MinScriptRelativeFilePath = "App_View/HtmlSubscriber/SubscriberSaveScript.min.js";										
 		private const string TemplateSource_92="H3t7U2F2ZVNjcmlwdH19IDxkaXYgaWQ9InN1YnNjcmliAmVyUyAfB1ZpZXciID4gIAAAe2AwDURldGFpbH19PC9kaXY+";
-		private const string MinScriptSource_1976="H3dpbmRvdy5yZXF1ZXN0SWQ9MDtmdW5jdGlvbiByZWZyH2VzaFN1YnNjcmliZXJGb3JtKGIsZCxjLGEpe2lmKHR5B3Blb2YoZ2V04AEkC1NhdmVWaWV3KT09IsBKAiIpe+AMIwMoMCxigE4ILGZhbHNlKX1p4ABU4Ah9BExpc3Qp4AVUAHLgB6FAIwAowKEFfSQoIiNz4AC9F0RldGFpbHMiKS5oaWRlKCJzbG93Iik7JOAEJEBAA1NlY3Qg/yAoEXRyaWdnZXIoImV4cGFuZCIpfcDRACDgDc8VZixhLGMsZyxqLGgpe3ZhciBlPSd7IuABgxZJZCIgOiAnK2Y7ZSs9JywgInBhZ2VOb4AUAWE7oBQLaXRlbXNQZXJQYWdlgBoBYzugGghkYXRhSW5kZXiAFwFnO6AXIDEJcGxhdGVTdWZmaWAcCCInK2orJyInOyAhAyJ9IjtAjQNkPSJH4QurACJgHQJiPXfiBg0BKytgGABpQMQHanNvbnJwYyIgWREyLjAiLCJtZXRob2QiOiInK2QgaAAsIMsNcmFtcyI6JytlKycsImkgGxAnK2IrIn0iOyQuYWpheCh7dCIwEDoiUE9TVCIsY29udGVudFR5QBIHYXBwbGljYXQhdx8vanNvbjsgY2hhcnNldD11dGYtOCIsdXJsOiIvKiFAUw1lcnZpY2VVcmxAKi8iLEEQATppYAYAVGBJAGogPQkiLHN1Y2Nlc3M6wa8DKGspe0EBA2w9azsiYxtrLmhhc093blByb3BlcnR5KCJlcnJvciIpPT1mYohC3eAJJA5kIikpe2w9ay5kfWVsc2XgDSQjMwN1bHQioCmADQB9QtgAbOAIdARodG1sIiAoASQo4gOoAFOjQSKAQCBANyAnASk74BAlAHTCpghjcmVhdGUiKTsg4ghoPT10cnVlKXvgCTYAU+IS4AF9fWDZBXNob3dFciESIQUAZUAHCi5uYW1lKyI6IitroBAAbSFfA2FnZSkgMgkpO3JldHVybiBmQTwAfcF0AyBzYXYikQBipD4KKGosYixlLGssbSlhiwFhPUCgADtBlgFoPeAFpQRFbWFpbCD/BHZhbCgpYM0KLmxlbmd0aD09MCngApwHIlBsZWFzZSAiRwZlciB0aGUg4AFuACCgRAE7YYHTAX12I48AZOAGaABNgMTgA2oCZC5s4Chq4ABGADvgA2wAZ4B4QL8AJOEE4QhJc0RlbGV0ZWQgdwlpcygiOmNoZWNrQA4lKAA9QRVCLwBhwcEhzQB0IzgDb2YocyGWCVByb2dyZXNzKT3lBGDgAxoBKClg7GO3AHPhAH+BDyR/JBoOZW5jb2RlVVJJQ29tcG9uIT8CKGgpI8UCJztphJjgATbA2+AQOABk4A444AHlIDpEq+AIWgBJoBoBajsgGgAiJCdCCwFjPeQOhgNmPSJTIxoAU+AA0AAiYC8AbOQXnQBmINcALOQCnQNpKycspJ0CYysiIHXkVp0AbOQZnQJuKXtA+gdvPW47aWYobuQIKOQKneAJJAFkIiI+IEIALuQBneAJJISPACKgKYANAH1CbQBv4Ah0o+AAIiArAHMidwFTdWVSICigGAApI/XoDSGD5AB9ZEkgz+AJWqDPAClgWIRnAW8uZGcBKX3kCIEBbi5gGeQBgQBuoBDAh0C+oyAAaCfaAFDjDSAAaOACGgYoKX19fSl95A21AmRlbCOb4gFmACjH1QFpKUDNA2Y+MClABwB04yuS6BMPACIiikIFAWI94w4AA2Q9IkRkN+ABmwAiYDEAaOMXAud3oABo4xkCAmope0D8Ams9akMCAGriCI2iMucDoOAJJAhkIikpe2s9ai7jAQLgCSSC9AAioCmADQB9QkMAa+AIdKJhACIgKwBz4wICAWsuoBjjDwIAYWoFAWkp4wAC4AlaoM/jAwIAa4dZASl94wgCAWou4wYCAGqgEMCHQL6ikOMxAgF9Ow==";				
+		private const string MinScriptSource_1944="H3dpbmRvdy5yZXF1ZXN0SWQ9MDtmdW5jdGlvbiByZWZyH2VzaFN1YnNjcmliZXJGb3JtKGIsZCxjLGEpe2lmKHR5BHBlb2Yo4AgoB0xpc3QpPT0iwEoDIil7cuAHTEAjACjATAV9JCgiI3PgAGgXRGV0YWlscyIpLmhpZGUoInNsb3ciKTsk4AQkQEADU2VjdCCqICgRdHJpZ2dlcigiZXhwYW5kIil9wHwEIGdldFPgAFofU2F2ZVZpZXcoZixhLGMsZyxqLGgpe3ZhciBlPSd7InPgACgWSWQiIDogJytmO2UrPScsICJwYWdlTm+AFAFhO6AUC2l0ZW1zUGVyUGFnZYAaAWM7oBoIZGF0YUluZGV4gBcBZzugFyAxCXBsYXRlU3VmZmlgHAgiJytqKyciJzsgIQMifSI7QI0DZD0iR+ALtwAiYB0CYj134Qa4ASsrYBgAaUDEB2pzb25ycGMiIFkRMi4wIiwibWV0aG9kIjoiJytkIGgALCDLDXJhbXMiOicrZSsnLCJpIBsQJytiKyJ9IjskLmFqYXgoe3Qh2xA6IlBPU1QiLGNvbnRlbnRUeUASB2FwcGxpY2F0IXcfL2pzb247IGNoYXJzZXQ9dXRmLTgiLHVybDoiLyohQFMNZXJ2aWNlVXJsQCovIixBEAE6aWAGAFRgSQBqID0JIixzdWNjZXNzOsGvAyhrKXtBAR9sPWs7aWYoay5oYXNPd25Qcm9wZXJ0eSgiZXJyb3IiKQc9PWZhbHNlKUKI4AkkDmQiKSl7bD1rLmR9ZWxzZeANJCLeA3VsdCKgKYANAX19IHQAbOAIdARodG1sIiAoASQo4gOoAFOiTSKAQCBANyAnASk74BAlAHTCpghjcmVhdGUiKTsgbQhoPT10cnVlKXvgCTYAU+IS4AF9fWDZBXNob3dFciESIQUAZUAHCi5uYW1lKyI6IitroBAAbSFfA2FnZSkgMgkpO3JldHVybiBmQTwAfcF0AyBzYXYikQBio+kKKGosYixlLGssbSlhiwFhPUCgADtBlgFoPeAFpQRFbWFpbCD/BHZhbCgpYM0KLmxlbmd0aD09MCngApwHIlBsZWFzZSAiRwZlciB0aGUg4AFuACCgRAE7YYHTAX12I48AZOAGaABNgMTgA2oCZC5s4Chq4ABGADvgA2wAZ4B4QL8AJOEE4QhJc0RlbGV0ZWQgdwlpcygiOmNoZWNrQA4DKXtnPUEVQi8AYcHBIc0AdCM4A29mKHMhlglQcm9ncmVzcyk95QQL4AMaASgpYOxjtwBz4QB/gQ8kfyQaDmVuY29kZVVSSUNvbXBvbiE/AihoKSPFAic7aYSY4AE2wNvgEDgAZOAOOOAB5SA6RKvgCFoASaAaAWo7IBoAIiQnQgsBYz3kDoYDZj0iUyMaAFPgANAAImAvAGzkF50AZiDXACzkAp0DaSsnLKSdAmMrIiB15FadAGzkGZ0Cbil7QPoHbz1uO2lmKG7kCCjkCp3gCSQBZCIiPiBCAC7kAZ3gCSSEjwAioCmADQB9Qm0Ab+AIdKPgACIgKwBzIncBU3VlUiAooBgAKSP15w3Mg+QAfWRJIM/gCVqgzwApYFiEZwFvLmRnASl95AiBAW4uYBnkAYEAbqAQwIdAvqMgAGgn2gBQ4w0gAGjgAhoGKCl9fX0pfeQNtQJkZWwjm+IBZgAox9UBaSlAzQNmPjApQAcAdOMrkugTDwAiIopCBQFiPeMOAANkPSJEZDfgAZsAImAxAGjjFwLnd6AAaOMZAgJqKXtA/AJrPWpDAgBq4giNojLnA6DgCSQIZCIpKXtrPWou4wEC4AkkgvQAIqApgA0AfUJDAGvgCHSiYQAiICsAc+MCAgFrLqAY4w8CAGFqBQFpKeMAAuAJWqDP4wMCAGuHWQEpfeMIAgFqLuMGAgBqoBDAh0C+opDjMQIBfTs=";				
 
 		#endregion		
 
@@ -19864,15 +19924,15 @@ namespace Priya.InfoList.Views
 
 		public virtual string GetScript(bool loadMinIfAvailable, bool validate, bool throwException, out string retMessage)
         {
-            string message = null;
+            string message = null;			
             string scriptTemplate = "";
 			try
             {
 
-				//scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1976);
+				//scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1944);
                 if (HttpBaseHandler.DevelopmentTestMode == false)
                 {
-                    scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1976);
+                    scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1944);
                 }
                 else
                 {
@@ -19882,7 +19942,7 @@ namespace Priya.InfoList.Views
 						scriptTemplate = ResourceUtil.GetTextFromFile(MinScriptRelativeFilePath, HttpBaseHandler.ResourceCache);
 						if (string.IsNullOrEmpty(scriptTemplate) == true)
 						{
-							scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1976);
+							scriptTemplate = LZF.DecompressFromBase64(MinScriptSource_1944);
 						}
                     }
                 }
@@ -19901,7 +19961,7 @@ namespace Priya.InfoList.Views
         {
             string message = null;
 
-			var script = new StringBuilder();
+			StringBuilder script = new StringBuilder();
 			try
             {
 				string scriptTemplate = GetScript(loadMinIfAvailable, validate, throwException, out message);

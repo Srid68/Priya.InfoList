@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B2CBD263-DD7E-4D0E-8172-58611CBD9E5A}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Priya.InfoList</RootNamespace>
+    <AssemblyName>Priya.InfoList</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidSupportedAbis>armeabi</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Android\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidLinkMode>None</AndroidLinkMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Android\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Arshu.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\PriyaReference\Core\Android\Arshu.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Arshu.Data, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\PriyaReference\Core\Android\Arshu.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.Web, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\PriyaReference\Core\Android\System.Web.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Gen\DataSource\DataEntities.cs" />
+    <Compile Include="App_Gen\DataSource\DataSource.cs" />
+    <Compile Include="App_Gen\DataSource\FileSource.cs" />
+    <Compile Include="App_Gen\Resource\Resource.cs" />
+    <Compile Include="App_Gen\Template\Template.cs" />
+    <Compile Include="App_Handler\Data\JsonDataHandler.cs" />
+    <Compile Include="App_Handler\Data\JsonDataRefTypeHandler.cs" />
+    <Compile Include="App_Handler\Data\JsonDataTypeHandler.cs" />
+    <Compile Include="App_Handler\InfoCategory\JsonInfoCategoryHandler.cs" />
+    <Compile Include="App_Handler\InfoDetail\JsonInfoDetailHandler.cs" />
+    <Compile Include="App_Handler\InfoPage\JsonInfoPageHandler.cs" />
+    <Compile Include="App_Handler\InfoSection\JsonInfoSectionHandler.cs" />
+    <Compile Include="App_Handler\Subscriber\JsonSubscriberHandler.cs" />
+    <Compile Include="App_Model\DataCommon.cs" />
+    <Compile Include="App_Model\DataInfoList.cs" />
+    <Compile Include="App_Model\DataSource.cs" />
+    <Compile Include="App_ViewModel\Data\DataRefTypeView.cs" />
+    <Compile Include="App_ViewModel\Data\DataTypeView.cs" />
+    <Compile Include="App_ViewModel\Data\DataView.cs" />
+    <Compile Include="App_ViewModel\InfoCategory\InfoCategoryView.cs" />
+    <Compile Include="App_ViewModel\InfoDetail\InfoDetailView.cs" />
+    <Compile Include="App_ViewModel\InfoList\InfoListView.cs" />
+    <Compile Include="App_ViewModel\InfoPage\InfoPageView.cs" />
+    <Compile Include="App_ViewModel\InfoSection\InfoSectionView.cs" />
+    <Compile Include="App_ViewModel\Subscriber\SubscriberView.cs" />
+    <Compile Include="Properties\AndroidAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App_Data\full.v1.mysql.sql" />
+    <None Include="App_Data\full.v1.sqlite.sql" />
+    <Content Include="appbackground.png" />
+    <Content Include="applogo.png" />
+    <Content Include="App_View\HtmlDataRefType\DataRefType.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeList.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeListDetail.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeListDetailEmpty.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeListDetailItem.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeListScript.js" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeListScript.min.js" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSave.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveDetail.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveScript.js" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveScript.min.js" />
+    <Content Include="App_View\HtmlDataRefType\DataRefTypeView.html" />
+    <Content Include="App_View\HtmlDataType\DataType.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeList.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeListDetail.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeListDetailEmpty.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeListDetailItem.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeListScript.js" />
+    <Content Include="App_View\HtmlDataType\DataTypeListScript.min.js" />
+    <Content Include="App_View\HtmlDataType\DataTypeSave.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeSaveDetail.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlDataType\DataTypeSaveScript.js" />
+    <Content Include="App_View\HtmlDataType\DataTypeSaveScript.min.js" />
+    <Content Include="App_View\HtmlDataType\DataTypeView.html" />
+    <Content Include="App_View\HtmlData\Data.html" />
+    <Content Include="App_View\HtmlData\DataList.html" />
+    <Content Include="App_View\HtmlData\DataListDetail.html" />
+    <Content Include="App_View\HtmlData\DataListDetailChildEmpty.html" />
+    <Content Include="App_View\HtmlData\DataListDetailEmpty.html" />
+    <Content Include="App_View\HtmlData\DataListDetailItem.html" />
+    <Content Include="App_View\HtmlData\DataListScript.js" />
+    <Content Include="App_View\HtmlData\DataListScript.min.js" />
+    <Content Include="App_View\HtmlData\DataSave.html" />
+    <Content Include="App_View\HtmlData\DataSaveAdd.html" />
+    <Content Include="App_View\HtmlData\DataSaveDetail.html" />
+    <Content Include="App_View\HtmlData\DataSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlData\DataSaveDetailAppend.html" />
+    <Content Include="App_View\HtmlData\DataSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlData\DataSaveScript.js" />
+    <Content Include="App_View\HtmlData\DataSaveScript.min.js" />
+    <Content Include="App_View\HtmlData\DataView.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategory.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryList.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryListDetail.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryListDetailEmpty.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryListDetailItem.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryListScript.js" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryListScript.min.js" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySave.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveDetail.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveDetailAdd.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveDetailEdit.html" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveScript.js" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveScript.min.js" />
+    <Content Include="App_View\HtmlInfoCategory\InfoCategoryView.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetail.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailList.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailListDetail.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailListDetailEmpty.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailListDetailItem.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailListScript.js" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailListScript.min.js" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailSave.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailSaveAdd.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailSaveDetail.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailSaveScript.js" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailSaveScript.min.js" />
+    <Content Include="App_View\HtmlInfoDetail\InfoDetailView.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPage.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageList.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageListDetail.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageListDetailEmpty.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageListDetailItem.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageListScript.js" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageListScript.min.js" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageSave.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageSaveAdd.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageSaveDetail.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageSaveScript.js" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageSaveScript.min.js" />
+    <Content Include="App_View\HtmlInfoPage\InfoPageView.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSection.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionList.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionListDetail.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionListDetailEmpty.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionListDetailItem.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionListScript.js" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionListScript.min.js" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionSave.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionSaveAdd.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionSaveDetail.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionSaveScript.js" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionSaveScript.min.js" />
+    <Content Include="App_View\HtmlInfoSection\InfoSectionView.html" />
+    <Content Include="App_View\HtmlSubscriber\Subscriber.html" />
+    <Content Include="App_View\HtmlSubscriber\SubscriberListDetailEmpty.html" />
+    <Content Include="App_View\HtmlSubscriber\SubscriberSaveDetailAdd.html" />
+    <Content Include="App_View\HtmlSubscriber\SubscriberSaveDetailEdit.html" />
+    <Content Include="App_View\HtmlSubscriber\SubscriberView.html" />
+    <Content Include="Index.ashx" />
+    <None Include="Apps\InfoList\Data\JsonData.ashx" />
+    <None Include="Apps\InfoList\Data\JsonDataRefType.ashx" />
+    <None Include="Apps\InfoList\Data\JsonDataType.ashx" />
+    <None Include="Apps\InfoList\InfoCategory\JsonInfoCategory.ashx" />
+    <None Include="Apps\InfoList\InfoDetail\JsonInfoDetail.ashx" />
+    <None Include="Apps\InfoList\InfoPage\JsonInfoPage.ashx" />
+    <None Include="Apps\InfoList\InfoSection\JsonInfoSection.ashx" />
+    <None Include="Apps\InfoList\Subscriber\JsonSubscriber.ashx" />
+    <Content Include="Apps\Security\Action\JsonAction.ashx" />
+    <Content Include="Apps\Security\Group\JsonGroup.ashx" />
+    <Content Include="Apps\Security\Invite\JsonInvite.ashx" />
+    <Content Include="Apps\Security\JsonSecurity.ashx" />
+    <Content Include="Apps\Security\Request\JsonRequest.ashx" />
+    <Content Include="Apps\Security\UserAdmin\JsonUserAdmin.ashx" />
+    <Content Include="Apps\Security\User\JsonUser.ashx" />
+    <Content Include="Apps\Setting\Config\JsonConfig.ashx" />
+    <Content Include="Apps\Setting\Profile\JsonProfile.ashx" />
+    <Content Include="Apps\Setting\Sync\JsonSync.ashx" />
+    <None Include="App_Data\infolist.v1.db" />
+    <None Include="App_Data\security.v1.db" />
+    <None Include="App_Data\setting.v1.db" />
+    <None Include="App_Data\SetupData.json" />
+    <None Include="App_View\HtmlSubscriber\SubscriberList.html" />
+    <None Include="App_View\HtmlSubscriber\SubscriberListDetail.html" />
+    <None Include="App_View\HtmlSubscriber\SubscriberListDetailItem.html" />
+    <None Include="App_View\HtmlSubscriber\SubscriberListScript.js" />
+    <None Include="App_View\HtmlSubscriber\SubscriberListScript.min.js" />
+    <None Include="App_View\HtmlSubscriber\SubscriberSave.html" />
+    <None Include="App_View\HtmlSubscriber\SubscriberSaveDetail.html" />
+    <None Include="App_View\HtmlSubscriber\SubscriberSaveScript.js" />
+    <None Include="App_View\HtmlSubscriber\SubscriberSaveScript.min.js" />
+    <Content Include="HttpBase.ashx" />
+    <None Include="JsonBase.ashx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Priya.Generic\Priya.Generic.Android.VS2012.csproj">
+      <Project>{b0009d12-3ff0-45b9-98b3-0fbce0c4f054}</Project>
+      <Name>Priya.Generic.Android.VS2012</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Priya.Mobile\Priya.Mobile.Android.VS2012.csproj">
+      <Project>{5e02ada1-ba67-41a7-9bfe-e64566b18891}</Project>
+      <Name>Priya.Mobile.Android.VS2012</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Priya.Security\Priya.Security.Android.VS2012.csproj">
+      <Project>{e12823a1-1e5b-4116-9f17-ca14e6140871}</Project>
+      <Name>Priya.Security.Android.VS2012</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Priya.Setting\Priya.Setting.Android.VS2012.csproj">
+      <Project>{da7e07bd-c88e-4401-8605-0c439952115b}</Project>
+      <Name>Priya.Setting.Android.VS2012</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <PropertyGroup>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

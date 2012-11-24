@@ -2,9 +2,9 @@ window.requestId = 0;
 
 function refreshSubscriberForm(pageNo, itemsPerPage, dataIndex, templateSuffix) {
 
-    if (typeof (getSubscriberSaveView) == 'function') {
-        getSubscriberSaveView(0, pageNo, itemsPerPage, dataIndex, templateSuffix, false);
-    }
+    //if (typeof (getSubscriberSaveView) == 'function') {
+    //    getSubscriberSaveView(0, pageNo, itemsPerPage, dataIndex, templateSuffix, false);
+    //}
 
     if (typeof (refreshSubscriberList) == 'function') {
         refreshSubscriberList(pageNo, itemsPerPage, dataIndex, templateSuffix);

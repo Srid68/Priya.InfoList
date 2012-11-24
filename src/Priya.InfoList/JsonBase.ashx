@@ -1,1 +1,1 @@
-<%@ WebHandler Language="C#" Class="Arshu.Core.Web.JsonBaseHandler" %>
+<%@ WebHandler Language="C#" Class="Arshu.Core.Http.JsonBaseHandler" %>

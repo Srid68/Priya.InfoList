@@ -57,9 +57,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Reference\Priya.Generic.dll</HintPath>
     </Reference>
-    <Reference Include="Priya.JQMobile, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Reference\Priya.JQMobile.dll</HintPath>
+    <Reference Include="Priya.Mobile">
+      <HintPath>..\..\Reference\Priya.Mobile.dll</HintPath>
     </Reference>
     <Reference Include="Priya.Security, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -68,6 +67,9 @@
     <Reference Include="Priya.Setting, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Reference\Priya.Setting.dll</HintPath>
+    </Reference>
+    <Reference Include="Priya.Tracking">
+      <HintPath>..\..\Reference\Priya.Tracking.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -80,6 +82,40 @@
   <ItemGroup>
     <None Include="App_Data\full.v1.mysql.sql" />
     <None Include="App_Data\full.v1.sqlite.sql" />
+    <None Include="App_Generate\DataEntities.txt">
+      <DependentUpon>DataEntities.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </None>
+    <None Include="App_Generate\DataSource.txt">
+      <DependentUpon>DataSource.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </None>
+    <None Include="App_Generate\FileSource.txt">
+      <DependentUpon>FileSource.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </None>
+    <None Include="App_Generate\ProcessCssJs.txt">
+      <DependentUpon>ProcessCssJs.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </None>
+    <None Include="App_Generate\Resource.txt">
+      <DependentUpon>Resource.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </None>
+    <None Include="App_Generate\Template.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Template.txt</LastGenOutput>
+    </None>
+    <None Include="App_Generate\Template.txt">
+      <DependentUpon>Template.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
     <Content Include="appbackground.png" />
     <Content Include="applogo.png" />
     <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveAdd.html" />
@@ -148,6 +184,28 @@
     <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveAdd.html" />
     <Content Include="App_View\HtmlInfoDetail\InfoDetailListDetailEmpty.html" />
     <Content Include="App_View\HtmlInfoDetail\InfoDetail.html" />
+    <None Include="App_Generate\Config.ttinclude" />
+    <None Include="App_Generate\DataEntities.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DataEntities.txt</LastGenOutput>
+    </None>
+    <None Include="App_Generate\DataSource.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DataSource.txt</LastGenOutput>
+    </None>
+    <None Include="App_Generate\FileSource.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FileSource.txt</LastGenOutput>
+    </None>
+    <None Include="App_Generate\ProcessCssJs.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ProcessCssJs.txt</LastGenOutput>
+    </None>
+    <None Include="App_Generate\Resource.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Resource.txt</LastGenOutput>
+    </None>
+    <None Include="App_Generate\DataConfig.ttinclude" />
     <Content Include="App_Data\security.v1.db" />
     <Content Include="App_Data\infolist.v1.db" />
     <Content Include="Apps\Setting\Config\JsonConfig.ashx" />
@@ -276,6 +334,7 @@
     <Compile Include="App_ViewModel\Data\DataTypeView.cs" />
     <Compile Include="App_ViewModel\Data\DataView.cs" />
     <Compile Include="App_ViewModel\InfoDetail\InfoDetailView.cs" />
+    <Compile Include="App_ViewModel\InfoList\InfoListView.cs" />
     <Compile Include="App_ViewModel\Subscriber\SubscriberView.cs" />
     <Compile Include="App_ViewModel\InfoPage\InfoPageView.cs" />
     <Compile Include="App_ViewModel\InfoSection\InfoSectionView.cs" />
@@ -306,7 +365,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>1093</DevelopmentServerPort>
+          <DevelopmentServerPort>59154</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

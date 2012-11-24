@@ -7,7 +7,7 @@ using Arshu.Core.Common;
 
 using Priya.Generic.Utils;
 using Priya.Generic.Views;
-using Priya.JQMobile.Views;
+using Priya.Mobile.Views;
 using Priya.Security.Utils;
 using Priya.Security.Views;
 using Priya.InfoList.Entity;
@@ -23,24 +23,129 @@ namespace Priya.InfoList.Views
         public string RawUrl { get; set; }
         public string ThemeName { get; set; }
         public string TemplateSuffix { get; set; }
-        public string PageName { get; set; }
+        public string SiteTitle { get; set; }
+        public string PageTitle { get; set; }
         public string PageContent { get; set; }
+        public bool IsPageProcessor { get { return false; } }
 
         public void InitView(bool reInit)
         {
-            DataSource.OnGetUserInfo -= UtilsSecurity.UtilsSecurity_OnGetUserInfo;
-            DataSource.OnGetUserInfo += UtilsSecurity.UtilsSecurity_OnGetUserInfo;                
         }
 
         public string GetPageView()
         {
-            string pageTitle = UtilsGeneric.GetCurrentText("Data");
+            string headerTitle = UtilsGeneric.GetCurrentText("Data Info");
+            if ((UtilsGeneric.ForceLogin == true) && (UtilsSecurity.IsAuthenticated() == false))
+            {
+                headerTitle = UtilsGeneric.GetCurrentText("Security");
+            }
+            string pageTitle = SiteTitle + "-" + headerTitle;
+
             string afterAction = UtilsGeneric.RefreshFunctionWithMessage;
             string helpUrl = UtilsGeneric.HelpUrl;
-            return GetPageView(TemplateSuffix, ThemeName, pageTitle, pageTitle, helpUrl, afterAction);
+            return GetPageView(TemplateSuffix, ThemeName, pageTitle, headerTitle, helpUrl, afterAction);
         }
 
         #endregion
+
+        #region Page View
+
+        public static string GetPageView(string templateSuffix, string themeName, string pageTitle, string headerTitle, string helpUrl, string afterAction)
+        {
+            #region Variables
+
+            bool enableMobileAddress = false;
+            int dataIndex = 0;
+
+            #endregion
+
+            #region Get Mobile Js/Css Resources
+
+            string cssResourcesLink = "";
+            string jsResourcesLink = "";
+            string currentThemeName = MobileTheme.Default.ToString();
+            if (string.IsNullOrEmpty(themeName) == false) currentThemeName = themeName;
+            MobileView.GetMobileHeaderResource(enableMobileAddress, currentThemeName, out cssResourcesLink, out jsResourcesLink);
+
+            #endregion
+
+            #region Set Mobile Page Header Html
+
+            string htmlMobilePageHeader = "";  //"<h2>Data Manager</h2>";
+
+            #endregion
+
+            #region Get Mobile Page Security Html
+
+            string htmlMobilePageSecure = "";
+
+            htmlMobilePageSecure = SecurityView.GetView(dataIndex, templateSuffix, headerTitle, helpUrl, afterAction, "");
+
+            #endregion
+
+            #region Get Mobile Page Content Html
+
+            string htmlMobilePageContent = "";
+
+            if ((UtilsGeneric.ForceLogin == false) || (UtilsSecurity.IsAuthenticated() == true))
+            {
+                string dataRefTypeHtml = "";
+                string dataTypeHtml = "";
+                string dataHtml = "";
+                if (UtilsSecurity.HaveAdminRole())
+                {
+                    dataRefTypeHtml = DataRefTypeView.GetView(dataIndex + 2, templateSuffix);
+                    dataTypeHtml += DataTypeView.GetView(dataIndex + 3, templateSuffix);
+                }
+                dataHtml = DataView.GetView(false, dataIndex + 4, templateSuffix, false, CommonRefType.None, 0, CommonDataType.GeneralData, "Data", false, false, false, true, true, true, false, true, true, "Add", "Edit", "Append", false);
+
+                var templateMain = new TemplateMain
+                {
+                    ManageDataRefType = dataRefTypeHtml,
+                    ManageDataType = dataTypeHtml,
+                    ManageData = dataHtml
+                };
+
+                string message = "";
+                htmlMobilePageContent = templateMain.GetFilled(templateSuffix, UtilsGeneric.Validate, UtilsGeneric.ThrowException, out message);
+            }
+
+            #endregion
+
+            #region Get Mobile Page Html
+
+            string htmlMobilePage = MobileView.GetView(templateSuffix, htmlMobilePageHeader, htmlMobilePageSecure, htmlMobilePageContent, "");
+
+            #endregion
+
+            #region Get IndexPage Header Html
+
+            string htmlPageHeader = "";
+
+            #endregion
+
+            #region Get IndexPage Content Html
+
+            string htmlPageContent = htmlMobilePage;
+
+            #endregion
+
+            #region Get IndexPage Footer Html
+
+            string htmlPageFooter = "";
+
+            #endregion
+
+            #region Get IndexPage Html
+
+            string htmlText = GenericView.GetView(templateSuffix, pageTitle, cssResourcesLink, jsResourcesLink, htmlPageHeader, htmlPageContent, htmlPageFooter, enableMobileAddress, true);
+
+            #endregion
+
+            return htmlText;
+        }
+
+        #endregion       
 
         #region Variables
 
@@ -80,98 +185,6 @@ namespace Priya.InfoList.Views
         }
 
         #endregion
-
-        #region Page View
-
-        public static string GetPageView(string templateSuffix, string themeName, string pageTitle, string headerTitle, string helpUrl, string afterAction)
-        {
-            #region Variables
-
-            bool enablejQMobileAddress = false;
-            int dataIndex = 0;
-
-            #endregion
-
-            #region Get JQ Js/Css Resources
-
-            string cssResourcesLink = "";
-            string jsResourcesLink = "";
-            string currentThemeName = JQueryMobileTheme.Default.ToString();
-            if (string.IsNullOrEmpty(themeName) == false) currentThemeName = themeName;
-            JQMobileView.GetJQHeaderResource(enablejQMobileAddress, currentThemeName, out cssResourcesLink, out jsResourcesLink);
-
-            #endregion
-
-            #region Set JQPage Header Html
-
-            string htmlJQPageHeader = "";  //"<h2>Data Manager</h2>";
-
-            #endregion
-
-            #region Get JQPage Security Html
-
-            string htmlJQPageSecure = "";
-
-            htmlJQPageSecure = SecurityView.GetView(dataIndex, templateSuffix, headerTitle, helpUrl, afterAction, "");
-
-            #endregion
-
-            #region Get JQPage Content Html
-
-            string htmlJQPageContent = "";
-
-            if ((UtilsGeneric.ForceLogin == false) || (UtilsSecurity.IsAuthenticated() == true))
-            {
-                string dataRefTypeHtml = "";
-                string dataTypeHtml = "";
-                string dataHtml = "";
-                if (UtilsSecurity.HaveAdminRole())
-                {
-                    dataRefTypeHtml = DataRefTypeView.GetView(dataIndex + 2, templateSuffix);
-                    dataTypeHtml += DataTypeView.GetView(dataIndex + 3, templateSuffix);
-                }
-                dataHtml = DataView.GetView(false, dataIndex + 4, templateSuffix, false, CommonRefType.None, 0, CommonDataType.GeneralData, "Data", false, false, false, true, true, true, false, true, true, "Add", "Edit", "Append", false);
-                
-                var templateMain = new TemplateMain
-                {
-                    ManageDataRefType = dataRefTypeHtml,
-                    ManageDataType = dataTypeHtml,
-                    ManageData = dataHtml
-                };
-
-                string message = "";
-                htmlJQPageContent = templateMain.GetFilled(templateSuffix, UtilsGeneric.Validate, UtilsGeneric.ThrowException, out message) ;
-            }
-
-            #endregion
-
-            #region Get JQPage Html
-
-            string htmlJQPage = JQMobileView.GetView(templateSuffix, htmlJQPageHeader, htmlJQPageSecure, htmlJQPageContent, "");
-
-            #endregion
-
-            #region Get IndexPage Content Html
-
-            string htmlPageContent = htmlJQPage;
-
-            #endregion
-
-            #region Get IndexPage Footer Html
-
-            string htmlPageFooter = "";
-
-            #endregion
-
-            #region Get IndexPage Html
-
-            string htmlText = GenericView.GetView(templateSuffix, pageTitle, cssResourcesLink, jsResourcesLink, htmlPageContent, htmlPageFooter, enablejQMobileAddress, true);
-
-            #endregion
-            return htmlText;
-        }
-
-        #endregion       
 
         #region Get View
 

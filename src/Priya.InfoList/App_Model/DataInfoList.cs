@@ -447,7 +447,38 @@ namespace Priya.InfoList.Model
 
         #region Get Page
 
-        public static List<LTD_InfoPage> GetPublicPagedLtdInfoPage(long filterInfoCategoryId, string filterInfoPage, long pageNo, long itemsPerPage, out long totalPages, out long totalItems)
+        public static List<LTD_InfoPage> GetCommonPagedLtdInfoPage(long filterInfoCategoryId, string filterInfoPage, long pageNo, long itemsPerPage, out long totalPages, out long totalItems)
+        {
+            long retTotalPages = 0;
+            long retTotalItems = 0;
+            List<LTD_InfoPage> ltdInfoPageList = new List<LTD_InfoPage>();
+
+            long userId = UtilsSecurity.GetUserId();
+            filterInfoPage = "%" + filterInfoPage + "%";
+
+            if ((filterInfoCategoryId == 0) && (string.IsNullOrEmpty(filterInfoPage) == true))
+            {
+                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsCommon=@1 and IsDeleted=@2 and CreatedUserID!=@3", true, true, false, userId);
+            }
+            else if ((filterInfoCategoryId == 0) && (string.IsNullOrEmpty(filterInfoPage) == false))
+            {
+                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsCommon=@1 and IsDeleted=@2 and CreatedUserID!=@3 and InfoPageName LIKE @4", true, true, false, userId, filterInfoPage);
+            }
+            else if ((filterInfoCategoryId > 0) && (string.IsNullOrEmpty(filterInfoPage) == true))
+            {
+                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsCommon=@1 and IsDeleted=@2 and CreatedUserID!=@3 and InfoCategoryId=@4", true, true, false, userId, filterInfoCategoryId);
+            }
+            else if ((filterInfoCategoryId > 0) && (string.IsNullOrEmpty(filterInfoPage) == false))
+            {
+                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsCommon=@1 and IsDeleted=@2 and InfoCategoryId=@3 and and CreatedUserID!=@4 and InfoPageName LIKE @5", true, true, false, userId, filterInfoCategoryId, filterInfoPage);
+            }
+
+            totalPages = retTotalPages;
+            totalItems = retTotalItems;
+            return ltdInfoPageList;
+        }
+
+        public static List<LTD_InfoPage> GetPublicPagedLtdInfoPage(long filterInfoCategoryId, string filterInfoPage, long filterCreatedUserId, long pageNo, long itemsPerPage, out long totalPages, out long totalItems)
         {
             long retTotalPages = 0;
             long retTotalItems = 0;
@@ -457,19 +488,47 @@ namespace Priya.InfoList.Model
 
             if ((filterInfoCategoryId == 0) && (string.IsNullOrEmpty(filterInfoPage) == true))
             {
-                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2", true, true, false);
+                if (filterCreatedUserId == 0)
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2", true, true, false);
+                }
+                else
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2 and CreatedUserID=@3", true, true, false, filterCreatedUserId);
+                }
             }
             else if ((filterInfoCategoryId == 0) && (string.IsNullOrEmpty(filterInfoPage) == false))
             {
-                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2 and InfoPageName LIKE @3", true, true, false, filterInfoPage);
+                if (filterCreatedUserId == 0)
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2 and InfoPageName LIKE @3", true, true, false, filterInfoPage);
+                }
+                else
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2 and InfoPageName LIKE @3 and CreatedUserID=@4", true, true, false, filterInfoPage, filterCreatedUserId);
+                }
             }
             else if ((filterInfoCategoryId > 0) && (string.IsNullOrEmpty(filterInfoPage) == true))
             {
-                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2 and InfoCategoryId=@3", true, true, false, filterInfoCategoryId);
+                if (filterCreatedUserId == 0)
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2 and InfoCategoryId=@3", true, true, false, filterInfoCategoryId);
+                }
+                else
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2 and InfoCategoryId=@3 and CreatedUserID=@4", true, true, false, filterInfoCategoryId, filterCreatedUserId);
+                }
             }
             else if ((filterInfoCategoryId > 0) && (string.IsNullOrEmpty(filterInfoPage) == false))
             {
-                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2 and InfoCategoryId=@3 and InfoPageName LIKE @4", true, true, false, filterInfoCategoryId, filterInfoPage);
+                if (filterCreatedUserId == 0)
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2 and InfoCategoryId=@3 and InfoPageName LIKE @4", true, true, false, filterInfoCategoryId, filterInfoPage);
+                }
+                else
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where IsActive=@0 and IsPublic=@1 and IsDeleted=@2 and InfoCategoryId=@3 and InfoPageName LIKE @4 and CreatedUserID=@5", true, true, false, filterInfoCategoryId, filterInfoPage, filterCreatedUserId);
+                }
             }
 
             totalPages = retTotalPages;
@@ -538,7 +597,7 @@ namespace Priya.InfoList.Model
             return ltdInfoPageList;
         }
 
-        public static List<LTD_InfoPage> GetPagedLtdInfoPage(long filterInfoCategoryId, string filterInfoPage, long pageNo, long itemsPerPage, out long totalPages, out long totalItems)
+        public static List<LTD_InfoPage> GetPagedLtdInfoPage(long filterInfoCategoryId, string filterInfoPage, long filterCreatedUserId, long pageNo, long itemsPerPage, out long totalPages, out long totalItems)
         {
             long retTotalPages = 0;
             long retTotalItems = 0;
@@ -549,19 +608,47 @@ namespace Priya.InfoList.Model
 
             if ((filterInfoCategoryId == 0) && (string.IsNullOrEmpty(filterInfoPage) == true))
             {
-                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "");
+                if (filterCreatedUserId == 0)
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where CreatedUserID=@0", filterCreatedUserId);
+                }
+                else
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "");
+                }
             }
             else if ((filterInfoCategoryId == 0) && (string.IsNullOrEmpty(filterInfoPage) == false))
             {
-                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where InfoPageName LIKE @0", filterInfoPage);
+                if (filterCreatedUserId == 0)
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where InfoPageName LIKE @0", filterInfoPage);
+                }
+                else
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where InfoPageName LIKE @0 and CreatedUserID=@1", filterInfoPage, filterCreatedUserId);
+                }
             }
             else if ((filterInfoCategoryId > 0) && (string.IsNullOrEmpty(filterInfoPage) == true))
             {
-                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where InfoCategoryId=@0", filterInfoCategoryId);
+                if (filterCreatedUserId == 0)
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where InfoCategoryId=@0", filterInfoCategoryId);
+                }
+                else
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where InfoCategoryId=@0 and CreatedUserID=@1", filterInfoCategoryId, filterCreatedUserId);
+                }
             }
             else if ((filterInfoCategoryId > 0) && (string.IsNullOrEmpty(filterInfoPage) == false))
             {
-                ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where InfoCategoryId=@0 and InfoPageName LIKE @1", filterInfoCategoryId, filterInfoPage);
+                if (filterCreatedUserId == 0)
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where InfoCategoryId=@0 and InfoPageName LIKE @1", filterInfoCategoryId, filterInfoPage);
+                }
+                else
+                {
+                    ltdInfoPageList = DataSource.GetPagedLtdInfoPage(pageNo, itemsPerPage, out retTotalPages, out retTotalItems, "", "Where InfoCategoryId=@0 and InfoPageName LIKE @1 and CreatedUserID=@2", filterInfoCategoryId, filterInfoPage, filterCreatedUserId);
+                }
             }
             
             totalPages = retTotalPages;
@@ -573,7 +660,7 @@ namespace Priya.InfoList.Model
 
         #region Save
 
-        public static long SaveLtdInfoPage(string infoPageName, string infoPageDescription, long infoPageCategoryId, long accessGroupId, bool commentable, string commentorRoleList, bool asyncLoading, bool isPublic, bool isActive, DateTime expiryDate, bool isDeleted, long sequence, long infoPageId, out string retMessage)
+        public static long SaveLtdInfoPage(string infoPageName, string infoPageDescription, long infoPageCategoryId, long accessGroupId, bool asyncLoading, bool isActive, DateTime expiryDate, bool commentable, string commentorRoleList, bool isPublic, bool isCommon, bool isDeleted, long sequence, long infoPageId, out string retMessage)
         {
             long id = 0;
             string message = "";
@@ -625,7 +712,7 @@ namespace Priya.InfoList.Model
                 {
                     if (ltdInfoCategory == null)
                     {
-                        message = "The User Category having ID [" + infoPageCategoryId + "] cannot be Retrieved";
+                        message = "The Category having ID [" + infoPageCategoryId + "] cannot be Retrieved";
                         validationFail = true;
                     }
                 }
@@ -648,15 +735,21 @@ namespace Priya.InfoList.Model
                 {                    
                     ltdInfoPage.InfoPageName = infoPageName;
                     ltdInfoPage.InfoPageDescription = infoPageDescription;
+
                     if (expiryDate == DateTime.MinValue) expiryDate = DateTime.Now.AddYears(1);
                     ltdInfoPage.ExpiryDate = expiryDate;
                     ltdInfoPage.IsActive = isActive;
-                    ltdInfoPage.IsDeleted = isDeleted;
-                    ltdInfoPage.Sequence = sequence;
 
                     ltdInfoPage.InfoCategoryID = ltdInfoCategory.InfoCategoryID;
                     ltdInfoPage.InfoCategoryGUID = ltdInfoCategory.InfoCategoryGUID;
-                    ltdInfoPage.IsPublic = isPublic;
+
+                    if (UtilsSecurity.HaveAdminRole())
+                    {
+                        ltdInfoPage.IsPublic = isPublic;
+                        ltdInfoPage.IsCommon = isCommon;
+                        ltdInfoPage.IsDeleted = isDeleted;
+                        ltdInfoPage.Sequence = sequence;
+                    }
 
                     if (accessGroupId > 0)
                     {
@@ -668,8 +761,8 @@ namespace Priya.InfoList.Model
                         }
                     }
 
-                    ltdInfoPage.Commentable = commentable;
                     ltdInfoPage.AsyncLoading = asyncLoading;
+                    ltdInfoPage.Commentable = commentable;
                     ltdInfoPage.CommentorRoleList = commentorRoleList;
 
                     if (infoPageId == 0)

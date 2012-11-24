@@ -1,65 +1,13 @@
 
 using System;
 using System.Collections.Generic;
-using Arshu.Data.Common;
+using Arshu.Core.Json;
 using Priya.InfoList.Entity;
 
 namespace Priya.InfoList.Data
 {
     internal static partial class FileSource
     {
-
-        public static Dictionary<Guid, CNS_DataType> LoadCNSDataTypeData()
-        {
-            Dictionary<Guid, CNS_DataType> keycnsDataTypeList = new Dictionary<Guid, CNS_DataType>();
-
-            List<CNS_DataType> cnsDataTypeList = JsonStore<CNS_DataType>.LoadData(false);
-            foreach (CNS_DataType item in cnsDataTypeList)
-            {
-                keycnsDataTypeList.Add(item.DataTypeGUID, item);
-            }
-            return keycnsDataTypeList;
-        }
-
-        public static bool SaveCNSDataTypeData(Dictionary<Guid, CNS_DataType> cnsDataTypeList)
-        {
-            bool ret = false;
-            if (cnsDataTypeList.Count > 0)
-            {
-                List<CNS_DataType> cnsDataTypeValueList = new List<CNS_DataType>();
-                CNS_DataType[] cnsDataTypeArray = new CNS_DataType[cnsDataTypeList.Values.Count];
-                cnsDataTypeList.Values.CopyTo(cnsDataTypeArray, 0);
-                cnsDataTypeValueList.AddRange(cnsDataTypeArray);
-                ret = JsonStore<CNS_DataType>.SaveData(cnsDataTypeValueList, true);
-            }
-
-            return ret;
-        }
-
-        public static List<CNS_DataType> GetPagedCNSDataType(Dictionary<Guid, CNS_DataType> allCNSDataTypeList, long pageNo, long itemsPerPage, out long totalPages, out long totalItems)
-        {
-            List<CNS_DataType> pagedCNSDataTypeList = new List<CNS_DataType>();
-            totalItems = allCNSDataTypeList.Count;
-            totalPages = (int)Math.Ceiling((decimal)totalItems / (decimal)itemsPerPage);
-
-            if (pageNo > 0) pageNo = pageNo - 1;
-            long startIndex = pageNo * itemsPerPage;
-            if (startIndex > totalItems) startIndex = 0;
-            long endIndex = startIndex + itemsPerPage;
-            if (endIndex > totalItems) endIndex = totalItems;
-
-            int i = 0;
-            foreach (KeyValuePair<Guid, CNS_DataType> item in allCNSDataTypeList)
-            {
-                if ((i >= (int)startIndex) && (i < endIndex))
-                {
-                    pagedCNSDataTypeList.Add(item.Value);
-                }
-                i++;
-            }
-
-            return pagedCNSDataTypeList;
-        }
 
         public static Dictionary<Guid, LTD_InfoSection> LoadLTDInfoSectionData()
         {
@@ -111,6 +59,110 @@ namespace Priya.InfoList.Data
             }
 
             return pagedLTDInfoSectionList;
+        }
+
+        public static Dictionary<Guid, LTD_InfoDetail> LoadLTDInfoDetailData()
+        {
+            Dictionary<Guid, LTD_InfoDetail> keyltdInfoDetailList = new Dictionary<Guid, LTD_InfoDetail>();
+
+            List<LTD_InfoDetail> ltdInfoDetailList = JsonStore<LTD_InfoDetail>.LoadData(false);
+            foreach (LTD_InfoDetail item in ltdInfoDetailList)
+            {
+                keyltdInfoDetailList.Add(item.InfoDetailGUID, item);
+            }
+            return keyltdInfoDetailList;
+        }
+
+        public static bool SaveLTDInfoDetailData(Dictionary<Guid, LTD_InfoDetail> ltdInfoDetailList)
+        {
+            bool ret = false;
+            if (ltdInfoDetailList.Count > 0)
+            {
+                List<LTD_InfoDetail> ltdInfoDetailValueList = new List<LTD_InfoDetail>();
+                LTD_InfoDetail[] ltdInfoDetailArray = new LTD_InfoDetail[ltdInfoDetailList.Values.Count];
+                ltdInfoDetailList.Values.CopyTo(ltdInfoDetailArray, 0);
+                ltdInfoDetailValueList.AddRange(ltdInfoDetailArray);
+                ret = JsonStore<LTD_InfoDetail>.SaveData(ltdInfoDetailValueList, true);
+            }
+
+            return ret;
+        }
+
+        public static List<LTD_InfoDetail> GetPagedLTDInfoDetail(Dictionary<Guid, LTD_InfoDetail> allLTDInfoDetailList, long pageNo, long itemsPerPage, out long totalPages, out long totalItems)
+        {
+            List<LTD_InfoDetail> pagedLTDInfoDetailList = new List<LTD_InfoDetail>();
+            totalItems = allLTDInfoDetailList.Count;
+            totalPages = (int)Math.Ceiling((decimal)totalItems / (decimal)itemsPerPage);
+
+            if (pageNo > 0) pageNo = pageNo - 1;
+            long startIndex = pageNo * itemsPerPage;
+            if (startIndex > totalItems) startIndex = 0;
+            long endIndex = startIndex + itemsPerPage;
+            if (endIndex > totalItems) endIndex = totalItems;
+
+            int i = 0;
+            foreach (KeyValuePair<Guid, LTD_InfoDetail> item in allLTDInfoDetailList)
+            {
+                if ((i >= (int)startIndex) && (i < endIndex))
+                {
+                    pagedLTDInfoDetailList.Add(item.Value);
+                }
+                i++;
+            }
+
+            return pagedLTDInfoDetailList;
+        }
+
+        public static Dictionary<Guid, CNS_DataType> LoadCNSDataTypeData()
+        {
+            Dictionary<Guid, CNS_DataType> keycnsDataTypeList = new Dictionary<Guid, CNS_DataType>();
+
+            List<CNS_DataType> cnsDataTypeList = JsonStore<CNS_DataType>.LoadData(false);
+            foreach (CNS_DataType item in cnsDataTypeList)
+            {
+                keycnsDataTypeList.Add(item.DataTypeGUID, item);
+            }
+            return keycnsDataTypeList;
+        }
+
+        public static bool SaveCNSDataTypeData(Dictionary<Guid, CNS_DataType> cnsDataTypeList)
+        {
+            bool ret = false;
+            if (cnsDataTypeList.Count > 0)
+            {
+                List<CNS_DataType> cnsDataTypeValueList = new List<CNS_DataType>();
+                CNS_DataType[] cnsDataTypeArray = new CNS_DataType[cnsDataTypeList.Values.Count];
+                cnsDataTypeList.Values.CopyTo(cnsDataTypeArray, 0);
+                cnsDataTypeValueList.AddRange(cnsDataTypeArray);
+                ret = JsonStore<CNS_DataType>.SaveData(cnsDataTypeValueList, true);
+            }
+
+            return ret;
+        }
+
+        public static List<CNS_DataType> GetPagedCNSDataType(Dictionary<Guid, CNS_DataType> allCNSDataTypeList, long pageNo, long itemsPerPage, out long totalPages, out long totalItems)
+        {
+            List<CNS_DataType> pagedCNSDataTypeList = new List<CNS_DataType>();
+            totalItems = allCNSDataTypeList.Count;
+            totalPages = (int)Math.Ceiling((decimal)totalItems / (decimal)itemsPerPage);
+
+            if (pageNo > 0) pageNo = pageNo - 1;
+            long startIndex = pageNo * itemsPerPage;
+            if (startIndex > totalItems) startIndex = 0;
+            long endIndex = startIndex + itemsPerPage;
+            if (endIndex > totalItems) endIndex = totalItems;
+
+            int i = 0;
+            foreach (KeyValuePair<Guid, CNS_DataType> item in allCNSDataTypeList)
+            {
+                if ((i >= (int)startIndex) && (i < endIndex))
+                {
+                    pagedCNSDataTypeList.Add(item.Value);
+                }
+                i++;
+            }
+
+            return pagedCNSDataTypeList;
         }
 
         public static Dictionary<Guid, CNS_DataRefType> LoadCNSDataRefTypeData()
@@ -217,110 +269,6 @@ namespace Priya.InfoList.Data
             return pagedCNDDataList;
         }
 
-        public static Dictionary<Guid, SYS_Version> LoadSYSVersionData()
-        {
-            Dictionary<Guid, SYS_Version> keysysVersionList = new Dictionary<Guid, SYS_Version>();
-
-            List<SYS_Version> sysVersionList = JsonStore<SYS_Version>.LoadData(false);
-            foreach (SYS_Version item in sysVersionList)
-            {
-                keysysVersionList.Add(item.VersionNoGUID, item);
-            }
-            return keysysVersionList;
-        }
-
-        public static bool SaveSYSVersionData(Dictionary<Guid, SYS_Version> sysVersionList)
-        {
-            bool ret = false;
-            if (sysVersionList.Count > 0)
-            {
-                List<SYS_Version> sysVersionValueList = new List<SYS_Version>();
-                SYS_Version[] sysVersionArray = new SYS_Version[sysVersionList.Values.Count];
-                sysVersionList.Values.CopyTo(sysVersionArray, 0);
-                sysVersionValueList.AddRange(sysVersionArray);
-                ret = JsonStore<SYS_Version>.SaveData(sysVersionValueList, true);
-            }
-
-            return ret;
-        }
-
-        public static List<SYS_Version> GetPagedSYSVersion(Dictionary<Guid, SYS_Version> allSYSVersionList, long pageNo, long itemsPerPage, out long totalPages, out long totalItems)
-        {
-            List<SYS_Version> pagedSYSVersionList = new List<SYS_Version>();
-            totalItems = allSYSVersionList.Count;
-            totalPages = (int)Math.Ceiling((decimal)totalItems / (decimal)itemsPerPage);
-
-            if (pageNo > 0) pageNo = pageNo - 1;
-            long startIndex = pageNo * itemsPerPage;
-            if (startIndex > totalItems) startIndex = 0;
-            long endIndex = startIndex + itemsPerPage;
-            if (endIndex > totalItems) endIndex = totalItems;
-
-            int i = 0;
-            foreach (KeyValuePair<Guid, SYS_Version> item in allSYSVersionList)
-            {
-                if ((i >= (int)startIndex) && (i < endIndex))
-                {
-                    pagedSYSVersionList.Add(item.Value);
-                }
-                i++;
-            }
-
-            return pagedSYSVersionList;
-        }
-
-        public static Dictionary<Guid, LTD_InfoDetail> LoadLTDInfoDetailData()
-        {
-            Dictionary<Guid, LTD_InfoDetail> keyltdInfoDetailList = new Dictionary<Guid, LTD_InfoDetail>();
-
-            List<LTD_InfoDetail> ltdInfoDetailList = JsonStore<LTD_InfoDetail>.LoadData(false);
-            foreach (LTD_InfoDetail item in ltdInfoDetailList)
-            {
-                keyltdInfoDetailList.Add(item.InfoDetailGUID, item);
-            }
-            return keyltdInfoDetailList;
-        }
-
-        public static bool SaveLTDInfoDetailData(Dictionary<Guid, LTD_InfoDetail> ltdInfoDetailList)
-        {
-            bool ret = false;
-            if (ltdInfoDetailList.Count > 0)
-            {
-                List<LTD_InfoDetail> ltdInfoDetailValueList = new List<LTD_InfoDetail>();
-                LTD_InfoDetail[] ltdInfoDetailArray = new LTD_InfoDetail[ltdInfoDetailList.Values.Count];
-                ltdInfoDetailList.Values.CopyTo(ltdInfoDetailArray, 0);
-                ltdInfoDetailValueList.AddRange(ltdInfoDetailArray);
-                ret = JsonStore<LTD_InfoDetail>.SaveData(ltdInfoDetailValueList, true);
-            }
-
-            return ret;
-        }
-
-        public static List<LTD_InfoDetail> GetPagedLTDInfoDetail(Dictionary<Guid, LTD_InfoDetail> allLTDInfoDetailList, long pageNo, long itemsPerPage, out long totalPages, out long totalItems)
-        {
-            List<LTD_InfoDetail> pagedLTDInfoDetailList = new List<LTD_InfoDetail>();
-            totalItems = allLTDInfoDetailList.Count;
-            totalPages = (int)Math.Ceiling((decimal)totalItems / (decimal)itemsPerPage);
-
-            if (pageNo > 0) pageNo = pageNo - 1;
-            long startIndex = pageNo * itemsPerPage;
-            if (startIndex > totalItems) startIndex = 0;
-            long endIndex = startIndex + itemsPerPage;
-            if (endIndex > totalItems) endIndex = totalItems;
-
-            int i = 0;
-            foreach (KeyValuePair<Guid, LTD_InfoDetail> item in allLTDInfoDetailList)
-            {
-                if ((i >= (int)startIndex) && (i < endIndex))
-                {
-                    pagedLTDInfoDetailList.Add(item.Value);
-                }
-                i++;
-            }
-
-            return pagedLTDInfoDetailList;
-        }
-
         public static Dictionary<Guid, LTD_InfoPage> LoadLTDInfoPageData()
         {
             Dictionary<Guid, LTD_InfoPage> keyltdInfoPageList = new Dictionary<Guid, LTD_InfoPage>();
@@ -371,6 +319,58 @@ namespace Priya.InfoList.Data
             }
 
             return pagedLTDInfoPageList;
+        }
+
+        public static Dictionary<Guid, SYS_Version> LoadSYSVersionData()
+        {
+            Dictionary<Guid, SYS_Version> keysysVersionList = new Dictionary<Guid, SYS_Version>();
+
+            List<SYS_Version> sysVersionList = JsonStore<SYS_Version>.LoadData(false);
+            foreach (SYS_Version item in sysVersionList)
+            {
+                keysysVersionList.Add(item.VersionNoGUID, item);
+            }
+            return keysysVersionList;
+        }
+
+        public static bool SaveSYSVersionData(Dictionary<Guid, SYS_Version> sysVersionList)
+        {
+            bool ret = false;
+            if (sysVersionList.Count > 0)
+            {
+                List<SYS_Version> sysVersionValueList = new List<SYS_Version>();
+                SYS_Version[] sysVersionArray = new SYS_Version[sysVersionList.Values.Count];
+                sysVersionList.Values.CopyTo(sysVersionArray, 0);
+                sysVersionValueList.AddRange(sysVersionArray);
+                ret = JsonStore<SYS_Version>.SaveData(sysVersionValueList, true);
+            }
+
+            return ret;
+        }
+
+        public static List<SYS_Version> GetPagedSYSVersion(Dictionary<Guid, SYS_Version> allSYSVersionList, long pageNo, long itemsPerPage, out long totalPages, out long totalItems)
+        {
+            List<SYS_Version> pagedSYSVersionList = new List<SYS_Version>();
+            totalItems = allSYSVersionList.Count;
+            totalPages = (int)Math.Ceiling((decimal)totalItems / (decimal)itemsPerPage);
+
+            if (pageNo > 0) pageNo = pageNo - 1;
+            long startIndex = pageNo * itemsPerPage;
+            if (startIndex > totalItems) startIndex = 0;
+            long endIndex = startIndex + itemsPerPage;
+            if (endIndex > totalItems) endIndex = totalItems;
+
+            int i = 0;
+            foreach (KeyValuePair<Guid, SYS_Version> item in allSYSVersionList)
+            {
+                if ((i >= (int)startIndex) && (i < endIndex))
+                {
+                    pagedSYSVersionList.Add(item.Value);
+                }
+                i++;
+            }
+
+            return pagedSYSVersionList;
         }
 
         public static Dictionary<Guid, LTD_Subscriber> LoadLTDSubscriberData()

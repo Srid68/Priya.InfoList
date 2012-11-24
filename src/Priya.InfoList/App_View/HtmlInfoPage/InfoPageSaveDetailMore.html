@@ -14,6 +14,16 @@
             </li>
 
             <li>
+                {{#AsyncLoading}}
+                <input type="checkbox" name="infoPageAsyncLoading" id="infoPageAsyncLoading" checked="checked"/>
+                {{/AsyncLoading}}
+                {{^AsyncLoading}}
+                <input type="checkbox" name="infoPageAsyncLoading" id="infoPageAsyncLoading"/>
+                {{/AsyncLoading}}
+                <label for="infoPageAsyncLoading">Async Loading</label>
+            </li>
+
+            <li>
                 {{#Commentable}}
                 <input type="checkbox" name="infoPageCommentable" id="infoPageCommentable" checked="checked"/>
                 {{/Commentable}}
@@ -33,26 +43,6 @@
                 </select>
             </li>
 
-            <li>
-                {{#AsyncLoading}}
-                <input type="checkbox" name="infoPageAsyncLoading" id="infoPageAsyncLoading" checked="checked"/>
-                {{/AsyncLoading}}
-                {{^AsyncLoading}}
-                <input type="checkbox" name="infoPageAsyncLoading" id="infoPageAsyncLoading"/>
-                {{/AsyncLoading}}
-                <label for="infoPageAsyncLoading">Async Loading</label>
-            </li>
-
-            <li {{#IsPublicHidden}}style="display:none;"{{/IsPublicHidden}}>
-                    {{#IsPublic}}
-                <input type="checkbox" name="infoPageIsPublic" id="infoPageIsPublic" checked="checked"/>
-                {{/IsPublic}}
-                {{^IsPublic}}
-                <input type="checkbox" name="infoPageIsPublic" id="infoPageIsPublic"/>
-                {{/IsPublic}}
-                <label for="infoPageIsPublic">Is Public</label>
-            </li>
-                
             <li {{#IsActiveHidden}}style="display:none;"{{/IsActiveHidden}}>
                 {{#IsActive}}
                     <input type="checkbox" name="infoPageIsActive" id="infoPageIsActive" checked="checked" />
@@ -71,7 +61,26 @@
                         value="{{ExpiryDate}}" />
                 </div>    
             </li>
+                
+            <li {{#IsPublicHidden}}style="display:none;"{{/IsPublicHidden}}>
+                    {{#IsPublic}}
+                <input type="checkbox" name="infoPageIsPublic" id="infoPageIsPublic" checked="checked"/>
+                {{/IsPublic}}
+                {{^IsPublic}}
+                <input type="checkbox" name="infoPageIsPublic" id="infoPageIsPublic"/>
+                {{/IsPublic}}
+                <label for="infoPageIsPublic">Is Public</label>
+            </li>
 
+            <li {{#IsCommonHidden}}style="display:none;"{{/IsCommonHidden}}>
+                {{#IsCommon}}
+                <input type="checkbox" name="infoPageIsCommon" id="infoPageIsCommon" checked="checked"/>
+                {{/IsCommon}}
+                {{^IsCommon}}
+                <input type="checkbox" name="infoPageIsCommon" id="infoPageIsCommon"/>
+                {{/IsCommon}}
+                <label for="infoPageIsCommon">Is Common</label>
+            </li>
                 
             <li {{#IsDeletedHidden}}style="display:none;"{{/IsDeletedHidden}}>
                 {{#IsDeleted}}
@@ -87,7 +96,7 @@
                 <label for="infoPageSequence">
                     Sequence<span style="color:Red;">*</span></label>
                 <input type="text" name="infoPageSequence" id="infoPageSequence" value="{{Sequence}}"
-                    maxlength="5" placeholder="&#187;Enter Info Page Sequence*" onkeypress="return return clickButton(event,'{{#AddMode}}buttonAddInfoPage{{/AddMode}}{{^AddMode}}buttonSaveInfoPage{{/AddMode}}');"/>
+                    maxlength="5" placeholder="&#187;Enter Info Page Sequence*" onkeypress="return clickButton(event,'{{#AddMode}}buttonAddInfoPage{{/AddMode}}{{^AddMode}}buttonSaveInfoPage{{/AddMode}}');"/>
             </li>
         </ul>
     </div>

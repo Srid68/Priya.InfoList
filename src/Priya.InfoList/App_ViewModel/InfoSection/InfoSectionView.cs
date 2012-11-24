@@ -354,17 +354,21 @@ namespace Priya.InfoList.Views
 
             #region Add Link
 
+            LTD_InfoPage ltdInfoPage = DataInfoList.GetLtdInfoPage(infoPageId);
             if (UtilsSecurity.HaveAuthorRoleEnabled() == true)
             {
-                TemplateInfoSectionSaveAdd templateSaveAdd = new TemplateInfoSectionSaveAdd
+                if ((ltdInfoPage != null) && (ltdInfoPage.UserID == UtilsSecurity.GetUserId()))
                 {
-                    DataIndex = dataIndex.ToString(),
-                    PageNo = pageNo.ToString(),
-                    ItemsPerPage = itemsPerPage.ToString(),
-                    TemplateSuffix = templateSuffix,
-                    InfoPageId = infoPageId.ToString(),                    
-                };
-                htmlAddItemList = templateSaveAdd.GetFilled(templateSuffix, UtilsGeneric.Validate, UtilsGeneric.ThrowException, out message);
+                    TemplateInfoSectionSaveAdd templateSaveAdd = new TemplateInfoSectionSaveAdd
+                    {
+                        DataIndex = dataIndex.ToString(),
+                        PageNo = pageNo.ToString(),
+                        ItemsPerPage = itemsPerPage.ToString(),
+                        TemplateSuffix = templateSuffix,
+                        InfoPageId = infoPageId.ToString(),
+                    };
+                    htmlAddItemList = templateSaveAdd.GetFilled(templateSuffix, UtilsGeneric.Validate, UtilsGeneric.ThrowException, out message);
+                }
             }
 
             #endregion
@@ -459,7 +463,7 @@ namespace Priya.InfoList.Views
                 List<TemplateInfoSectionListDetailItem.EditAction> editActionList = new List<TemplateInfoSectionListDetailItem.EditAction>();
                 List<TemplateInfoSectionListDetailItem.AsyncAction> asyncActionList = new List<TemplateInfoSectionListDetailItem.AsyncAction>();
 
-                if ((UtilsSecurity.HaveAdminRole() == true) || (UtilsSecurity.HaveAuthorRoleEnabled() == true))
+                if (((UtilsSecurity.HaveAdminRole() == true) && (UtilsSecurity.HaveAuthorRoleEnabled() == true)) || ((UtilsSecurity.HaveAuthorRoleEnabled() == true) && (ltdInfoPage.UserID == UtilsSecurity.GetUserId())))
                 {
                     editActionList.Add(new TemplateInfoSectionListDetailItem.EditAction
                     {
@@ -467,7 +471,7 @@ namespace Priya.InfoList.Views
                         DataIndex = dataIndex.ToString(),
                         PageNo = pageNo.ToString(),
                         ItemsPerPage = itemsPerSection.ToString(),
-                        TemplateSuffix = templateSuffix,                                 
+                        TemplateSuffix = templateSuffix,
                         InfoPageId = infoPageId.ToString(),
                     });
                 }

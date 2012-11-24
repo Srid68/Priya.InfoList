@@ -6,69 +6,6 @@ using PetaPoco;
 namespace Priya.InfoList.Entity
 {
 	
-    [TableName("CNS_DataType")]
-    [PrimaryKey("DataTypeID", autoIncrement=false)]
-    [ExplicitColumns]
-    public partial class CNS_DataType  
-    {
-      public bool HaveColumn(string columnName, string columnValue, out bool retValueMatched)
-      {
-          bool ret = false;
-          bool valueMatched = false;
-
-          if (columnName == "DataTypeID") 
-          {
-              ret = true;
-              if (DataTypeID.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "DataTypeGUID") 
-          {
-              ret = true;
-              if (DataTypeGUID.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "RevisionNo") 
-          {
-              ret = true;
-              if (RevisionNo.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "DataType") 
-          {
-              ret = true;
-              if (DataType.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "IsDefault") 
-          {
-              ret = true;
-              if (IsDefault.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "IsSystem") 
-          {
-              ret = true;
-              if (IsSystem.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "IsActive") 
-          {
-              ret = true;
-              if (IsActive.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "Sequence") 
-          {
-              ret = true;
-              if (Sequence.ToString() == columnValue) valueMatched = true;
-          }
-          retValueMatched = valueMatched;
-          return ret;
-      }
-      [Column] public long DataTypeID { get; set; }
-      [Column] public Guid DataTypeGUID { get; set; }
-      [Column] public long RevisionNo { get; set; }
-      [Column] public string DataType { get; set; }
-      [Column] public bool IsDefault { get; set; }
-      [Column] public bool IsSystem { get; set; }
-      [Column] public bool IsActive { get; set; }
-      [Column] public long Sequence { get; set; }
-    }
-
     [TableName("LTD_InfoSection")]
     [PrimaryKey("InfoSectionID")]
     [ExplicitColumns]
@@ -144,6 +81,11 @@ namespace Priya.InfoList.Entity
               ret = true;
               if (InfoSectionDescription.ToString() == columnValue) valueMatched = true;
           }
+          if (columnName == "HideSectionName") 
+          {
+              ret = true;
+              if (HideSectionName.ToString() == columnValue) valueMatched = true;
+          }
           if (columnName == "IsDeleted") 
           {
               ret = true;
@@ -165,7 +107,188 @@ namespace Priya.InfoList.Entity
       [Column] public Guid InfoPageGUID { get; set; }
       [Column] public string InfoSectionName { get; set; }
       [Column] public string InfoSectionDescription { get; set; }
+      [Column] public bool HideSectionName { get; set; }
       [Column] public bool IsDeleted { get; set; }
+    }
+
+    [TableName("LTD_InfoDetail")]
+    [PrimaryKey("InfoDetailID")]
+    [ExplicitColumns]
+    public partial class LTD_InfoDetail  
+    {
+      public bool HaveColumn(string columnName, string columnValue, out bool retValueMatched)
+      {
+          bool ret = false;
+          bool valueMatched = false;
+
+          if (columnName == "InfoDetailID") 
+          {
+              ret = true;
+              if (InfoDetailID.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "InfoDetailGUID") 
+          {
+              ret = true;
+              if (InfoDetailGUID.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "RevisionNo") 
+          {
+              ret = true;
+              if (RevisionNo.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "UserID") 
+          {
+              ret = true;
+              if (UserID.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "UserGUID") 
+          {
+              ret = true;
+              if (UserGUID.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "CreatedDate") 
+          {
+              ret = true;
+              if (CreatedDate.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "LastUpdateDate") 
+          {
+              ret = true;
+              if (LastUpdateDate.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "IsActive") 
+          {
+              ret = true;
+              if (IsActive.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "Sequence") 
+          {
+              ret = true;
+              if (Sequence.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "InfoPageID") 
+          {
+              ret = true;
+              if (InfoPageID.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "InfoPageGUID") 
+          {
+              ret = true;
+              if (InfoPageGUID.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "InfoSectionID") 
+          {
+              ret = true;
+              if (InfoSectionID.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "InfoSectionGUID") 
+          {
+              ret = true;
+              if (InfoSectionGUID.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "InfoDetailName") 
+          {
+              ret = true;
+              if (InfoDetailName.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "InfoDetailDescription") 
+          {
+              ret = true;
+              if (InfoDetailDescription.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "HideDetailName") 
+          {
+              ret = true;
+              if (HideDetailName.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "IsDeleted") 
+          {
+              ret = true;
+              if (IsDeleted.ToString() == columnValue) valueMatched = true;
+          }
+          retValueMatched = valueMatched;
+          return ret;
+      }
+      [Column] public long InfoDetailID { get; set; }
+      [Column] public Guid InfoDetailGUID { get; set; }
+      [Column] public long RevisionNo { get; set; }
+      [Column] public long UserID { get; set; }
+      [Column] public Guid UserGUID { get; set; }
+      [Column] public DateTime CreatedDate { get; set; }
+      [Column] public DateTime LastUpdateDate { get; set; }
+      [Column] public bool IsActive { get; set; }
+      [Column] public long Sequence { get; set; }
+      [Column] public long InfoPageID { get; set; }
+      [Column] public Guid InfoPageGUID { get; set; }
+      [Column] public long InfoSectionID { get; set; }
+      [Column] public Guid InfoSectionGUID { get; set; }
+      [Column] public string InfoDetailName { get; set; }
+      [Column] public string InfoDetailDescription { get; set; }
+      [Column] public bool HideDetailName { get; set; }
+      [Column] public bool IsDeleted { get; set; }
+    }
+
+    [TableName("CNS_DataType")]
+    [PrimaryKey("DataTypeID", autoIncrement=false)]
+    [ExplicitColumns]
+    public partial class CNS_DataType  
+    {
+      public bool HaveColumn(string columnName, string columnValue, out bool retValueMatched)
+      {
+          bool ret = false;
+          bool valueMatched = false;
+
+          if (columnName == "DataTypeID") 
+          {
+              ret = true;
+              if (DataTypeID.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "DataTypeGUID") 
+          {
+              ret = true;
+              if (DataTypeGUID.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "RevisionNo") 
+          {
+              ret = true;
+              if (RevisionNo.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "DataType") 
+          {
+              ret = true;
+              if (DataType.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "IsDefault") 
+          {
+              ret = true;
+              if (IsDefault.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "IsSystem") 
+          {
+              ret = true;
+              if (IsSystem.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "IsActive") 
+          {
+              ret = true;
+              if (IsActive.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "Sequence") 
+          {
+              ret = true;
+              if (Sequence.ToString() == columnValue) valueMatched = true;
+          }
+          retValueMatched = valueMatched;
+          return ret;
+      }
+      [Column] public long DataTypeID { get; set; }
+      [Column] public Guid DataTypeGUID { get; set; }
+      [Column] public long RevisionNo { get; set; }
+      [Column] public string DataType { get; set; }
+      [Column] public bool IsDefault { get; set; }
+      [Column] public bool IsSystem { get; set; }
+      [Column] public bool IsActive { get; set; }
+      [Column] public long Sequence { get; set; }
     }
 
     [TableName("CNS_DataRefType")]
@@ -354,144 +477,6 @@ namespace Priya.InfoList.Entity
       [Column] public long Sequence { get; set; }
     }
 
-    [TableName("SYS_Version")]
-    [PrimaryKey("VersionNo", autoIncrement=false)]
-    [ExplicitColumns]
-    public partial class SYS_Version  
-    {
-      public bool HaveColumn(string columnName, string columnValue, out bool retValueMatched)
-      {
-          bool ret = false;
-          bool valueMatched = false;
-
-          if (columnName == "VersionNo") 
-          {
-              ret = true;
-              if (VersionNo.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "VersionNoGUID") 
-          {
-              ret = true;
-              if (VersionNoGUID.ToString() == columnValue) valueMatched = true;
-          }
-          retValueMatched = valueMatched;
-          return ret;
-      }
-      [Column] public double VersionNo { get; set; }
-      [Column] public Guid VersionNoGUID { get; set; }
-    }
-
-    [TableName("LTD_InfoDetail")]
-    [PrimaryKey("InfoDetailID")]
-    [ExplicitColumns]
-    public partial class LTD_InfoDetail  
-    {
-      public bool HaveColumn(string columnName, string columnValue, out bool retValueMatched)
-      {
-          bool ret = false;
-          bool valueMatched = false;
-
-          if (columnName == "InfoDetailID") 
-          {
-              ret = true;
-              if (InfoDetailID.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "InfoDetailGUID") 
-          {
-              ret = true;
-              if (InfoDetailGUID.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "RevisionNo") 
-          {
-              ret = true;
-              if (RevisionNo.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "UserID") 
-          {
-              ret = true;
-              if (UserID.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "UserGUID") 
-          {
-              ret = true;
-              if (UserGUID.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "CreatedDate") 
-          {
-              ret = true;
-              if (CreatedDate.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "LastUpdateDate") 
-          {
-              ret = true;
-              if (LastUpdateDate.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "IsActive") 
-          {
-              ret = true;
-              if (IsActive.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "Sequence") 
-          {
-              ret = true;
-              if (Sequence.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "InfoPageID") 
-          {
-              ret = true;
-              if (InfoPageID.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "InfoPageGUID") 
-          {
-              ret = true;
-              if (InfoPageGUID.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "InfoSectionID") 
-          {
-              ret = true;
-              if (InfoSectionID.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "InfoSectionGUID") 
-          {
-              ret = true;
-              if (InfoSectionGUID.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "InfoDetailName") 
-          {
-              ret = true;
-              if (InfoDetailName.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "InfoDetailDescription") 
-          {
-              ret = true;
-              if (InfoDetailDescription.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "IsDeleted") 
-          {
-              ret = true;
-              if (IsDeleted.ToString() == columnValue) valueMatched = true;
-          }
-          retValueMatched = valueMatched;
-          return ret;
-      }
-      [Column] public long InfoDetailID { get; set; }
-      [Column] public Guid InfoDetailGUID { get; set; }
-      [Column] public long RevisionNo { get; set; }
-      [Column] public long UserID { get; set; }
-      [Column] public Guid UserGUID { get; set; }
-      [Column] public DateTime CreatedDate { get; set; }
-      [Column] public DateTime LastUpdateDate { get; set; }
-      [Column] public bool IsActive { get; set; }
-      [Column] public long Sequence { get; set; }
-      [Column] public long InfoPageID { get; set; }
-      [Column] public Guid InfoPageGUID { get; set; }
-      [Column] public long InfoSectionID { get; set; }
-      [Column] public Guid InfoSectionGUID { get; set; }
-      [Column] public string InfoDetailName { get; set; }
-      [Column] public string InfoDetailDescription { get; set; }
-      [Column] public bool IsDeleted { get; set; }
-    }
-
     [TableName("LTD_InfoPage")]
     [PrimaryKey("InfoPageID")]
     [ExplicitColumns]
@@ -517,16 +502,6 @@ namespace Priya.InfoList.Entity
               ret = true;
               if (RevisionNo.ToString() == columnValue) valueMatched = true;
           }
-          if (columnName == "CreatedUserID") 
-          {
-              ret = true;
-              if (CreatedUserID.ToString() == columnValue) valueMatched = true;
-          }
-          if (columnName == "CreatedUserGUID") 
-          {
-              ret = true;
-              if (CreatedUserGUID.ToString() == columnValue) valueMatched = true;
-          }
           if (columnName == "UserID") 
           {
               ret = true;
@@ -547,15 +522,15 @@ namespace Priya.InfoList.Entity
               ret = true;
               if (LastUpdateDate.ToString() == columnValue) valueMatched = true;
           }
-          if (columnName == "IsActive") 
+          if (columnName == "CreatedUserID") 
           {
               ret = true;
-              if (IsActive.ToString() == columnValue) valueMatched = true;
+              if (CreatedUserID.ToString() == columnValue) valueMatched = true;
           }
-          if (columnName == "Sequence") 
+          if (columnName == "CreatedUserGUID") 
           {
               ret = true;
-              if (Sequence.ToString() == columnValue) valueMatched = true;
+              if (CreatedUserGUID.ToString() == columnValue) valueMatched = true;
           }
           if (columnName == "InfoPageName") 
           {
@@ -577,15 +552,20 @@ namespace Priya.InfoList.Entity
               ret = true;
               if (InfoCategoryGUID.ToString() == columnValue) valueMatched = true;
           }
-          if (columnName == "ExpiryDate") 
+          if (columnName == "AccessGroupID") 
           {
               ret = true;
-              if (ExpiryDate.ToString() == columnValue) valueMatched = true;
+              if (AccessGroupID.ToString() == columnValue) valueMatched = true;
           }
-          if (columnName == "IsPublic") 
+          if (columnName == "AccessGroupGUID") 
           {
               ret = true;
-              if (IsPublic.ToString() == columnValue) valueMatched = true;
+              if (AccessGroupGUID.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "AsyncLoading") 
+          {
+              ret = true;
+              if (AsyncLoading.ToString() == columnValue) valueMatched = true;
           }
           if (columnName == "Commentable") 
           {
@@ -597,20 +577,45 @@ namespace Priya.InfoList.Entity
               ret = true;
               if (CommentorRoleList.ToString() == columnValue) valueMatched = true;
           }
-          if (columnName == "AsyncLoading") 
+          if (columnName == "CommentorGroupList") 
           {
               ret = true;
-              if (AsyncLoading.ToString() == columnValue) valueMatched = true;
+              if (CommentorGroupList.ToString() == columnValue) valueMatched = true;
           }
-          if (columnName == "AccessGroupID") 
+          if (columnName == "CommentorHideRoleList") 
           {
               ret = true;
-              if (AccessGroupID.ToString() == columnValue) valueMatched = true;
+              if (CommentorHideRoleList.ToString() == columnValue) valueMatched = true;
           }
-          if (columnName == "AccessGroupGUID") 
+          if (columnName == "CommentorHideGroupList") 
           {
               ret = true;
-              if (AccessGroupGUID.ToString() == columnValue) valueMatched = true;
+              if (CommentorHideGroupList.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "IsActive") 
+          {
+              ret = true;
+              if (IsActive.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "ExpiryDate") 
+          {
+              ret = true;
+              if (ExpiryDate.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "IsCommon") 
+          {
+              ret = true;
+              if (IsCommon.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "IsPublic") 
+          {
+              ret = true;
+              if (IsPublic.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "Sequence") 
+          {
+              ret = true;
+              if (Sequence.ToString() == columnValue) valueMatched = true;
           }
           if (columnName == "IsDeleted") 
           {
@@ -623,26 +628,57 @@ namespace Priya.InfoList.Entity
       [Column] public long InfoPageID { get; set; }
       [Column] public Guid InfoPageGUID { get; set; }
       [Column] public long RevisionNo { get; set; }
-      [Column] public long CreatedUserID { get; set; }
-      [Column] public Guid CreatedUserGUID { get; set; }
       [Column] public long UserID { get; set; }
       [Column] public Guid UserGUID { get; set; }
       [Column] public DateTime CreatedDate { get; set; }
       [Column] public DateTime LastUpdateDate { get; set; }
-      [Column] public bool IsActive { get; set; }
-      [Column] public long Sequence { get; set; }
+      [Column] public long CreatedUserID { get; set; }
+      [Column] public Guid CreatedUserGUID { get; set; }
       [Column] public string InfoPageName { get; set; }
       [Column] public string InfoPageDescription { get; set; }
       [Column] public long InfoCategoryID { get; set; }
       [Column] public Guid InfoCategoryGUID { get; set; }
-      [Column] public DateTime ExpiryDate { get; set; }
-      [Column] public bool IsPublic { get; set; }
-      [Column] public bool Commentable { get; set; }
-      [Column] public string CommentorRoleList { get; set; }
-      [Column] public bool AsyncLoading { get; set; }
       [Column] public long? AccessGroupID { get; set; }
       [Column] public Guid? AccessGroupGUID { get; set; }
+      [Column] public bool AsyncLoading { get; set; }
+      [Column] public bool Commentable { get; set; }
+      [Column] public string CommentorRoleList { get; set; }
+      [Column] public string CommentorGroupList { get; set; }
+      [Column] public string CommentorHideRoleList { get; set; }
+      [Column] public string CommentorHideGroupList { get; set; }
+      [Column] public bool IsActive { get; set; }
+      [Column] public DateTime ExpiryDate { get; set; }
+      [Column] public bool IsCommon { get; set; }
+      [Column] public bool IsPublic { get; set; }
+      [Column] public long Sequence { get; set; }
       [Column] public bool IsDeleted { get; set; }
+    }
+
+    [TableName("SYS_Version")]
+    [PrimaryKey("VersionNo", autoIncrement=false)]
+    [ExplicitColumns]
+    public partial class SYS_Version  
+    {
+      public bool HaveColumn(string columnName, string columnValue, out bool retValueMatched)
+      {
+          bool ret = false;
+          bool valueMatched = false;
+
+          if (columnName == "VersionNo") 
+          {
+              ret = true;
+              if (VersionNo.ToString() == columnValue) valueMatched = true;
+          }
+          if (columnName == "VersionNoGUID") 
+          {
+              ret = true;
+              if (VersionNoGUID.ToString() == columnValue) valueMatched = true;
+          }
+          retValueMatched = valueMatched;
+          return ret;
+      }
+      [Column] public double VersionNo { get; set; }
+      [Column] public Guid VersionNoGUID { get; set; }
     }
 
     [TableName("LTD_Subscriber")]

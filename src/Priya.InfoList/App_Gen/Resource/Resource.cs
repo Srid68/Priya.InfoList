@@ -1,13 +1,9 @@
 
 
 using System;
-using System.Text;
 using System.Reflection;
-using System.Globalization;
-using System.Collections.Generic;
 
 using Arshu.Core.Basic.Log;
-using Arshu.Core.Basic.Compress;
 using Arshu.Core.Common;
 using Arshu.Core.Http;
 using Arshu.Core.IO;

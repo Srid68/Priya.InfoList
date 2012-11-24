@@ -1,0 +1,52 @@
+[1][21/Nov/2012: 10:56:23:][5][GenericHandler-PreLoadPageViewTypes]Processing Completed in 562.0649ms
+
+[2][21/Nov/2012: 10:56:23:][6][GenericHandler-PreLoadPageViewObjects]Processing Completed in 292.0376ms
+
+[1][21/Nov/2012: 11:00:03:][15][GenericHandler-PreLoadPageViewTypes]Processing Completed in 119.0153ms
+
+[2][21/Nov/2012: 11:00:04:][14][GenericHandler-PreLoadPageViewObjects]Processing Completed in 292.042ms
+
+[1][21/Nov/2012: 11:17:23:][19][GenericHandler-PreLoadPageViewTypes]Processing Completed in 278.0399ms
+
+[2][21/Nov/2012: 11:17:23:][7][GenericHandler-PreLoadPageViewObjects]Processing Completed in 293.0398ms
+
+[1][21/Nov/2012: 11:21:57:][33][GenericHandler-PreLoadPageViewTypes]Processing Completed in 125.0157ms
+
+[2][21/Nov/2012: 11:21:57:][28][GenericHandler-PreLoadPageViewObjects]Processing Completed in 72.0076ms
+
+[1][21/Nov/2012: 11:27:01:][23][GenericHandler-PreLoadPageViewTypes]Processing Completed in 116.0145ms
+
+[2][21/Nov/2012: 11:27:01:][34][GenericHandler-PreLoadPageViewObjects]Processing Completed in 66.0053ms
+
+[1][21/Nov/2012: 11:30:38:][28][GenericHandler-PreLoadPageViewTypes]Processing Completed in 125.0131ms
+
+[2][21/Nov/2012: 11:30:38:][21][GenericHandler-PreLoadPageViewObjects]Processing Completed in 63.0121ms
+
+[1][21/Nov/2012: 11:34:41:][7][GenericHandler-PreLoadPageViewTypes]Processing Completed in 122.0193ms
+
+[2][21/Nov/2012: 11:34:41:][33][GenericHandler-PreLoadPageViewObjects]Processing Completed in 82.0092ms
+
+[3][21/Nov/2012: 11:34:41:][7][Priya.InfoList.DataSource-OnDBException]Error:DBError:[SELECT COUNT(*) FROM LTD_InfoPage Where IsActive=@0 and IsCommon=@1 and IsDeleted=@2 and and CreatedUserID!=@3 and InfoPageName LIKE @4  ][SELECT COUNT(*) FROM LTD_InfoPage Where IsActive=@0 and IsCommon=@1 and IsDeleted=@2 and and CreatedUserID!=@3 and InfoPageName LIKE @4  
+	 -> @0 [Int32] = "1"
+	 -> @1 [Int32] = "1"
+	 -> @2 [Int32] = "0"
+	 -> @3 [Int64] = "10087"
+	 -> @4 [String] = "%%"][0]
+[Incorrect syntax near the keyword 'and'.]
+[   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteScalar()
+   at PetaPoco.Database.ExecuteScalar[T](String sql, Object[] args)]
+
+[1][21/Nov/2012: 11:35:13:][30][GenericHandler-PreLoadPageViewTypes]Processing Completed in 115.0142ms
+
+[2][21/Nov/2012: 11:35:13:][32][GenericHandler-PreLoadPageViewObjects]Processing Completed in 73.0066ms
+

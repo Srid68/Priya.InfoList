@@ -1,54 +1,62 @@
-[
-{
-    "DbProviderNameFactory" : "System.Data.SQLite.SQLiteFactory, System.Data.SQLite",        
-    "DbConnectionString" : "",
-    "AppName" : "Priya.InfoList.v1",        
-    "StartDate" : "0001-01-01T00:00:00Z",        
-    "EndDate" : "0001-01-01T00:00:00Z",        
-    "AppKey" : null,        
-    "AppPassword" : null,        
-    "RoleData" : ["AdminRole","AuthorRole","GuestRole"],        
-    "UserData" : [
-    {
-        "UserName" : "guest",                
-        "UserPwd" : "guest",                
-        "UserEmail" : "guest",                
-        "UserRoles" : ["GuestRole"]
+[{
+        "AppName" : "Priya.InfoList.v1",        
+        "AppKey" : "YxovbZIrhHRS4S2EJ5gkscoVo67MCorEjjcpPKFh7O7wuiZSUV",        
+        "StartDate" : "0001-01-01T00:00:00Z",        
+        "EndDate" : "0001-01-01T00:00:00Z",        
+        "RoleData" : ["AdminRole","AuthorRole","GuestRole"],        
+        "UserData" : [
+            {
+                "UserName" : "guest",                
+                "UserPwd" : "guest",                
+                "UserEmail" : "guest",                
+                "UserRoles" : ["GuestRole"]
+            },
+            {
+                "UserName" : "admin",                
+                "UserPwd" : "admin",                
+                "UserEmail" : "admin",                
+                "UserRoles" : ["AdminRole","AuthorRole"]
+            },
+            {
+                "UserName" : "author",                
+                "UserPwd" : "author",                
+                "UserEmail" : "author",                
+                "UserRoles" : ["AuthorRole","GuestRole"]
+            },
+            {
+                "UserName" : "testor1@arshu.com",                
+                "UserPwd" : "testor1",                
+                "UserEmail" : "testor1@arshu.com",                
+                "UserRoles" : ["GuestRole"]
+            },
+            {
+                "UserName" : "testor2@arshu.com",                
+                "UserPwd" : "testor2",                
+                "UserEmail" : "testor2@arshu.com",                
+                "UserRoles" : ["AuthorRole","GuestRole"]
+            }],        
+        "DbProviderNameFactory" : "System.Data.SQLite.SQLiteFactory, System.Data.SQLite",        
+        "DbConnectionString" : ""
     },
     {
-        "UserName" : "admin",                
-        "UserPwd" : "admin",                
-        "UserEmail" : "admin",                
-        "UserRoles" : ["AdminRole", "AuthorRole"]
+        "AppName" : "Priya.Security.v1",        
+        "StartDate" : "0001-01-01T00:00:00Z",        
+        "EndDate" : "0001-01-01T00:00:00Z",        
+        "DbProviderNameFactory" : "System.Data.SQLite.SQLiteFactory, System.Data.SQLite",        
+        "DbConnectionString" : ""
     },
     {
-        "UserName" : "author",                
-        "UserPwd" : "author",                
-        "UserEmail" : "author",                
-        "UserRoles" : ["AuthorRole", "GuestRole"]
-    },	
+        "AppName" : "Priya.Setting.v1",        
+        "StartDate" : "0001-01-01T00:00:00Z",        
+        "EndDate" : "0001-01-01T00:00:00Z",        
+        "DbProviderNameFactory" : "System.Data.SQLite.SQLiteFactory, System.Data.SQLite",        
+        "DbConnectionString" : ""
+    },
     {
-        "UserName" : "testor1@arshu.com",                
-        "UserPwd" : "testor1",                
-        "UserEmail" : "testor1@arshu.com",                
-        "UserRoles" : ["GuestRole"]
-    },	
-    {
-        "UserName" : "testor2@arshu.com",                
-        "UserPwd" : "testor2",                
-        "UserEmail" : "testor2@arshu.com",                
-        "UserRoles" : ["AuthorRole", "GuestRole"]
-    }	
+        "AppName" : "Priya.Tracking.v1",        
+        "StartDate" : "0001-01-01T00:00:00Z",        
+        "EndDate" : "0001-01-01T00:00:00Z",        
+        "DbProviderNameFactory" : "System.Data.SQLite.SQLiteFactory, System.Data.SQLite",        
+        "DbConnectionString" : ""
+    }
 	]
-},
-{
-    "DbProviderNameFactory" : "System.Data.SQLite.SQLiteFactory, System.Data.SQLite",        
-    "DbConnectionString" : "",
-    "AppName" : "Priya.Security.v1",        
-},
-{
-    "DbProviderNameFactory" : "System.Data.SQLite.SQLiteFactory, System.Data.SQLite",        
-    "DbConnectionString" : "",
-    "AppName" : "Priya.Setting.v1",        
-}
-]

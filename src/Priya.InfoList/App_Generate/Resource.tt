@@ -12,6 +12,7 @@
     Resource.Javacmd = javacmd;
 	Resource.ResourceSkipFilterDirRegEx = "Pages";
 	Resource.ResourceIncludeFilterDirRegEx ="";
+
     string transformLog = template.TransformText();
 	WriteLine(transformLog);
 #>

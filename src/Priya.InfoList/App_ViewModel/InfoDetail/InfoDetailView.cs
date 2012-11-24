@@ -347,17 +347,25 @@ namespace Priya.InfoList.Views
 
             #region Add Link
 
-            if (UtilsSecurity.HaveAuthorRoleEnabled() == true)
+            LTD_InfoSection ltdInfoSection = DataInfoList.GetLtdInfoSection(infoSectionId);
+            if (ltdInfoSection != null)
             {
-                TemplateInfoDetailSaveAdd saveAdd = new TemplateInfoDetailSaveAdd
+                LTD_InfoPage ltdInfoPage = DataInfoList.GetLtdInfoPage(ltdInfoSection.InfoPageID);
+                if (UtilsSecurity.HaveAuthorRoleEnabled() == true)
                 {
-                    DataIndex = dataIndex.ToString(),
-                    PageNo = pageNo.ToString(),
-                    ItemsPerPage = itemsPerPage.ToString(),
-                    TemplateSuffix = templateSuffix,
-                    InfoSectionId = infoSectionId.ToString(),
-                };
-                htmlAddItemList = saveAdd.GetFilled(templateSuffix, UtilsGeneric.Validate, UtilsGeneric.ThrowException, out message);
+                    if ((ltdInfoPage != null) && (ltdInfoPage.UserID == UtilsSecurity.GetUserId()))
+                    {
+                        TemplateInfoDetailSaveAdd saveAdd = new TemplateInfoDetailSaveAdd
+                        {
+                            DataIndex = dataIndex.ToString(),
+                            PageNo = pageNo.ToString(),
+                            ItemsPerPage = itemsPerPage.ToString(),
+                            TemplateSuffix = templateSuffix,
+                            InfoSectionId = infoSectionId.ToString(),
+                        };
+                        htmlAddItemList = saveAdd.GetFilled(templateSuffix, UtilsGeneric.Validate, UtilsGeneric.ThrowException, out message);
+                    }
+                }
             }
 
             #endregion
@@ -443,11 +451,12 @@ namespace Priya.InfoList.Views
         private static string GetListSingleItemView(LTD_InfoDetail ltdDetail, long pageNo, long itemsPerDetail, long dataIndex, string templateSuffix, long infoSectionId)
         {
             string htmlTextItem = "";
-            if (ltdDetail != null)
+            LTD_InfoPage ltdInfoPage = DataInfoList.GetLtdInfoPage(ltdDetail.InfoPageID);
+            if ((ltdDetail != null)  && (ltdInfoPage != null))
             {
                 string message;
                 List<TemplateInfoDetailListDetailItem.EditAction> editActionList = new List<TemplateInfoDetailListDetailItem.EditAction>();
-                if ((UtilsSecurity.HaveAdminRole() == true) || (UtilsSecurity.HaveAuthorRoleEnabled() == true))
+                if (((UtilsSecurity.HaveAdminRole() == true) && (UtilsSecurity.HaveAuthorRoleEnabled() == true)) || ((UtilsSecurity.HaveAuthorRoleEnabled() == true) && (ltdInfoPage.UserID == UtilsSecurity.GetUserId())))
                 {
                     editActionList.Add(new TemplateInfoDetailListDetailItem.EditAction
                     {

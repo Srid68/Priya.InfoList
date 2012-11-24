@@ -39,17 +39,17 @@
 //     Include Filter RegEx						:``<br/>
 //     Embed Source								:`True`<br/>
 //     Compress Source								:`True`<br/>
-//     Default Constant Start Tag				:`!`<br/>
-//     Default Mandatory End Tag					:`!`<br/>
-//     Default Escape End Tag					:`{|&|@`<br/>
-//     Default Section Invert Start Tag			:`{{^`<br/>
-//     Default Section Start Tag				:`{{#`<br/>
-//     Default Section End Tag					:`{{/`<br/>
-//     Default Section Close Tag				:`}}`<br/>
-//     Default PlaceHolder Start Tag			:`{{`<br/>
-//     Default PlaceHolder End Tag				:`}}`<br/>
-//     Default PlaceHolder Js Start Tag			:`/*!@`<br/>
-//     Default PlaceHolder Js End Tag			:`@*/`<br/>
+//     Constant Start Tag						:`!`<br/>
+//     Mandatory End Tag							:`!`<br/>
+//     Escape End Tag							:`{|&|@`<br/>
+//     Section Invert Start Tag					:`{{^`<br/>
+//     Section Start Tag						:`{{#`<br/>
+//     Section End Tag							:`{{/`<br/>
+//     Section Close Tag						:`}}`<br/>
+//     PlaceHolder Start Tag					:`{{`<br/>
+//     PlaceHolder End Tag						:`}}`<br/>
+//     PlaceHolder Js Start Tag					:`/*!@`<br/>
+//     PlaceHolder Js End Tag					:`@*/`<br/>
 //     Output Path                              :`C:\Work\ArshuSource\Priya\Priya.InfoList\App_Gen\Template\Template.cs`<br/>
 <br/>
 Checking File for Template [C:\Work\ArshuSource\Priya\Priya.InfoList\App_View\HtmlData\Data.html] Generation<br/>

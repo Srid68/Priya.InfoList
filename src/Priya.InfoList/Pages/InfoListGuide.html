@@ -1,0 +1,85 @@
+﻿<!-- PageTitle=Intro to Info List -->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Info to Info List</title>
+</head>
+<body>
+    <div>
+        <ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+            data-dividertheme="e" data-filter="false">
+            <li style="text-align: center" data-role="list-divider">Functional Guide of the Reference Implementation of a Platform Agnositc C# Hybrid App Framework
+            </li>
+            <li style="text-align: center">
+                <div data-role="collapsible" data-collapsed="false">
+                    <h3 style="text-align: center; font-size: x-large; margin: 25px auto">Step 1: Auto Register</h3>
+                    <ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+                        data-dividertheme="e" data-filter="false">
+                        <li style="text-align: center">
+                            <p style="position: absolute; right: 5px;">
+                                <button data-inline="true" data-ajax="false" data-mini="true" data-iconpos="notext" data-icon="info" onclick="$('#autoRegisterMore').toggle('slow'); return false;">Show</button>
+                            </p>
+                            Auto Register to access the functionality of the app
+                        </li>
+                        <li id="autoRegisterMore" style="display:none;">
+                            To access the functionality provided by the Reference Application, you need to register using a email and password. 
+                            <br />
+                            To reduce the barrier to entry for new users, Auto Register functionality is implemented using a auto generated user stored in a browser cookie.
+                            <br />
+                            If the user feels that the functionality of the application is suitable for short term engagement, then they will specify a User ID and password.
+                            <br />
+                            As the User uses the application by creating content, they automatically have the incentive to safeguard the content they created which may be lost if the cookie in his browser is lost. This gives them an incentive to specify a User ID and Password.
+                            Also if the user wants to share the content created across browsers, then they will be forced to create a user id and password.
+                            <br />
+                            Another advantage from a system maintainence point of view is that we can auto clear the temporary account after a certain period and this also eliminates users who are not our target audience.
+                            <br />
+                            Auto Registration is controlled by creating a Auto Registration Invite specifying the number of auto registrations allowed in the Invite Module. The Invite Module is accessable only by users having AdminRole.
+                        </li>
+                        <li style="text-align: center">
+                            <div>
+                                <img src="/Pages/InfoList/InfoGrid-AutoRegister.png" alt="Auto Register">
+                            </div>
+                        </li>
+                    </ul>
+                </div>                 
+            </li>
+        </ul>
+    </div>
+    <div data-role="collapsible" data-collapsed="false">
+        <h3 style="text-align: center; font-size: x-large; margin: 25px auto">Step 2 : Enable Author Role</h3>
+        <ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+            data-dividertheme="e" data-filter="false">
+            <li style="text-align: center">
+                <p style="position: absolute; right: 5px;">
+                    <button data-inline="true" data-ajax="false" data-mini="true" data-iconpos="notext" data-icon="info" onclick="$('#enableAuthorRoleMore').toggle('slow'); return false;">Show</button>
+                </p>
+                Enable Author Role to access editing functionality in the App. Auto Register may be configured to enable Author Role Automatically.
+            </li>
+            <li id="enableAuthorRoleMore" style="display:none;">
+                Security control for doing actions are controlled by predefined roles as well as the currently enabled default role defined in the User Details Screen.
+                <br />
+                For enabling editing of InfoList, Author Action is required
+                <br />
+            </li>
+            <li style="text-align: center">
+                <div>
+                    <img src="/Pages/InfoList/InfoGrid-EnableAuthorRole.png" alt="Enable Author Role">
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div data-role="collapsible" data-collapsed="false">
+        <h3 style="text-align: center; font-size: x-large; margin: 25px auto">Step 3: Creating Info List</h3>
+        <ul data-role="listview" data-inset="true" data-theme="a" data-content-theme="b"
+            data-dividertheme="e" data-filter="false">
+            <li style="text-align: center">
+                <div>
+                    <img src="/Pages/InfoList/InfoGrid-CreateInfoList.png" alt="Creating Info List">
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</body>
+</html>

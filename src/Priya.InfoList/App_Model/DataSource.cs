@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Collections.Generic;
 
 using PetaPoco;
+using Arshu.Core.Common;
 using Arshu.Data.Common;
 
 using Priya.Security.Utils;
@@ -13,16 +14,7 @@ namespace Priya.InfoList.Data
 {
     internal static partial class DataSource
     {
-        #region Constructor
-
-        static DataSource()
-        {
-            OnGetUserInfo -= UtilsSecurity.UtilsSecurity_OnGetUserInfo;
-            OnGetUserInfo += UtilsSecurity.UtilsSecurity_OnGetUserInfo;
-        }
-
-        #endregion
-
+        
         #region CNS_DataType Query Related
 
         #region Get
@@ -31,9 +23,10 @@ namespace Priya.InfoList.Data
         {
             CNS_DataType cnsDataType = null;
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                cnsDataType = GetDb.SingleOrDefault<CNS_DataType>("SELECT * FROM CNS_DataType Where DataType=@0", dataType);
+                cnsDataType = db.SingleOrDefault<CNS_DataType>("SELECT * FROM CNS_DataType Where DataType=@0", dataType);
             }
             else
             {
@@ -54,9 +47,10 @@ namespace Priya.InfoList.Data
         {
             CNS_DataType defaultCnsDataType = null;
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                defaultCnsDataType = GetDb.SingleOrDefault<CNS_DataType>("SELECT * FROM CNS_DataType Where IsDefault=@0", 1);
+                defaultCnsDataType = db.SingleOrDefault<CNS_DataType>("SELECT * FROM CNS_DataType Where IsDefault=@0", 1);
             }
             else
             {
@@ -95,9 +89,10 @@ namespace Priya.InfoList.Data
         {
             CNS_DataRefType cnsDataRefType = null;
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                cnsDataRefType = GetDb.SingleOrDefault<CNS_DataRefType>("SELECT * FROM CNS_DataRefType Where DataRefType=@0", dataRefType);
+                cnsDataRefType = db.SingleOrDefault<CNS_DataRefType>("SELECT * FROM CNS_DataRefType Where DataRefType=@0", dataRefType);
             }
             else
             {
@@ -118,9 +113,10 @@ namespace Priya.InfoList.Data
         {
             CNS_DataRefType defaultCnsDataRefType = null;
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
-                defaultCnsDataRefType = GetDb.SingleOrDefault<CNS_DataRefType>("SELECT * FROM CNS_DataRefType Where IsDefault=@0", 1);
+                defaultCnsDataRefType = db.SingleOrDefault<CNS_DataRefType>("SELECT * FROM CNS_DataRefType Where IsDefault=@0", 1);
             }
             else
             {
@@ -157,7 +153,8 @@ namespace Priya.InfoList.Data
         {
             LTD_Subscriber ltdSubscriber = null;
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 long totalPages =0;
                 long totalItems = 0;
@@ -187,9 +184,11 @@ namespace Priya.InfoList.Data
         public static long GetLtdSubscriberCount()
         {
             long ltdSubscriberCount = 0;
-            if (HaveDb == true)
+
+            Database db = HaveDb();
+            if (db != null)
             {
-                ltdSubscriberCount = GetDb.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_Subscriber ");
+                ltdSubscriberCount = db.Single<long>("SELECT COUNT(*) AS TOTAL_COUNT FROM LTD_Subscriber ");
             }
             else
             {
@@ -208,11 +207,12 @@ namespace Priya.InfoList.Data
             LTD_InfoCategory ltdInfoCategory = null;
             long userId = UtilsSecurity.GetUserId();
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 long totalPages = 0;
                 long totalItems = 0;
-                List<LTD_InfoCategory> categoryList = DataSource.GetPagedLtdInfoCategory(1, 1, out totalPages, out totalItems, "", " Where InfoCategoryName=@0 and UserID=@1", infoCategoryName, userId);
+                List<LTD_InfoCategory> categoryList = GetPagedLtdInfoCategory(1, 1, out totalPages, out totalItems, "", " Where InfoCategoryName=@0 and UserID=@1", infoCategoryName, userId);
                 if (totalItems > 0)
                 {
                     ltdInfoCategory = categoryList[0];
@@ -238,11 +238,12 @@ namespace Priya.InfoList.Data
         {
             LTD_InfoCategory ltdInfoCategory = null;
 
-            if (HaveDb == true)
+            Database db = HaveDb();
+            if (db != null)
             {
                 long totalPages = 0;
                 long totalItems = 0;
-                List<LTD_InfoCategory> categoryList = DataSource.GetPagedLtdInfoCategory(1, 1, out totalPages, out totalItems, "", " Where IsDefault=@0", true);
+                List<LTD_InfoCategory> categoryList = GetPagedLtdInfoCategory(1, 1, out totalPages, out totalItems, "", " Where IsDefault=@0", true);
                 if (totalItems > 0)
                 {
                     ltdInfoCategory = categoryList[0];
