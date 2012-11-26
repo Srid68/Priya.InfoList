@@ -45,54 +45,41 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Arshu.Core">
-      <HintPath>..\..\PriyaReference\Core\Win\Arshu.Core.dll</HintPath>
+    <Reference Include="Arshu.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=965eb7c7ced7f21b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\Arshu.Core.dll</HintPath>
     </Reference>
     <Reference Include="Arshu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=965eb7c7ced7f21b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\PriyaReference\Core\Win\Arshu.Data.dll</HintPath>
+      <HintPath>..\..\Reference\Arshu.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Priya.Generic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\Priya.Generic.dll</HintPath>
+    </Reference>
+    <Reference Include="Priya.Mobile, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\Priya.Mobile.dll</HintPath>
+    </Reference>
+    <Reference Include="Priya.Security, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\Priya.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Priya.Setting, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\Priya.Setting.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.79.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Reference\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App_Data\full.v1.mysql.sql" />
     <None Include="App_Data\full.v1.sqlite.sql" />
-    <None Include="App_Generate\DataEntities.txt">
-      <DependentUpon>DataEntities.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </None>
-    <None Include="App_Generate\DataSource.txt">
-      <DependentUpon>DataSource.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </None>
-    <None Include="App_Generate\FileSource.txt">
-      <DependentUpon>FileSource.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </None>
-    <None Include="App_Generate\ProcessCssJs.txt">
-      <DependentUpon>ProcessCssJs.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </None>
-    <None Include="App_Generate\Resource.txt">
-      <DependentUpon>Resource.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </None>
-    <None Include="App_Generate\Template.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Template.txt</LastGenOutput>
-    </None>
-    <None Include="App_Generate\Template.txt">
-      <DependentUpon>Template.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </None>
     <Content Include="appbackground.png" />
     <Content Include="applogo.png" />
     <Content Include="App_View\HtmlDataRefType\DataRefTypeSaveAdd.html" />
@@ -161,28 +148,6 @@
     <Content Include="App_View\HtmlInfoCategory\InfoCategorySaveAdd.html" />
     <Content Include="App_View\HtmlInfoDetail\InfoDetailListDetailEmpty.html" />
     <Content Include="App_View\HtmlInfoDetail\InfoDetail.html" />
-    <None Include="App_Generate\Config.ttinclude" />
-    <None Include="App_Generate\DataEntities.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DataEntities.txt</LastGenOutput>
-    </None>
-    <None Include="App_Generate\DataSource.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DataSource.txt</LastGenOutput>
-    </None>
-    <None Include="App_Generate\FileSource.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>FileSource.txt</LastGenOutput>
-    </None>
-    <None Include="App_Generate\ProcessCssJs.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ProcessCssJs.txt</LastGenOutput>
-    </None>
-    <None Include="App_Generate\Resource.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Resource.txt</LastGenOutput>
-    </None>
-    <None Include="App_Generate\DataConfig.ttinclude" />
     <Content Include="App_Data\security.v1.db" />
     <Content Include="App_Data\infolist.v1.db" />
     <Content Include="Apps\Setting\Config\JsonConfig.ashx" />
@@ -312,24 +277,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Priya.Generic\Priya.Generic.VS2012.csproj">
-      <Project>{B8D27AB8-6CC3-4A3E-88CD-C789FCA5C7B7}</Project>
-      <Name>Priya.Generic.VS2012</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Priya.Mobile\Priya.Mobile.VS2012.csproj">
-      <Project>{53b0eb70-d36f-41c8-9f0f-dbeba6b212a7}</Project>
-      <Name>Priya.Mobile.VS2012</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Priya.Security\Priya.Security.VS2012.csproj">
-      <Project>{347552e9-d378-44cd-af36-b025f3efa5d6}</Project>
-      <Name>Priya.Security.VS2012</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Priya.Setting\Priya.Setting.VS2012.csproj">
-      <Project>{60dc73c4-3635-4081-a35b-551fe8174e0c}</Project>
-      <Name>Priya.Setting.VS2012</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Index.ashx" />

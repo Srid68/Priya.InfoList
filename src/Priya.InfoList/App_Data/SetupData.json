@@ -35,20 +35,27 @@
                 "UserEmail" : "testor2@arshu.com",                
                 "UserRoles" : ["AuthorRole","GuestRole"]
             }],        
-        "DbProviderNameFactory" : "System.Data.SqlClient.SqlClientFactory, System.Data",        
-        "DbConnectionString" : "Data Source=localhost;Initial Catalog=InfoList;Integrated Security=True;MultipleActiveResultSets=true"
+        "DbProviderNameFactory" : "System.Data.SQLite.SQLiteFactory, System.Data.SQLite",        
+        "DbConnectionString" : ""
     },
     {
         "AppName" : "Priya.Security.v1",        
         "StartDate" : "0001-01-01T00:00:00Z",        
         "EndDate" : "0001-01-01T00:00:00Z",        
-        "DbProviderNameFactory" : "System.Data.SqlClient.SqlClientFactory, System.Data",        
-        "DbConnectionString" : "Data Source=localhost;Initial Catalog=Security;Integrated Security=True;MultipleActiveResultSets=true"
+        "DbProviderNameFactory" : "System.Data.SQLite.SQLiteFactory, System.Data.SQLite",        
+        "DbConnectionString" : ""
     },
     {
         "AppName" : "Priya.Setting.v1",        
         "StartDate" : "0001-01-01T00:00:00Z",        
         "EndDate" : "0001-01-01T00:00:00Z",        
-        "DbProviderNameFactory" : "System.Data.SqlClient.SqlClientFactory, System.Data",        
-        "DbConnectionString" : "Data Source=localhost;Initial Catalog=Setting;Integrated Security=True;MultipleActiveResultSets=true"
-    }]
+        "DbProviderNameFactory" : "System.Data.SQLite.SQLiteFactory, System.Data.SQLite",        
+        "DbConnectionString" : ""
+    },
+    {
+        "AppName" : "Priya.Tracking.v1",        
+        "StartDate" : "0001-01-01T00:00:00Z",        
+        "EndDate" : "0001-01-01T00:00:00Z",        
+        "DbProviderNameFactory" : "System.Data.SQLite.SQLiteFactory, System.Data.SQLite",        
+        "DbConnectionString" : ""
+    }	]
