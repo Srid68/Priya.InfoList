@@ -10178,7 +10178,7 @@ namespace Priya.InfoList.Views
 		public const string RelativeFilePath = "App_View/HtmlInfoCategory/InfoCategorySaveDetailAdd.html";
 		public const string ScriptRelativeFilePath = "";		
 		public const string MinScriptRelativeFilePath = "";										
-		private const string TemplateSource_500="BTxkaXY+ICAAADwgCBEgY2xhc3M9InVpLWdyaWQtYSJgGkAA4AYeBGJsb2Nr4AMfQAALPGJ1dHRvbiBpZD0igAoUQWRkSW5mb0NhdGVnb3J5IiBuYW1l4BAcAnR5cCAcEHN1Ym1pdCIgZGF0YS10aGVtIBMYYiIgb25jbGljaz0icmV0dXJuIHNhdmVJbuABWw0oMCwge3tQYWdlTm99fUALB0l0ZW1zUGVyQBMAfWARAEQgUgVJbmRleH0gDhMne3tUZW1wbGF0ZVN1ZmZpeH19J0A2BkhpZGVEaXMgGAR5fX0pIiBUFCNBZGRBY3Rpb25EaXNhYmxlZH19ZKAJAj0iZKAJBCJ7ey9B4AkoBT5BZGQ8L4EO4QBN4AMAAjwvZKGCQAABPGThBIYBYmxBZwBi4QGHQAAAPIBNASB04RAvAWMi4QgvCHJlZnJlc2hJbuEBMgVGb3JtKHvhSjPgCOcFQ2FuY2Vs4QgG4AH6gAkFPC9kaXY+";
+		private const string TemplateSource_512="BTxkaXY+ICAAADwgCBEgY2xhc3M9InVpLWdyaWQtYSJgGkAA4AYeBGJsb2Nr4AMfQAALPGJ1dHRvbiBpZD0igAofQWRkSW5mb0NhdGVnb3J5e3tEYXRhSW5kZXh9fSIgbmEBbWXgHSkCdHlwICkIc3VibWl0IiBkIEQELXRoZW0gExhiIiBvbmNsaWNrPSJyZXR1cm4gc2F2ZUlu4AF1DSgwLCB7e1BhZ2VOb319QAsHSXRlbXNQZXJAEwB9YBEARCBSoJcVLCAne3tUZW1wbGF0ZVN1ZmZpeH19J0A2BkhpZGVEaXMgGAR5fX0pIiBUFCNBZGRBY3Rpb25EaXNhYmxlZH19ZKAJAj0iZKAJBCJ7ey9B4AkoBT5BZGQ8L4Eo4QBn4AMAAjwvZKGcQAABPGThBKABYmxBgQBi4QGhQAAAPIBNASB04RAvAWMi4QgvCHJlZnJlc2hJbuEBMgVGb3JtKHvhSjPgCOcFQ2FuY2Vs4QgG4AH6gAkFPC9kaXY+";
 
 		#endregion		
 
@@ -10194,9 +10194,9 @@ namespace Priya.InfoList.Views
 
         #region PlaceHolder Properties
 
+		public string DataIndex { get; set; }	
 		public string PageNo { get; set; }	
 		public string ItemsPerPage { get; set; }	
-		public string DataIndex { get; set; }	
 		public string TemplateSuffix { get; set; }	
 		public string HideDisplay { get; set; }	
 
@@ -10239,7 +10239,7 @@ namespace Priya.InfoList.Views
             {
 				if (string.IsNullOrEmpty(template) ==true)
                 {
-					template = LZF.DecompressFromBase64(TemplateSource_500);
+					template = LZF.DecompressFromBase64(TemplateSource_512);
 				}
             }
             else
@@ -10258,7 +10258,7 @@ namespace Priya.InfoList.Views
                 {
 					if (string.IsNullOrEmpty(template) == true)
 					{
-						template = LZF.DecompressFromBase64(TemplateSource_500);
+						template = LZF.DecompressFromBase64(TemplateSource_512);
 					}
                 }
             }
@@ -10328,9 +10328,9 @@ namespace Priya.InfoList.Views
 
 		protected string ProcessPlaceHolder(string template)
 		{
+			template = template.Replace("{{DataIndex}}", string.IsNullOrEmpty(DataIndex)==false ? DataIndex : "");
 			template = template.Replace("{{PageNo}}", string.IsNullOrEmpty(PageNo)==false ? PageNo : "");
 			template = template.Replace("{{ItemsPerPage}}", string.IsNullOrEmpty(ItemsPerPage)==false ? ItemsPerPage : "");
-			template = template.Replace("{{DataIndex}}", string.IsNullOrEmpty(DataIndex)==false ? DataIndex : "");
 			template = template.Replace("{{TemplateSuffix}}", string.IsNullOrEmpty(TemplateSuffix)==false ? TemplateSuffix : "");
 			template = template.Replace("{{HideDisplay}}", string.IsNullOrEmpty(HideDisplay)==false ? HideDisplay : "");
 			return template;
@@ -10353,7 +10353,7 @@ namespace Priya.InfoList.Views
 		public const string RelativeFilePath = "App_View/HtmlInfoCategory/InfoCategorySaveDetailEdit.html";
 		public const string ScriptRelativeFilePath = "";		
 		public const string MinScriptRelativeFilePath = "";										
-		private const string TemplateSource_584="BTxkaXY+ICAAADwgCBEgY2xhc3M9InVpLWdyaWQtYSJgGkAA4AYeBGJsb2Nr4AMfQAALPGJ1dHRvbiBpZD0igAoVU2F2ZUluZm9DYXRlZ29yeSIgbmFtZeARHQJ0eXAgHRBzdWJtaXQiIGRhdGEtdGhlbSATGGIiIG9uY2xpY2s9InJldHVybiBzYXZlSW7gAVwRKHt7SWR9fSwge3tQYWdlTm99YAsHSXRlbXNQZXJAEwB9YBEARCBXBUluZGV4fSAOEyd7e1RlbXBsYXRlU3VmZml4fX0nQEIGSGlkZURpcyAYBHl9fSkiIFQBI1MgzRBBY3Rpb25EaXNhYmxlZH19ZKAJAj0iZKAJBCJ7ey9T4AopAT5TIBQBPC+BGOEAV+ADAAI8L2ShjEAAATxk4QSQAWJsQXEAYuEBkUAAADyATQEgdOEQNwFjIuEINwhyZWZyZXNoSW7hAToFRm9ybSh74Uo24AjnBUNhbmNlbOEIBuAB+uACCQBk4QMN4CvpB2RlbGV0ZUlu4AHoIOQBSWTiUyMBRGVAcuIdJQBE4AwrAT5EYBbhCCJAAIEcBTwvZGl2Pg==";
+		private const string TemplateSource_596="BTxkaXY+ICAAADwgCBEgY2xhc3M9InVpLWdyaWQtYSJgGkAA4AYeBGJsb2Nr4AMfQAALPGJ1dHRvbiBpZD0igAofU2F2ZUluZm9DYXRlZ29yeXt7RGF0YUluZGV4fX0iIG4CYW1l4B4qAnR5cCAqCHN1Ym1pdCIgZCBFBC10aGVtIBMYYiIgb25jbGljaz0icmV0dXJuIHNhdmVJbuABdhEoe3tJZH19LCB7e1BhZ2VOb31gCwdJdGVtc1BlckATAH1gEQBEIFegnRUsICd7e1RlbXBsYXRlU3VmZml4fX0nQEIGSGlkZURpcyAYBHl9fSkiIFQBI1Mg5xBBY3Rpb25EaXNhYmxlZH19ZKAJAj0iZKAJBCJ7ey9T4AopAT5TIBQBPC+BMuEAceADAAI8L2ShpkAAATxk4QSqAWJsQYsAYuEBq0AAADyATQEgdOEQNwFjIuEINwhyZWZyZXNoSW7hAToFRm9ybSh74Uo24AjnBUNhbmNlbOEIBuAB+uACCQBk4QMN4CvpB2RlbGV0ZUlu4AHoIOQBSWTiUyMBRGVAcuIdJQBE4AwrAT5EYBbhCCJAAIEcBTwvZGl2Pg==";
 
 		#endregion		
 
@@ -10370,10 +10370,10 @@ namespace Priya.InfoList.Views
 
         #region PlaceHolder Properties
 
+		public string DataIndex { get; set; }	
 		public string Id { get; set; }	
 		public string PageNo { get; set; }	
 		public string ItemsPerPage { get; set; }	
-		public string DataIndex { get; set; }	
 		public string TemplateSuffix { get; set; }	
 		public string HideDisplay { get; set; }	
 
@@ -10416,7 +10416,7 @@ namespace Priya.InfoList.Views
             {
 				if (string.IsNullOrEmpty(template) ==true)
                 {
-					template = LZF.DecompressFromBase64(TemplateSource_584);
+					template = LZF.DecompressFromBase64(TemplateSource_596);
 				}
             }
             else
@@ -10435,7 +10435,7 @@ namespace Priya.InfoList.Views
                 {
 					if (string.IsNullOrEmpty(template) == true)
 					{
-						template = LZF.DecompressFromBase64(TemplateSource_584);
+						template = LZF.DecompressFromBase64(TemplateSource_596);
 					}
                 }
             }
@@ -10527,10 +10527,10 @@ namespace Priya.InfoList.Views
 
 		protected string ProcessPlaceHolder(string template)
 		{
+			template = template.Replace("{{DataIndex}}", string.IsNullOrEmpty(DataIndex)==false ? DataIndex : "");
 			template = template.Replace("{{Id}}", string.IsNullOrEmpty(Id)==false ? Id : "");
 			template = template.Replace("{{PageNo}}", string.IsNullOrEmpty(PageNo)==false ? PageNo : "");
 			template = template.Replace("{{ItemsPerPage}}", string.IsNullOrEmpty(ItemsPerPage)==false ? ItemsPerPage : "");
-			template = template.Replace("{{DataIndex}}", string.IsNullOrEmpty(DataIndex)==false ? DataIndex : "");
 			template = template.Replace("{{TemplateSuffix}}", string.IsNullOrEmpty(TemplateSuffix)==false ? TemplateSuffix : "");
 			template = template.Replace("{{HideDisplay}}", string.IsNullOrEmpty(HideDisplay)==false ? HideDisplay : "");
 			return template;
@@ -16612,7 +16612,7 @@ namespace Priya.InfoList.Views
 		public const string RelativeFilePath = "App_View/HtmlInfoPage/InfoPageView.html";
 		public const string ScriptRelativeFilePath = "";		
 		public const string MinScriptRelativeFilePath = "";										
-		private const string TemplateSource_596="Fzx1bCBkYXRhLXJvbGU9Imxpc3R2aWV3IoAUC2luc2V0PSJ0cnVlIoARCHRoZW1lPSJhIoAOBmNvbnRlbnTAFgJiIiAgAGBPCWRpdmlkZXJ0aGVALwJlIj4gGAMgPGxpYAdAAAk8c3BhbiBzdHlsIE8fcG9zaXRpb246YWJzb2x1dGU7dG9wOjVweDtyaWdodDoBMTAgCoBDwAAbPGEgaHJlZj0iIyIgb25jbGljaz0icmV0dXJuICAXCHJlc2hQYWdlTCDRAih7e0AKD05vfX0sIHt7SXRlbXNQZXJAEwB9YBEARCEBBUluZGV4fSAOEyd7e1RlbXBsYXRlU3VmZml4fX0nQDYQQXN5bmNMb2FkaW5nfX0pOyKA6IE4BmJ1dHRvbiKAEgZpbmxpbmU94QM3A21pbmngBBAAaSE6AD0gr2CoACKgNyATIQkLPSJub3RleHQiPlJlYB4CPC9h4QE2AC9BN+AADhdQbGVhc2UgbG9naW4gYXMgVXNlciBoYXYgowwgQXV0aG9yIFJvbGUgIBoVRGVmYXVsdCB0byBNb2RpZnkgSW5mb0EEAihzKUFVCTwvbGk+PC91bD4=";
+		private const string TemplateSource_600="Fzx1bCBkYXRhLXJvbGU9Imxpc3R2aWV3IoAUC2luc2V0PSJ0cnVlIoARCHRoZW1lPSJhIoAOBmNvbnRlbnTAFgJiIiAgAGBPCWRpdmlkZXJ0aGVALwJlIj4gGAMgPGxpYAdAAAk8c3BhbiBzdHlsIE8fcG9zaXRpb246YWJzb2x1dGU7dG9wOjVweDtyaWdodDoBMTAgCoBDwAAbPGEgaHJlZj0iIyIgb25jbGljaz0icmV0dXJuICAXDHJlc2hJbmZvUGFnZUwg1QIoe3tACg9Ob319LCB7e0l0ZW1zUGVyQBMAfWARAEQhBQVJbmRleH0gDhMne3tUZW1wbGF0ZVN1ZmZpeH19J0A2EEFzeW5jTG9hZGluZ319KTsigOyBPAZidXR0b24igBIGaW5saW5lPeEDOwNtaW5p4AQQAGkhPgA9ILNgrAAioDcgEyENCz0ibm90ZXh0Ij5SZWAeAjwvYeEBOgAvQTvgAA4XUGxlYXNlIGxvZ2luIGFzIFVzZXIgaGF2IKMMIEF1dGhvciBSb2xlICAaE0RlZmF1bHQgdG8gTW9kaWZ5IElugSMCKHMpQVkJPC9saT48L3VsPg==";
 
 		#endregion		
 
@@ -16663,7 +16663,7 @@ namespace Priya.InfoList.Views
             {
 				if (string.IsNullOrEmpty(template) ==true)
                 {
-					template = LZF.DecompressFromBase64(TemplateSource_596);
+					template = LZF.DecompressFromBase64(TemplateSource_600);
 				}
             }
             else
@@ -16682,7 +16682,7 @@ namespace Priya.InfoList.Views
                 {
 					if (string.IsNullOrEmpty(template) == true)
 					{
-						template = LZF.DecompressFromBase64(TemplateSource_596);
+						template = LZF.DecompressFromBase64(TemplateSource_600);
 					}
                 }
             }

@@ -45,38 +45,15 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Arshu.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=965eb7c7ced7f21b, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Reference\Arshu.Core.dll</HintPath>
+    <Reference Include="Arshu.Core">
+      <HintPath>..\..\PriyaReference\Core\Win\Arshu.Core.dll</HintPath>
     </Reference>
     <Reference Include="Arshu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=965eb7c7ced7f21b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Reference\Arshu.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Priya.Generic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Reference\Priya.Generic.dll</HintPath>
-    </Reference>
-    <Reference Include="Priya.Mobile">
-      <HintPath>..\..\Reference\Priya.Mobile.dll</HintPath>
-    </Reference>
-    <Reference Include="Priya.Security, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Reference\Priya.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Priya.Setting, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Reference\Priya.Setting.dll</HintPath>
-    </Reference>
-    <Reference Include="Priya.Tracking">
-      <HintPath>..\..\Reference\Priya.Tracking.dll</HintPath>
+      <HintPath>..\..\PriyaReference\Core\Win\Arshu.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite, Version=1.0.79.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Reference\System.Data.SQLite.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
@@ -272,13 +249,6 @@
     <None Include="App_View\HtmlInfoPage\InfoPageSaveDetail.html" />
     <None Include="App_View\HtmlInfoPage\InfoPageSaveScript.js" />
     <None Include="App_View\HtmlInfoPage\InfoPageSaveScript.min.js" />
-    <Content Include="Pages\Footer\Architecture.html" />
-    <Content Include="Pages\Footer\Architecture1.png" />
-    <Content Include="Pages\Footer\Architecture2.png" />
-    <Content Include="Pages\Footer\Architecture3.png" />
-    <Content Include="Pages\Footer\License.html" />
-    <Content Include="Pages\Footer\PoweredByZipStorer.png" />
-    <Content Include="Pages\InfoList.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -306,7 +276,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Gen\DataSource\DataEntities.cs" />
-    <Compile Include="App_Handler\InfoCategory\JsonInfoCategoryHandler.cs" />
+    <Compile Include="App_ViewService\InfoCategory\JsonInfoCategoryHandler.cs" />
     <Compile Include="App_Gen\DataSource\DataSource.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -319,13 +289,13 @@
     <Compile Include="App_Gen\Template\Template.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="App_Handler\Data\JsonDataHandler.cs" />
-    <Compile Include="App_Handler\Data\JsonDataRefTypeHandler.cs" />
-    <Compile Include="App_Handler\Data\JsonDataTypeHandler.cs" />
-    <Compile Include="App_Handler\InfoDetail\JsonInfoDetailHandler.cs" />
-    <Compile Include="App_Handler\InfoSection\JsonInfoSectionHandler.cs" />
-    <Compile Include="App_Handler\InfoPage\JsonInfoPageHandler.cs" />
-    <Compile Include="App_Handler\Subscriber\JsonSubscriberHandler.cs" />
+    <Compile Include="App_ViewService\Data\JsonDataHandler.cs" />
+    <Compile Include="App_ViewService\Data\JsonDataRefTypeHandler.cs" />
+    <Compile Include="App_ViewService\Data\JsonDataTypeHandler.cs" />
+    <Compile Include="App_ViewService\InfoDetail\JsonInfoDetailHandler.cs" />
+    <Compile Include="App_ViewService\InfoSection\JsonInfoSectionHandler.cs" />
+    <Compile Include="App_ViewService\InfoPage\JsonInfoPageHandler.cs" />
+    <Compile Include="App_ViewService\Subscriber\JsonSubscriberHandler.cs" />
     <Compile Include="App_Model\DataCommon.cs" />
     <Compile Include="App_Model\DataInfoList.cs" />
     <Compile Include="App_Model\DataSource.cs" />
@@ -342,6 +312,24 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Priya.Generic\Priya.Generic.VS2012.csproj">
+      <Project>{B8D27AB8-6CC3-4A3E-88CD-C789FCA5C7B7}</Project>
+      <Name>Priya.Generic.VS2012</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Priya.Mobile\Priya.Mobile.VS2012.csproj">
+      <Project>{53b0eb70-d36f-41c8-9f0f-dbeba6b212a7}</Project>
+      <Name>Priya.Mobile.VS2012</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Priya.Security\Priya.Security.VS2012.csproj">
+      <Project>{347552e9-d378-44cd-af36-b025f3efa5d6}</Project>
+      <Name>Priya.Security.VS2012</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Priya.Setting\Priya.Setting.VS2012.csproj">
+      <Project>{60dc73c4-3635-4081-a35b-551fe8174e0c}</Project>
+      <Name>Priya.Setting.VS2012</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Index.ashx" />
@@ -365,7 +353,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>59154</DevelopmentServerPort>
+          <DevelopmentServerPort>1093</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

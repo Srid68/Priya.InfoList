@@ -214,7 +214,7 @@ namespace Priya.InfoList.Model
 
         public static LTD_InfoCategory GetLtdInfoCategory(long infoCategoryId)
         {
-            return DataSource.GetLtdInfoCategory(infoCategoryId, " Where InfoCategoryId=@0", infoCategoryId);
+            return DataSource.GetLtdInfoCategory(infoCategoryId, " ");
         }
        
         public static LTD_InfoCategory GetLtdInfoCategory(string infoCategoryName)

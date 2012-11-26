@@ -481,7 +481,7 @@ namespace Priya.InfoList.Views
 
                 if ((ltdInfoPage.AsyncLoading == false) || ((ltdInfoPage.AsyncLoading == true) && (asyncLoading == false)))
                 {
-                    infoDetailListView = InfoDetailView.GetView(ltdSection.InfoSectionID, dataIndex + 1, templateSuffix, true, true, false, false);
+                    infoDetailListView = InfoDetailView.GetView(ltdSection.InfoSectionID, dataIndex + 1, templateSuffix, false, true, true, false);
                 }
                 else
                 {

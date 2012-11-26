@@ -30,7 +30,7 @@ namespace Priya.InfoList
         #region Save Info Page
 
         [JsonRpcMethod("SaveInfoPage")]
-        [JsonRpcHelp("Save Info Page (Only by Loged in User having Admin Role)")]
+        [JsonRpcHelp("Save Info Page (Only by Loged in User having Admin/Author Role)")]
         public JsonObject SaveInfoPage(string infoPageName, string infoPageDescription, long infoPageCategoryId, long accessGroupId, bool asyncLoading, bool isActive, DateTime expiryDate, bool commentable, string commentorRoleList, bool isPublic, bool isCommon, bool isDeleted, long sequence, long infoPageId)
         {
             var retMessage = new JsonObject();
